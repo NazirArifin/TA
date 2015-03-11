@@ -1,0 +1,133 @@
+ <div class="row">
+	<div class="col-lg-12">
+		<div class="row">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li class="active"><span>Pengaturan</span></li>
+				</ol>
+				<h1>Pengaturan</h1>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<h2>&nbsp;</h2>
+					</header>
+					<div class="main-box-body clearfix">
+						<div class="tabs-wrapper">
+							<ul class="nav nav-tabs">
+								<li class="active">
+									<a href="" data-toggle="tab" data-target="#tab-master"><i class="fa fa-database fa-fw"></i> Data Master</a>
+								</li>
+								<li>
+									<a href="" data-toggle="tab" data-target="#tab-situs"><i class="fa fa-globe fa-fw"></i> Data Situs</a>
+								</li>
+								<li>
+									<a href="" data-toggle="tab" data-target="#tab-pembayaran"><i class="fa fa-money fa-fw"></i> Pembayaran</a>
+								</li>
+							</ul>
+							<div class="tab-content">
+								<div class="tab-pane fade active in" id="tab-master">
+									<div class="container">
+										<div class="row">
+											<div class="col-lg-4">
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<strong>&nbsp; Data Kota</strong>
+														<a href="" class="pull-right tooltips" title="Tambah" show-prompt="" data-scope="kota" data-text="Masukkan nama kota:"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
+													</div>
+													<table class="table table-condensed table-striped">
+														<tbody>
+															<tr data-ng-repeat="c in kota">
+																<td class="text-muted" width="1">{{$index + 1}}.</td>
+																<td>{{c.nama}}</td>
+																<td class="text-center">
+																	<a href="" class="table-link primary" show-prompt="{{$index}}" data-scope="kota" data-text="Ubah nama kota:">
+																		<span class="fa-stack">
+																			<i class="fa fa-square fa-stack-2x"></i>
+																			<i class="fa fa-edit fa-stack-1x fa-inverse"></i>
+																		</span>
+																	</a>
+																	<a href="" delete-button="&id={{c.id}}" data-type="data?t=kota" class="table-link danger">
+																		<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+																	</a>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+											<div class="col-lg-4">
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<strong>&nbsp; Kategori Direktori</strong>
+														<a href="" class="pull-right tooltips" title="Tambah" show-prompt="" data-scope="kategori_direktori" data-text="Masukkan nama kategori direktori:"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
+													</div>
+													<table class="table table-condensed table-striped">
+														<tbody>
+															<tr data-ng-repeat="c in kategori_direktori">
+																<td class="text-muted" width="1">{{$index + 1}}.</td>
+																<td>{{c.nama}}</td>
+																<td class="text-center">
+																	<a href="" class="table-link primary" show-prompt="{{$index}}" data-scope="kategori_direktori" data-text="Ubah nama kategori direktori:">
+																		<span class="fa-stack">
+																			<i class="fa fa-square fa-stack-2x"></i>
+																			<i class="fa fa-edit fa-stack-1x fa-inverse"></i>
+																		</span>
+																	</a>
+																	<a href="" delete-button="&id={{c.id}}" data-type="data?t=kategori_direktori" class="table-link danger">
+																		<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+																	</a>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+											<div class="col-lg-4">
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<strong>&nbsp; Kategori Produk</strong>
+														<a href="" class="pull-right tooltips" title="Tambah" show-prompt="" data-scope="kategori_produk" data-text="Masukkan nama kategori produk:"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
+													</div>
+													<table class="table table-condensed table-striped">
+														<tbody>
+															<tr data-ng-repeat="c in kategori_produk">
+																<td class="text-muted" width="1">{{$index + 1}}.</td>
+																<td>{{c.nama}}</td>
+																<td class="text-center">
+																	<a href="" class="table-link primary" show-prompt="{{$index}}" data-scope="kategori_produk" data-text="Ubah nama kategori produk:">
+																		<span class="fa-stack">
+																			<i class="fa fa-square fa-stack-2x"></i>
+																			<i class="fa fa-edit fa-stack-1x fa-inverse"></i>
+																		</span>
+																	</a>
+																	<a href="" delete-button="&id={{c.id}}" data-type="data?t=kategori_produk" class="table-link danger">
+																		<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+																	</a>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="tab-pane fade" id="tab-situs">
+									situs
+								</div>
+								<div class="tab-pane fade" id="tab-pembayaran">
+									pembayaran
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

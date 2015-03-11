@@ -1,0 +1,95 @@
+<div class="row">
+	<div class="col-lg-12">
+		<div class="row">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li><a href="">Transaksi</a></li>
+					<li class="active"><span>Penjualan Produk</span></li>
+				</ol>
+				<h1>Penjualan Produk</h1>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<div class="col-xs-4 form-inline pagenum">
+							<label for="show-status">
+								<select name="show-status" id="show-status" id="show-status" class="form-control" data-ng-model="page.status" data-ng-change="loadData()">
+									<option value="">Semua Status</option>
+									<option value="1">Tertunda</option>
+									<option value="2">Lewat</option>
+									<option value="3">Batal</option>
+									<option value="4">Diproses</option>
+									<option value="5">Selesai</option>
+								</select>
+							</label>
+						</div>
+						<div class="filter-block pull-right">
+							<div class="form-group pull-left">
+								<input type="text" data-ng-model="page.date" name="cari2" id="cari2" class="form-control" placeholder="dd/mm/yyyy" date-picker style="width: 140px;" data-ng-change="loadData()">
+								<i class="fa fa-calendar search-icon"></i>
+							</div>
+						</div>
+					</header>
+					<div class="main-box-body clearfix">
+						<div class="table-responsive">
+							<table class="table table-condensed dataTable">
+								<thead>
+									<tr>
+										<th data-ng-class="sortingIcon('code')" data-ng-click="sortOrder('code')">Kode</th>
+										<th data-ng-class="sortingIcon('date')" data-ng-click="sortOrder('date')">Tanggal</th>
+										<th data-ng-class="sortingIcon('member')" data-ng-click="sortOrder('member')">Anggota</th>
+										<th data-ng-class="sortingIcon('status')" data-ng-click="sortOrder('status')" class="text-center">Status</th>
+										<th class="text-right">Total</th>
+										<th>&nbsp;</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="c in itemList">
+										<td><a href="">#{{c.id}}</a></td>
+										<td>{{c.tanggal}}</td>
+										<td>
+											<a href="" class="user-link" show-modal="{{c.anggota.kode}}" data-type="anggota" data-target="modal-1"><span data-ng-show="c.anggota.valid == 1"><i class="fa fa-check-circle"></i> </span>{{c.anggota.nama}}</a>
+										</td>
+										<td class="text-center">
+											<span class="label" data-ng-class="getLabelStatus(c.status)">{{c.status}}</span>
+										</td>
+										<td class="text-right">Rp. {{c.total}},-</td>
+										<td class="text-center">
+											<a href="" class="table-link warning tooltips" title="Set Diproses" data-ng-click="setStatus(c.id, 4)" data-ng-show="c.status == 'Tertunda'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-history fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" class="table-link warning tooltips" title="Set Tertunda" data-ng-click="setStatus(c.id, 1)" data-ng-show="c.status == 'Diproses' || c.status == 'Selesai'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-recycle fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" class="table-link success tooltips" title="Set Selesai" data-ng-click="setStatus(c.id, 5)" data-ng-show="c.status == 'Diproses'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-check fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" delete-button="{{c.id}}" data-type="transaksi/jual" class="table-link danger" data-ng-show="c.status == 'Lewat' || c.status == 'Batal'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+											</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<ul class="pagination pagination-sm pull-right">
+								<li data-ng-class="{ disabled: page.cpage == 0 }">
+									<a href="" data-ng-click="prevPage()"><i class="fa fa-chevron-left"></i></a>
+								</li>
+								<li data-ng-repeat="n in range(page.numpage)" data-ng-class="{ active: n == page.cpage }">
+									<a href="" data-ng-click="setPage()" data-ng-bind="n + 1">1</a>
+								</li>
+								<li data-ng-class="{ disabled: page.cpage == page.numpage - 1 }">
+									<a href="" data-ng-click="nextPage()"><i class="fa fa-chevron-right"></i></a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

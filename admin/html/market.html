@@ -1,0 +1,88 @@
+<div class="row">
+	<div class="col-lg-12">
+		<div class="row">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li><a href="">e-Market</a></li>
+					<li class="active"><span>{{type}}</span></li>
+				</ol>
+				<h1>eMarket {{type}}</h1>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<div class="filter-block pull-right">
+							<div class="form-group pull-left">
+								<input type="text" data-ng-model="page.query" name="cari" id="cari" class="form-control" placeholder="Pencarian">
+								<i class="fa fa-search search-icon"></i>
+							</div>
+							<div class="form-group pull-left">
+								<input type="text" data-ng-model="page.date" name="cari2" id="cari2" class="form-control" placeholder="dd/mm/yyyy" date-picker style="width: 140px;">
+								<i class="fa fa-calendar search-icon"></i>
+							</div>
+							<a href="" class="btn btn-primary pull-right" data-ng-click="loadData()"><i class="fa fa-search"></i></a>
+						</div>
+					</header>
+					<div class="main-box-body clearfix">
+						<div class="table-responsive">
+							<table class="table user-list table-condensed dataTable">
+								<thead>
+									<tr>
+										<th colspan="2" class="text-center">Kiriman</th>
+										<th data-ng-class="sortingIcon('date')" data-ng-click="sortOrder('date')">Tanggal</th>
+										<th data-ng-class="sortingIcon('sender')" data-ng-click="sortOrder('sender')">Pengirim</th>
+										<th>&nbsp;</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="c in postList">
+										<td width="1"></td>
+										<td style="max-width: 250px;">
+											<h4><a href="">{{c.judul}}</a></h4>
+											<div class="clearfix">
+												<img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt="" class="search-img hidden-xs">
+												<div class="meta-info">
+													<div class="desc">{{c.isi}}</div>
+													<div class="info text-info">
+														<span class="label label-info"><i class="fa fa-comments"></i></span> {{c.komentar}} &nbsp; 
+														<span class="label label-default"><i class="fa fa-tags"></i></span> Batik, Madura
+													</div>
+												</div>
+											</div>
+										</td>
+										<td>{{c.tanggal}}</td>
+										<td>
+											<h4>
+												<a href="" class="user-link" show-modal="{{c.kode}}" data-type="anggota" data-target="modal-1"><span data-ng-show="c.valid_pengirim"><i class="fa fa-check-circle"></i> </span>{{c.nama_pengirim}}</a>
+											</h4>
+										</td>
+										<td>
+											<a href="" delete-button="{{c.id}}" data-type="emarket/{{type|lowercase}}" class="table-link danger">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+											</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<ul class="pagination pagination-sm pull-right">
+								<li data-ng-class="{ disabled: page.cpage == 0 }">
+									<a href="" data-ng-click="prevPage()"><i class="fa fa-chevron-left"></i></a>
+								</li>
+								<li data-ng-repeat="n in range(page.numpage)" data-ng-class="{ active: n == page.cpage }">
+									<a href="" data-ng-click="setPage()" data-ng-bind="n + 1">1</a>
+								</li>
+								<li data-ng-class="{ disabled: page.cpage == page.numpage - 1 }">
+									<a href="" data-ng-click="nextPage()"><i class="fa fa-chevron-right"></i></a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

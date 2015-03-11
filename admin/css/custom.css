@@ -1,0 +1,148 @@
+.table a.table-link {
+	margin: 0;
+}
+
+.btn-file {
+	position: relative;
+	overflow: hidden;
+}
+.btn-file input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	min-width: 100%;
+	min-height: 100%;
+	font-size: 100px;
+	text-align: right;
+	filter: alpha(opacity=0);
+	opacity: 0;
+	outline: none;
+	background: white;
+	cursor: inherit;
+	display: block;
+}
+
+.ns-type-error {
+	background-color:#e74c3c;
+	color:#fff;
+}
+.ns-type-error a {
+	color:#fff;
+}
+.ns-type-error .ns-close:before,.ns-type-error .ns-close:after {
+	background-color:#fff;
+}
+
+html, body {
+	font-family: "Open Sans", sans-serif
+}
+.ns-type-warning {
+	background-color:#f1c40f;
+	color:#fff;
+}
+.ns-type-warning a {
+	color:#fff;
+}
+.ns-type-warning .ns-close:before,.ns-type-warning .ns-close:after {
+	background-color:#fff;
+}
+.ns-type-notice { 
+	background-color:#01b9fe;
+	color:#fff;
+}
+.ns-type-notice a {
+	color:#fff;
+}
+.ns-type-notice .ns-close:before,.ns-type-notice .ns-close:after {
+	background-color:#fff;
+}
+.ns-type-success {
+	background-color:#2ecc71;
+	color:#fff;
+}
+.ns-type-success a {
+	color:#fff;
+}
+.ns-type-success .ns-close:before,.ns-type-success .ns-close:after {
+	background-color:#fff;
+}
+.ns-effect-loadingcircle .ns-close:before,.ns-effect-loadingcircle .ns-close:after {
+	background-color:#ddd;
+}
+.shape-progress svg,.notification-shape {
+	pointer-events:none;
+}
+.ns-effect-loadingcircle {
+	background-color:#fff!important;
+}
+
+.select2 {
+	font-size: 0.875em;
+}
+.select2-results {
+	font-size: 0.875em;
+}
+.select2-selection.select2-selection--single {
+	height: 34px;
+	padding-top: 2px;
+}
+
+#content-wrapper {
+	min-height: 650px;
+}
+
+.pagenum {
+	 margin-top: 8px
+}
+
+.table a.table-link.success {
+	color: #2ecc71;
+}
+.table a.table-link.warning {
+	color: #f1c40f;
+}
+
+.user-list tbody td>img {
+	border-radius: 25px;
+	max-height: 45px;
+}
+
+.user-list tbody td .user-link {
+	margin-left: 0px;
+	font-size: 1em;
+}
+
+.user-list tbody td .user-subhead {
+	font-size: 0.80em;
+}
+
+.table .search-img {
+	margin-right: 8px;
+	margin-top: 7px;
+	float: left;
+	max-height: 50px;
+	max-width: 50px;
+}
+
+.table div.desc, .table div.info {
+	margin-top: 3px;
+}
+
+.note-editor {
+	border: 1px solid #e7ebee;
+	border-radius: 3px;
+}
+.note-editor .note-toolbar {
+	border-bottom: 1px solid #e7ebee;
+}
+.has-error .note-editor, .has-error .note-editor .note-toolbar {
+	border: 1px solid #e74c3c;
+}
+
+.table tbody>tr>td:first-child {
+	font-size: 1.1em;
+}
+
+.infographic-box.merged {
+	width: 100%;
+}

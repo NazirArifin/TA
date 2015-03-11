@@ -1,0 +1,194 @@
+<div class="row">
+	<div class="col-lg-12">
+		
+		<div class="row" data-ng-show="editing">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li><a href="" data-ng-click="cancel()">Berita</a></li>
+					<li class="active"><span>{{mode}} {{type}}</span></li>
+				</ol>
+				<h1>{{mode}} Berita {{type}}</h1>
+			</div>
+		</div>
+		
+		<div class="row" data-ng-hide="editing">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li><a href="">Berita</a></li>
+					<li class="active"><span>{{type}}</span></li>
+				</ol>
+				<h1>Berita {{type}}</h1>
+			</div>
+		</div>
+		
+		<div class="row" data-ng-show="editing">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<p class="alert alert-info alert-block">
+							<a href="" class="btn btn-default pull-right" cancel-form>
+								<i class="fa fa-arrow-circle-o-left fa-lg"></i> Batalkan Input
+							</a>
+							<i class="fa fa-fw fa-exclamation-circle fa-3x pull-left"></i> <small>Pastikan isian berikut ini terisi dengan lengkap dan benar.<br><strong>Bagian bertanda * harus terisi</strong>.</small>
+						</p>
+					</header>
+					<div class="main-box-body clearfix">
+						<form role="form" novalidate>
+							<fieldset class="form-horizontal">
+								<div class="form-group">
+									<label for="judul" class="col-lg-2 control-label"><strong>Judul Berita</strong></label>
+									<div class="col-lg-6">
+										<input type="text" name="judul" id="judul" class="form-control" placeholder="Judul Berita" maxlength="120" data-ng-model="news.judul" required>
+									</div>
+									<div class="col-lg-2"><small class="help-block"><strong>*</strong></small></div>
+								</div>
+								<div class="form-group" data-ng-hide="type == 'info'">
+									<label for="pengantar" class="col-lg-2 control-label">Pengantar</label>
+									<div class="col-lg-6">
+										<textarea name="" id="pengantar" cols="30" rows="4" class="form-control" data-ng-model="news.pengantar"></textarea>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="isi" class="col-lg-2 control-label"><strong>Isi Berita</strong></label>
+									<div class="col-lg-8">
+										<div id="isi" summernote height="300" focus ng-model="news.isi" config="summernoteOptions"></div>
+									</div>
+									<div class="col-lg-1"><small class="help-block"><strong>*</strong></small></div>
+								</div>
+								<div class="form-group" data-ng-show="news.foto">
+									<div class="col-lg-4 col-lg-offset-2">
+										<img data-ng-src="{{server|rootserver}}/{{news.foto}}" alt="thumb" class="img-thumbnail">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="file" class="col-lg-2 control-label">Gambar</label>
+									<div class="col-lg-2">
+										<span class="btn btn-success btn-sm btn-block btn-file">
+											<span><i class="fa fa-file-o"></i> Pilih Berkas</span>
+											<input type="file" name="file" id="file" accept=".png,.jpg,.jpeg" simple-file-input>
+										</span>
+									</div>
+									<div class="col-lg-4"><small class="help-block"><em>format file jpg, jpeg, png, maksimal berukuran 2 MB</em></small></div>
+								</div>
+								<div class="form-group" data-ng-show="type == 'info'">
+									<label for="keyword" class="col-lg-2 control-label">Kata Kunci</label>
+									<div class="col-lg-5">
+										<input type="text" name="keyword" id="keyword" class="form-control" placeholder="Kata Kunci" maxlength="120" data-ng-model="news.keyword" required>
+									</div>
+									<div class="col-lg-4"><small class="help-block">pisahkan dengan tanda koma <code>,</code></small></div>
+								</div>
+							</fieldset>
+							<hr>
+							<fieldset class="form-horizontal">
+								<div class="form-group">
+									<div class="col-lg-offset-2 col-lg-5">
+										<button class="btn btn-primary" simpan-berita><i class="fa fa-lg fa-check-square-o"></i> SIMPAN BERITA</button> 
+										<button class="btn btn-default" cancel-form>BATALKAN</button>
+									</div>
+								</div>
+							</fieldset>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row" data-ng-hide="editing">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<div class="col-xs-4 form-inline pagenum">
+							<label for="show-status">
+								<select name="show-status" id="show-status" id="show-status" class="form-control" data-ng-model="page.status" data-ng-change="loadData()">
+									<option value="">Semua Status</option>
+									<option value="1">Aktif</option>
+									<option value="2">Nonaktif</option>
+								</select>
+							</label>
+						</div>
+						<div class="filter-block pull-right">
+							<div class="form-group pull-left">
+								<input type="text" data-ng-model="page.query" name="cari" id="cari" class="form-control" placeholder="Pencarian" data-ng-keyup="loadData()">
+								<i class="fa fa-search search-icon"></i>
+							</div>
+							<div class="form-group pull-left">
+								<input type="text" data-ng-model="page.date" name="cari2" id="cari2" class="form-control" date-range-picker data-ng-change="loadData()">
+								<i class="fa fa-calendar search-icon"></i>
+							</div>
+							<a href="" class="btn btn-primary pull-right" data-ng-click="add()"><i class="fa fa-lg fa-plus-circle"></i> Tambah Berita</a>
+						</div>
+					</header>
+					<div class="main-box-body clearfix">
+						<div class="table-responsive">
+							<table class="table user-list table-condensed dataTable">
+								<thead>
+									<tr>
+										<th colspan="2" class="text-center" data-ng-class="sortingIcon('title')" data-ng-click="sortOrder('title')">Berita</th>
+										<th data-ng-class="sortingIcon('date')" data-ng-click="sortOrder('date')">Tanggal</th>
+										<th data-ng-class="sortingIcon('state')" data-ng-click="sortOrder('state')">Status</th>
+										<th>&nbsp;</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="c in newsList">
+										<td width="1"></td>
+										<td style="max-width: 250px;">
+											<h4><a href="">{{c.judul}}</a></h4>
+											<div class="clearfix">
+												<img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt="" class="search-img hidden-xs">
+												<div class="meta-info">
+													<div class="desc">{{c.isi}}</div>
+													<div class="info text-info" data-ng-show="c.tag">
+														<span class="label label-default"><i class="fa fa-tags"></i></span> {{c.tag}}
+													</div>
+												</div>
+											</div>
+										</td>
+										<td>{{c.tanggal}}</td>
+										<td><span class="label" data-ng-class="{ true: 'label-success', false: 'label-default' }[c.status == 'Aktif']">{{c.status}}</span></td>
+										<td>
+											<a href="" class="table-link primary" data-ng-click="setEdit(c.id)" data-ng-show="c.status == 'Aktif'">
+												<span class="fa-stack">
+													<i class="fa fa-square fa-stack-2x"></i>
+													<i class="fa fa-edit fa-stack-1x fa-inverse"></i>
+												</span>
+											</a>
+											<a href="" class="table-link warning" data-ng-click="setStatus(c.id, 2)" data-ng-show="c.status == 'Aktif'">
+												<span class="fa-stack">
+													<i class="fa fa-square fa-stack-2x"></i>
+													<i class="fa fa-ban fa-stack-1x fa-inverse"></i>
+												</span>
+											</a>
+											<a href="" class="table-link success" data-ng-click="setStatus(c.id, 1)" data-ng-show="c.status == 'Nonaktif'">
+												<span class="fa-stack">
+													<i class="fa fa-square fa-stack-2x"></i>
+													<i class="fa fa-recycle fa-stack-1x fa-inverse"></i>
+												</span>
+											</a>
+											<a href="" delete-button="{{c.id}}" data-type="berita/{{type|lowercase}}" class="table-link danger" data-ng-show="c.status == 'Nonaktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+											</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<ul class="pagination pagination-sm pull-right">
+								<li data-ng-class="{ disabled: page.cpage == 0 }">
+									<a href="" data-ng-click="prevPage()"><i class="fa fa-chevron-left"></i></a>
+								</li>
+								<li data-ng-repeat="n in range(page.numpage)" data-ng-class="{ active: n == page.cpage }">
+									<a href="" data-ng-click="setPage()" data-ng-bind="n + 1">1</a>
+								</li>
+								<li data-ng-class="{ disabled: page.cpage == page.numpage - 1 }">
+									<a href="" data-ng-click="nextPage()"><i class="fa fa-chevron-right"></i></a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

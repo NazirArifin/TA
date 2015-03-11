@@ -1,0 +1,68 @@
+<!-- modal untuk info direktori -->
+<div class="md-modal md-effect-8" id="modal-1">
+	<div class="md-content">
+		<div class="modal-header">
+			<button class="md-close close">&times;</button>
+			<h4 class="modal-title">{{infoData.nama}}</h4>
+		</div>
+		<div class="modal-body">
+			<div class="container">
+				hahh
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default"><i class="fa fa-close"></i> TUTUP</button>
+		</div>
+	</div>
+</div>
+
+<!-- modal untuk mengirim pesan -->
+<div class="md-modal md-effect-5" id="modal-2">
+	<div class="md-content">
+		<div class="modal-header">
+			<button class="md-close close">&times;</button>
+			<h4 class="modal-title">Kirim Pesan</h4>
+		</div>
+		<div class="modal-body">
+			<div class="container">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label for="modalInputFor" class="col-md-3 control-label">Penerima</label>
+						<div class="col-md-6">
+							<input type="text" name="for" id="modalInputFor" class="form-control" data-ng-model="message.forName" disabled>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="modalInputText" class="col-md-3 control-label">Pesan</label>
+						<div class="col-md-8">
+							<textarea name="" id="modalInputText" cols="30" rows="4" class="form-control" data-ng-model="message.message" data-ng-focus="message.message.length == 0"></textarea>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default"><i class="fa fa-close"></i> BATAL</button>
+			<button type="button" class="btn btn-primary" id="message-send"><i class="fa fa-send"></i> KIRIMKAN</button>
+		</div>
+	</div>
+</div>
+
+<div id="theme-wrapper">
+	
+	<div data-ng-include="'html/header-main.html'"></div>
+	
+	<div id="page-wrapper" class="container">
+		<div class="row">
+			
+			<div data-ng-include="'html/sidebar-menu.html'"></div>
+			
+			<div id="content-wrapper">
+				<div data-ng-include="getIncludeFile()"></div>
+				<div data-ng-include="'html/footer-main.html'"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="md-overlay"></div><!-- the overlay element -->

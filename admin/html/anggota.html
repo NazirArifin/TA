@@ -1,0 +1,114 @@
+<div class="row">
+	<div class="col-lg-12">
+		<div class="row">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li class="active"><span>Anggota</span></li>
+				</ol>
+				<h1>Anggota</h1>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<div class="col-xs-4 form-inline pagenum">
+							<label for="show-type">
+								<select name="show-type" id="show-type" id="show-type" class="form-control" data-ng-model="page.type" data-ng-change="loadData()">
+									<option value="">Semua Jenis</option>
+									<option value="1">Reguler</option>
+									<option value="2">Premium</option>
+								</select>
+							</label>
+							<label for="show-status">
+								<select name="show-type" id="show-status" id="show-status" class="form-control" data-ng-model="page.status" data-ng-change="loadData()">
+									<option value="">Semua Status</option>
+									<option value="1">Aktif</option>
+									<option value="2">Nonaktif</option>
+								</select>
+							</label>
+						</div>
+						<div class="filter-block pull-right">
+							<div class="form-group pull-left" data-ng-hide="page.order == 'daftar'">
+								<input type="text" data-ng-model="page.query" name="cari" id="cari" class="form-control" placeholder="Cari Anggota" data-ng-keyup="loadData()">
+								<i class="fa fa-search search-icon"></i>
+							</div>
+							<div class="form-group pull-left" data-ng-show="page.order == 'daftar'">
+								<input type="text" data-ng-model="page.date" name="cari2" id="cari2" class="form-control" placeholder="dd/mm/yyyy" data-ng-change="loadData()" date-picker>
+								<i class="fa fa-calendar search-icon"></i>
+							</div>
+							<!--<a href="" class="btn btn-primary pull-right" data-ng-click="add()">
+								<i class="fa fa-plus-circle fa-lg"></i> Tambah Anggota
+							</a>-->
+						</div>
+					</header>
+					<div class="main-box-body clearfix">
+						<div class="table-responsive">
+							<table class="table user-list table-hover table-condensed dataTable">
+								<thead>
+									<th data-ng-class="sortingIcon('nama')" data-ng-click="sortOrder('nama')">Anggota</th>
+									<th data-ng-class="sortingIcon('daftar')" data-ng-click="sortOrder('daftar')">Daftar</th>
+									<th data-ng-class="sortingIcon('email')" data-ng-click="sortOrder('email')">Email</th>
+									<th>Kiriman</th>
+									<th>Review</th>
+									<th>Status</th>
+									<th>&nbsp;</th>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="c in anggotaList">
+										<td>
+											<img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt="">
+											<a href="" class="user-link" show-modal="{{c.kode}}" data-type="anggota" data-target="modal-1">{{c.nama}}</a>
+											<span class="user-subhead" data-ng-class="{ 'text-muted': c.tipe == 'Premium' }"><i class="fa fa-check-circle text-info" data-ng-show="c.valid"></i> <i class="fa fa-user-plus" data-ng-show="c.tipe == 'Premium'"></i></span>
+										</td>
+										<td>{{c.daftar}}</td>
+										<td>{{c.email}}</td>
+										<td><span class="badge badge-danger">{{c.post}}</span></td>
+										<td><span class="badge">{{c.review}}</span></td>
+										<td>
+											<span class="label label-success" data-ng-show="c.status == 'Aktif'">Aktif</span>
+											<span class="label label-default" data-ng-hide="c.status == 'Aktif'">Nonaktif</span>
+										</td>
+										<td>
+											<a href="" modify-user="{{c.kode}}" data-type="upgrade" class="table-link success" data-ng-show="c.tipe == 'Reguler' && c.status == 'Aktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-user-plus fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" modify-user="{{c.kode}}" data-type="validate" class="table-link info" data-ng-hide="c.valid">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-check-circle fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" class="table-link" show-modal="{{$index}}" data-type="anggota" data-target="modal-2" data-ng-show="c.status == 'Aktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-envelope fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" class="table-link warning" data-ng-click="setStatus(c.kode, 2)" data-ng-show="c.status == 'Aktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-ban fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" class="table-link success" data-ng-click="setStatus(c.kode, 1)" data-ng-hide="c.status == 'Aktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-recycle fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" delete-button="{{c.kode}}" data-type="anggota" class="table-link danger" data-ng-hide="c.status == 'Aktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+											</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<ul class="pagination pagination-sm pull-right">
+							<li data-ng-class="{ disabled: page.cpage == 0 }">
+								<a href="" data-ng-click="prevPage()"><i class="fa fa-chevron-left"></i></a>
+							</li>
+							<li data-ng-repeat="n in range(page.numpage)" data-ng-class="{ active: n == page.cpage }">
+								<a href="" data-ng-click="setPage()" data-ng-bind="n + 1">1</a>
+							</li>
+							<li data-ng-class="{ disabled: page.cpage == page.numpage - 1 }">
+								<a href="" data-ng-click="nextPage()"><i class="fa fa-chevron-right"></i></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
