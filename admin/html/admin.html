@@ -1,0 +1,160 @@
+<div class="row">
+	<div class="col-lg-12">
+		<div class="row" data-ng-hide="edit">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li class="active"><span>Admin</span></li>
+				</ol>
+				<h1>Administrator</h1>
+			</div>
+		</div>
+		<!-- untuk tambah -->
+		<div class="row" data-ng-show="edit">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li><a href="" data-ng-click="cancel()">Admin</a></li>
+					<li class="active"><span>Tambah Admin</span></li>
+				</ol>
+				<h1>Tambah Admin</h1>
+			</div>
+		</div>
+		
+		<div class="row" data-ng-hide="edit">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<div class="col-xs-4 form-inline pagenum">
+							<label for="show-status">
+								<select name="show-type" id="show-status" id="show-status" class="form-control" data-ng-model="page.status" data-ng-change="loadData()">
+									<option value="">Semua Status</option>
+									<option value="1">Aktif</option>
+									<option value="2">Nonaktif</option>
+								</select>
+							</label>
+						</div>
+						<div class="filter-block pull-right">
+							<div class="form-group pull-left">
+								<input type="text" data-ng-model="page.query" name="cari" id="cari" class="form-control" placeholder="Cari Admin" data-ng-keyup="loadData()">
+								<i class="fa fa-search search-icon"></i>
+							</div>
+							<a href="" class="btn btn-primary pull-right" data-ng-click="add()">
+								<i class="fa fa-plus-circle fa-lg"></i> Tambah Admin
+							</a>
+						</div>
+					</header>
+					<div class="main-box-body clearfix">
+						<div class="table-responsive">
+							<table class="table user-list table-hover table-condensed dataTable">
+								<thead>
+									<th data-ng-class="sortingIcon('nama')" data-ng-click="sortOrder('nama')">Admin</th>
+									<th data-ng-class="sortingIcon('email')" data-ng-click="sortOrder('email')">Email</th>
+									<th>Status</th>
+									<th>&nbsp;</th>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="c in adminList">
+										<td>
+											<img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt="">
+											{{c.nama}}
+											<!--<span class="user-subhead" data-ng-class="{ 'text-muted': c.tipe == 'Premium' }"><i class="fa fa-check-circle text-info" data-ng-show="c.valid"></i> <i class="fa fa-user-plus" data-ng-show="c.tipe == 'Premium'"></i></span>-->
+										</td>
+										<td>{{c.email}}</td>
+										<td>
+											<span class="label label-success" data-ng-show="c.status == 'Aktif'">Aktif</span>
+											<span class="label label-default" data-ng-hide="c.status == 'Aktif'">Nonaktif</span>
+										</td>
+										<td>
+											<a href="" class="table-link" show-modal="{{$index}}" data-type="administrator" data-target="modal-2" data-ng-show="c.status == 'Aktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-envelope fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<!--<a href="" class="table-link tooltips" title="reset password" data-ng-show="c.status == 'Aktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-key fa-stack-1x fa-inverse"></i></span>
+											</a>-->
+											<a href="" class="table-link warning" data-ng-click="setStatus(c.kode, 2)" data-ng-show="c.status == 'Aktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-ban fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" class="table-link success" data-ng-click="setStatus(c.kode, 1)" data-ng-hide="c.status == 'Aktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-recycle fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" delete-button="{{c.kode}}" data-type="admin" class="table-link danger" data-ng-hide="c.status == 'Aktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+											</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<ul class="pagination pagination-sm pull-right">
+							<li data-ng-class="{ disabled: page.cpage == 0 }">
+								<a href="" data-ng-click="prevPage()"><i class="fa fa-chevron-left"></i></a>
+							</li>
+							<li data-ng-repeat="n in range(page.numpage)" data-ng-class="{ active: n == page.cpage }">
+								<a href="" data-ng-click="setPage()" data-ng-bind="n + 1">1</a>
+							</li>
+							<li data-ng-class="{ disabled: page.cpage == page.numpage - 1 }">
+								<a href="" data-ng-click="nextPage()"><i class="fa fa-chevron-right"></i></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+		<div class="row" data-ng-show="edit">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<p class="alert alert-info alert-block">
+							<a href="" class="btn btn-default pull-right" cancel-form>
+								<i class="fa fa-arrow-circle-o-left fa-lg"></i> Batalkan Input
+							</a>
+							<i class="fa fa-fw fa-exclamation-circle fa-3x pull-left"></i> <small>Pastikan isian berikut ini terisi dengan lengkap dan benar.<br><strong>Bagian bertanda * harus terisi</strong>.</small>
+						</p>
+					</header>
+					<div class="main-box-body clearfix">
+						<form role="form" novalidate>
+							<fieldset class="form-horizontal">
+								<div class="form-group">
+									<label for="nama" class="col-lg-2 control-label">Nama Admin</label>
+									<div class="col-lg-3">
+										<input type="text" name="nama" id="nama" class="form-control" placeholder="Nama" maxlength="60" data-ng-model="admin.nama">
+									</div>
+									<div class="col-lg-2"><small class="help-block"><strong>*</strong> <em>minimal 3 karakter</em></small></div>
+								</div>
+								<div class="form-group">
+									<label for="email" class="col-lg-2 control-label">Email Admin</label>
+									<div class="col-lg-3">
+										<input type="email" name="email" id="email" class="form-control" placeholder="Email" maxlength="60" data-ng-model="admin.email">
+									</div>
+									<div class="col-lg-2"><small class="help-block"><strong>*</strong> <em></em></small></div>
+								</div>
+								<div class="form-group">
+									<label for="password" class="col-lg-2 control-label">Password</label>
+									<div class="col-lg-3">
+										<input type="password" name="password" id="password" class="form-control" placeholder="" maxlength="40" data-ng-model="admin.pass">
+									</div>
+									<div class="col-lg-2"><small class="help-block"><strong>*</strong> <em>minimal 6 karakter</em></small></div>
+								</div>
+								<div class="form-group">
+									<label for="password2" class="col-lg-2 control-label">Ketik Ulang</label>
+									<div class="col-lg-3">
+										<input type="password" name="password2" id="password2" class="form-control" placeholder="" maxlength="40" data-ng-model="admin.pass2">
+									</div>
+									<div class="col-lg-2"><small class="help-block"><strong>*</strong> <em>ketik ulang password</em></small></div>
+								</div>
+								<div class="form-group">
+									<div class="col-lg-offset-2 col-lg-5">
+										<button class="btn btn-primary" simpan-admin><i class="fa fa-lg fa-check-square-o"></i> SIMPAN DATA ADMIN</button> 
+										<button class="btn btn-default" cancel-form>BATALKAN</button>
+									</div>
+								</div>
+							</fieldset>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -146,3 +146,24 @@ html, body {
 .infographic-box.merged {
 	width: 100%;
 }
+
+.messages-list .item>a>img {
+	max-width: 35px;
+	max-height: 35px;
+}
+
+.widget-users li {
+	height: 86px;
+}
+
+.conversation-content {
+	margin-top: 20px;
+}
+
+.conversation-user img {
+	max-width: 50px;
+}
+
+.conversation-wrapper .conversation-user {
+	border-radius: 0;
+}

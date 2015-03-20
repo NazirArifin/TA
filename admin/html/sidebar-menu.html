@@ -5,7 +5,7 @@
 						<!--<img alt="" src="favicon.png"/>-->
 						<div class="user-box">
 							<span class="name">{{myDetails.nama}}</span>
-							<span class="status"><i class="fa fa-circle"></i> Online</span>
+							<!--<span class="status"><i class="fa fa-circle"></i> Online</span>-->
 						</div>
 					</div>
 					<div class="collapse navbar-collapse navbar-ex1-collapse" id="sidebar-nav">
@@ -14,35 +14,41 @@
 								<a href="#/home">
 									<i class="fa fa-dashboard"></i>
 									<span>Dashboard</span>
-									<!--<span class="label label-info label-circle pull-right">28</span>-->
 								</a>
 							</li>
 							<li data-ng-class="menuClass('produk')">
 								<a href="#/produk">
 									<i class="fa fa-gift"></i>
 									<span>Data Produk</span>
-									<!--<span class="label label-info label-circle pull-right">28</span>-->
 								</a>
 							</li>
 							<li data-ng-class="menuClass('direktori')">
 								<a href="#/direktori">
 									<i class="fa fa-compass"></i>
 									<span>Direktori</span>
-									<!--<span class="label label-info label-circle pull-right">300</span>-->
 								</a>
 							</li>
-							<li data-ng-class="menuClass('anggota')">
+							<li data-ng-class="menuClass('anggota')" data-ng-hide="myDetails.level == '1'">
 								<a href="#/anggota">
 									<i class="fa fa-user"></i>
 									<span>Anggota</span>
-									<!--<span class="label label-info label-circle pull-right">300</span>-->
 								</a>
+							</li>
+							<li data-ng-class="menuClass('pengguna')" data-ng-show="myDetails.level == '1'">
+								<a href="" class="dropdown-toggle">
+									<i class="fa fa-user-plus"></i>
+									<span>Pengguna</span>
+									<i class="fa fa-chevron-circle-right drop-icon"></i>
+								</a>
+								<ul class="submenu">
+									<li><a href="#/pengguna/anggota" data-ng-class="menuClass('pengguna', 'anggota')">Anggota</a></li>
+									<li><a href="#/pengguna/admin" data-ng-class="menuClass('pengguna', 'admin')">Admin</a></li>
+								</ul>
 							</li>
 							<li data-ng-class="menuClass('transaksi')">
 								<a href="#/transaksi/jual">
 									<i class="fa fa-money"></i>
 									<span>Penjualan</span>
-									<!--<span class="label label-info label-circle pull-right">300</span>-->
 								</a>
 							</li>
 							<!--<li data-ng-class="menuClass('transaksi')">
@@ -76,9 +82,6 @@
 								<ul class="submenu">
 									<li><a href="#/berita/bisnis" data-ng-class="menuClass('berita', 'bisnis')">Berita Bisnis</a></li>
 									<li><a href="#/berita/info" data-ng-class="menuClass('berita', 'info')">Informasi</a></li>
-									<!--<li>
-										<a href="users.html">Tips &amp; Trik</a>
-									</li>-->
 								</ul>
 							</li>
 							<li data-ng-class="menuClass('pengaturan')">

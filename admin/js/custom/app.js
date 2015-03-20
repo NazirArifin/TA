@@ -12,6 +12,10 @@ config(function($routeProvider, $httpProvider, $locationProvider, cfpLoadingBarP
 		templateUrl: 'html/home.html', 
 		controller: 'HomeCtrl' 
 	})
+	.when('/pesan', { 
+		templateUrl: 'html/home.html', 
+		controller: 'PesanCtrl' 
+	})
 	.when('/produk', { 
 		templateUrl: 'html/home.html', 
 		controller: 'ProdukCtrl' 
@@ -23,6 +27,14 @@ config(function($routeProvider, $httpProvider, $locationProvider, cfpLoadingBarP
 	.when('/anggota', { 
 		templateUrl: 'html/home.html', 
 		controller: 'AnggotaCtrl' 
+	})
+	.when('/pengguna/anggota', { 
+		templateUrl: 'html/home.html', 
+		controller: 'AnggotaCtrl' 
+	})
+	.when('/pengguna/admin', { 
+		templateUrl: 'html/home.html', 
+		controller: 'AdminCtrl' 
 	})
 	.when('/market/:type', { 
 		templateUrl: 'html/home.html', 
@@ -43,8 +55,7 @@ config(function($routeProvider, $httpProvider, $locationProvider, cfpLoadingBarP
 	.otherwise({ redirectTo: '/' });
 	
 	// loading-bar
-	cfpLoadingBarProvider.includeSpinner = true;
-	
+	cfpLoadingBarProvider.includeSpinner = false;
 	// interceptor untuk set Header
 	$httpProvider.interceptors.push(['$q', '$location', '$localStorage', function($q, $location, $localStorage) {
 		return {
@@ -76,14 +87,10 @@ run(['$rootScope', '$location', function($rootScope, $location) {
 	$rootScope.server = protocol + '://' + host + (port != '80' ? ':' + port : '');
 	
 	// ketika routing error
-	$rootScope.$on("$routeChangeError", function(event, current, previous, rejection) {
-		$location.path('/').replace();
-	});
-	
+	$rootScope.$on("$routeChangeError", function(event, current, previous, rejection) { $location.path('/').replace(); });
 	// include file template setelah login
 	$rootScope.getIncludeFile = function() {
-		var d = 'html',
-			path = $location.path();
+		var d = 'html', path = $location.path();
 		switch (path) {
 			case '/home': 
 				return d + '/dashboard.html'; break;
@@ -93,11 +100,13 @@ run(['$rootScope', '$location', function($rootScope, $location) {
 				return d + '/transaksi-jual.html'; break;
 			case '/berita/bisnis': case '/berita/info': 
 				return d + '/berita.html'; break;
-			default: 
-				return d + path + '.html';
+			case '/pengguna/anggota':
+				return d + '/anggota.html'; break;
+			case '/pengguna/admin':
+				return d + '/admin.html'; break;
+			default: return d + path + '.html';
 		}
 	};
-	
 	// set menu active atau tidak
 	$rootScope.menuClass = function(p, s) {
 		var path = $location.path().split('/');

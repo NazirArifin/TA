@@ -21,7 +21,7 @@
 		</div>
 		<div class="nav-no-collapse pull-right" id="header-nav">
 			<ul class="nav navbar-nav pull-right">
-				<li class="mobile-search">
+				<!--<li class="mobile-search">
 					<a class="btn">
 						<i class="fa fa-search"></i>
 					</a>
@@ -33,9 +33,9 @@
 							</div>
 						</form>
 					</div>
-				</li>
+				</li>-->
 				<li class="dropdown hidden-xs">
-					<a class="btn dropdown-toggle" data-toggle="dropdown">
+					<!--<a class="btn dropdown-toggle" data-toggle="dropdown">
 						<i class="fa fa-warning"></i>
 						<span class="count">8</span>
 					</a>
@@ -61,99 +61,49 @@
 						<li class="item-footer">
 							<a href="#">Lihat semua pemberitahuan</a>
 						</li>
-					</ul>
+					</ul>-->
 				</li>
 				<li class="dropdown hidden-xs">
-					<a class="btn dropdown-toggle" data-toggle="dropdown">
-					<i class="fa fa-envelope-o">
-					</i>
-					<span class="count">
-						16
-					</span>
+					<a class="btn dropdown-toggle" data-toggle="dropdown" data-ng-click="setTerbaca()">
+						<i class="fa fa-envelope-o"></i>
+						<span class="count" data-ng-show="pesan.baru > 0">{{pesan.baru}}</span></span>
 					</a>
 					<ul class="dropdown-menu notifications-list messages-list">
-					<li class="pointer">
-						<div class="pointer-inner">
-							<div class="arrow"></div>
-						</div>
-					</li>
-					<li class="item first-item">
-						<a href="#">
-						<img src="img/samples/messages-photo-1.png" alt=""/>
-						<span class="content">
-							<span class="content-headline">
-							George Clooney
-							</span>
-							<span class="content-text">
-							Look, just because I don't be givin' no man a foot massage don't make it
-							right for Marsellus to throw...
-							</span>
-						</span>
-						<span class="time">
-							<i class="fa fa-clock-o">
-							</i>
-							13 min.
-						</span>
-						</a>
-					</li>
-					<li class="item">
-						<a href="#">
-						<img src="img/samples/messages-photo-2.png" alt=""/>
-						<span class="content">
-							<span class="content-headline">
-							Emma Watson
-							</span>
-							<span class="content-text">
-							Look, just because I don't be givin' no man a foot massage don't make it
-							right for Marsellus to throw...
-							</span>
-						</span>
-						<span class="time">
-							<i class="fa fa-clock-o">
-							</i>
-							13 min.
-						</span>
-						</a>
-					</li>
-					<li class="item">
-						<a href="#">
-						<img src="img/samples/messages-photo-3.png" alt=""/>
-						<span class="content">
-							<span class="content-headline">
-							Robert Downey Jr.
-							</span>
-							<span class="content-text">
-							Look, just because I don't be givin' no man a foot massage don't make it
-							right for Marsellus to throw...
-							</span>
-						</span>
-						<span class="time">
-							<i class="fa fa-clock-o">
-							</i>
-							13 min.
-						</span>
-						</a>
-					</li>
-					<li class="item-footer">
-						<a href="#">Lihat semua pesan</a>
-					</li>
+						<li class="pointer" data-ng-show="pesan.item.length > 0">
+							<div class="pointer-inner">
+								<div class="arrow"></div>
+							</div>
+						</li>
+						<li data-ng-repeat="c in pesan.item" class="item" data-ng-class="$index == 0 ? 'first-item' : ''">
+							<a href="">
+								<img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt=""/>
+								<span class="content">
+									<span class="content-headline">{{c.nama}}</span>
+									<span class="content-text">{{c.isi}}</span>
+								</span>
+								<span class="time">
+									<i class="fa fa-clock-o"></i>{{c.waktu}}
+								</span>
+							</a>
+						</li>
+						<li class="item-footer" data-ng-show="pesan.item.length > 0"><a href="#/pesan">Lihat semua pesan</a></li>
 					</ul>
 				</li>
 				<li class="dropdown profile-dropdown">
 					<a href="" class="dropdown-toggle" data-toggle="dropdown">
-						<img src="favicon.png" alt=""/>
+						<img data-ng-src="{{server|rootserver}}/{{myDetails.foto}}" alt=""/>
 						<span class="hidden-xs">{{myDetails.nama}}</span>
 						<b class="caret"></b>
 					</a>
 					<ul class="dropdown-menu">
 						<li>
-							<a href="#"><i class="fa fa-cogs"></i>Pengaturan</a>
+							<a href="" show-modal="" data-target="modal-0"><i class="fa fa-newspaper-o"></i>Ubah Profil</a>
 						</li>
 						<li>
-							<a href="#"><i class="fa fa-envelope-o"></i>Pesan</a>
+							<a href="#/pesan"><i class="fa fa-envelope-o"></i>Pesan</a>
 						</li>
 						<li>
-							<a href="#" data-ng-click="logout()"><i class="fa fa-power-off"></i>Logout</a>
+							<a href="" data-ng-click="logout()"><i class="fa fa-power-off"></i>Logout</a>
 						</li>
 					</ul>
 				</li>

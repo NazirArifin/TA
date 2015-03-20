@@ -250,3 +250,150 @@ app.directive('simpanProduk', ['notify', '$http', '$localStorage', function(noti
 		}
 	};
 }]);
+
+/** simpan pesan dari modal */
+app.directive('simpanPesanModal', ['notify', '$http', function(notify, $http) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			var $text = $('#modalInputText');
+			elm.on('click', function(ev) {
+				if ($text.val().length < 3) {
+					$text.focus();
+					return $text.closest('.form-group').addClass('has-error');
+				}
+				$http.post($scope.server + '/pesan', $scope.message).
+				success(function(d) {
+					$('#modal-2').removeClass('md-show');
+					notify.flip.info('Pesan yang Anda kirim berhasil tersimpan');
+				}).error(function(e, s, h) {
+					$('#modal-2').removeClass('md-show');
+					alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
+				});
+			});
+		}
+	};
+}]);
+
+/** simpan pesan */
+app.directive('simpanPesan', ['$http', function($http) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(e) {
+				if ($scope.newMessage.length < 2) return false;
+				elm.html('<i class="fa fa-refresh fa-spin"></i> HARAP TUNGGU...').prop('disabled', true).removeClass('btn-primary').addClass('btn-danger');
+				$http.post($scope.server + '/pesan', { forCode: $scope.idSelected, forName: '', type: $scope.tipeSelected.toLowerCase(), message: $scope.newMessage }).
+				success(function(d) {
+					elm.html('<i class="fa fa-send"></i> KIRIMKAN').prop('disabled', false).addClass('btn-primary').removeClass('btn-danger');
+					$scope.newMessage = '';
+					$scope.loadPesanAfter();
+				});
+			});
+		}
+	};
+}]);
+
+/** simpan admin */
+app.directive('simpanAdmin', ['notify', '$http', function(notify, $http) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(ev) {
+				// validasi
+				var valid = true, fields = [];
+				if ($scope.admin.nama.length < 3) {
+					valid = false; fields.push('nama');
+				}
+				if (angular.isUndefined($scope.admin.email) || $scope.admin.email.length == 0) {
+					valid = false; fields.push('email');
+				}
+				if ($scope.admin.pass.length < 6) {
+					valid = false; fields.push('password');
+				}
+				if ($scope.admin.pass != $scope.admin.pass2) {
+					valid = false; fields.push('password2');
+				}
+				if ( ! valid) {
+					angular.forEach(fields, function(value, key) {
+						$('#' + value).closest('.form-group').addClass('has-error');
+					});
+					return;
+				}
+				$http.post($scope.server + '/admin', $scope.admin).
+				success(function(d) {
+					notify.flip.info('Data admin berhasil tersimpan');
+					$scope.cancel();
+					$scope.loadData();
+				}).error(function(e, s, h) {
+					alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
+				});
+			});
+		}
+	};
+}]);
+
+/** simpan profil admin */
+app.directive('simpanProfil', ['notify', '$http', '$localStorage', function(notify, $http, $localStorage) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(ev) {
+				// validasi
+				var $nama = $('#modalInputNama'),
+					$pass = $('#modalInputPassword'),
+					$pass2 = $('#modalInputPassword2'), valid = true, fields = [];
+				if ($nama.val().length < 3) {
+					valid = false; fields.push($nama);
+				}
+				if ($pass.val() > 0 && $pass.val().length < 6) {
+					valid = false; fields.push($pass);
+				}
+				if ($pass.val() != $pass2.val()) {
+					valid = false; fields.push($pass2);
+				}
+				if ( ! valid) {
+					angular.forEach(fields, function(value, key) {
+						value.closest('.form-group').addClass('has-error');
+					});
+					return;
+				}
+				
+				var url = $scope.server + '/me';
+				if ($scope.file !== null) {
+					var fd = new FormData;
+					fd.append('file', $scope.file);
+					angular.forEach($scope.myInputDetails, function(value, key) {
+						fd.append(key, value);
+					});
+					var xhr = new XMLHttpRequest();
+					xhr.open('POST', url, true);
+					xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+					xhr.setRequestHeader('Authorization', 'Bearer ' + $localStorage.token);
+					xhr.onload = function() {
+						var d = angular.fromJson(this.responseText);
+						if (d.type == true) {
+							notify.flip.info('Data profil berhasil tersimpan');
+							$scope.me();
+						} else {
+							alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
+						}
+						$('#modal-0').removeClass('md-show');
+					};
+					xhr.onerror = function() {};
+					xhr.send(fd);
+				} else {
+					$http.post(url, $scope.myInputDetails)
+					.success(function(d) {
+						notify.flip.info('Data profil berhasil tersimpan');
+						$scope.me();
+						$('#modal-0').removeClass('md-show');
+					}).error(function(e, s, h) { 
+						alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
+						$('#modal-0').removeClass('md-show');
+					});
+				}
+			});
+		}
+	};
+}]);

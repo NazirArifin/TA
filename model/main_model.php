@@ -4,8 +4,6 @@
  */
 namespace Model;
 
-set_time_limit(0);
-
 class MainModel extends ModelBase {
 	public function __construct() {
 		parent::__construct();
@@ -131,10 +129,75 @@ class MainModel extends ModelBase {
 			'type' 	=> TRUE,
 			'data' 	=> array()
 		);
-		$cari 		= $this->db->query("SELECT NAMA_ADMIN, LEVEL_ADMIN FROM admin WHERE ID_ADMIN = '{$token['id']}'", TRUE);
+		$cari 		= $this->db->query("SELECT NAMA_ADMIN, FOTO_ADMIN, LEVEL_ADMIN FROM admin WHERE ID_ADMIN = '{$token['id']}'", TRUE);
 		$r['data']['nama'] 	= $cari->NAMA_ADMIN;
+		$r['data']['foto'] 	= 'upload/member/' . (empty($cari->FOTO_ADMIN) ? 'default.png' : $cari->FOTO_ADMIN);
 		$r['data']['level'] = $cari->LEVEL_ADMIN;
 		return $r;
+	}
+	
+	/**
+	 * Menyimpan data user
+	 */
+	public function save_profil($token, $iofiles) {
+		extract($token);
+		extract($this->prepare_post(array('nama', 'pass', 'pass2')));
+		$run	= $this->db->query("SELECT NAMA_ADMIN FROM admin WHERE ID_ADMIN = '$id'", TRUE);
+		if (empty($run)) return FALSE;
+		$upd 	= array();
+		if (strlen($nama) > 3 AND $nama != $run->NAMA_ADMIN) $upd[] = "NAMA_ADMIN = '$nama'";
+		if (strlen($pass) > 6 AND $pass == $pass2) $upd[] = "PASSWORD_ADMIN = '" . crypt($pass, $this->salt) . "'";
+		if ( ! empty($upd))
+			$run = $this->db->query("UPDATE admin SET " . implode(", ", $upd) . " WHERE ID_ADMIN = '$id'");
+		
+		if (isset($_FILES['file'])) {
+			// foto
+			$run = $this->db->query("SELECT FOTO_ADMIN FROM admin WHERE ID_ADMIN = '$id'", TRUE);
+			if ( ! empty($run)) {
+				@unlink('upload/member/' . $run->FOTO_ADMIN);
+				@unlink('upload/member/' . str_replace('.', '_thumb.', $run->FOTO_ADMIN));
+			}
+			$config['upload_path']		= 'upload/member/';
+			$config['allowed_types']	= 'jpeg|jpg|png';
+			$config['encrypt_name']		= TRUE;
+			$config['overwrite']		= TRUE;
+			$iofiles->upload_config($config);
+			$iofiles->upload('file');
+			$filename 					= $iofiles->upload_get_param('file_name');
+			// buat thumbnail
+			$config						= array();
+			$config['source_image']		= 'upload/member/' . $filename;
+			$config['new_image']		= 'upload/member/' . str_replace('.', '_thumb.', $filename);
+			$config['maintain_ratio']	= TRUE;
+			$config['width']			= 120;
+			$config['height']			= 120;
+			$iofiles->image_config($config);
+			$iofiles->image_resize();
+			// update tabel
+			$upd = $this->db->query("UPDATE admin SET FOTO_ADMIN = '$filename' WHERE ID_ADMIN = '$id'");
+		}
+		
+		return array( 'type' => TRUE );
+	}
+	
+	/**
+	 * Tambah admin
+	 */
+	public function save_admin($token, $kode = '') {
+		extract($token);
+		extract($this->prepare_post(array('email', 'nama', 'pass', 'pass2', 'status')));
+		$email	= $this->db->escape_str($email);
+		$nama	= $this->db->escape_str($nama);
+		
+		// hanya jika superadmin
+		if ($level != '1') return FALSE;
+		if ( ! empty($status)) {
+			if ($status != '1' AND $status != '2') $status = '1';
+			$upd	= $this->db->query("UPDATE admin SET STATUS_ADMIN = '$status' WHERE ID_ADMIN = '$kode'");
+		} else {
+			$ins	= $this->db->query("INSERT INTO admin VALUES(0, '$email', '" . crypt($pass, $this->salt) . "', '$nama', '', '2', '1')");
+		}
+		return array( 'type' => TRUE );
 	}
 	
 	/**
@@ -216,40 +279,6 @@ class MainModel extends ModelBase {
 		$id 	= intval($id);
 		$del 	= $this->db->query("UPDATE $tabel SET STATUS_" . strtoupper($tabel) . " = '0' WHERE ID_" . strtoupper($tabel) . " = '$id'");
 		return array('type' => TRUE);
-	}
-	
-	public function save_message($token) {
-		// pengirim berasal dari token
-		extract($token);
-		extract($this->prepare_post(array('forCode', 'message', 'type')));
-		
-		$forCode 	= $this->db->escape_str($forCode);
-		$message	= $this->db->escape_str(htmlentities($message));
-		$type		= ($type == 'admin' ? 'admin' : 'anggota');
-		$posttype	= 0;
-		
-		if (strlen($message) < 5) return FALSE;
-		switch ($user) {
-			case 'admin':
-				if ($type == 'admin') $posttype = 1;
-				if ($type == 'anggota') $posttype = 2;
-				break;
-			case 'anggota':
-				if ($type == 'admin') $posttype = 3;
-				if ($type == 'anggota') $posttype = 4;
-				break;
-		}
-		if (empty($posttype)) return FALSE;
-		
-		$idrecpt	= 0;
-		if ($type == 'anggota') {
-			$run	= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$forCode'", TRUE);
-			$idrecpt= $run->ID_ANGGOTA;
-		}
-		
-		// masukkan ke pesan
-		$ins	= $this->db->query("INSERT pesan VALUES(0, '$id', '$idrecpt', NOW(), '$message', '1', '$posttype')");
-		return array( 'type' => TRUE );
 	}
 }
 

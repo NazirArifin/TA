@@ -137,6 +137,21 @@ app.directive('sortable', function() {
 });
 
 /**
+ * Scrollable
+ */
+app.directive('scrollable', function() {
+	return function($scope, elm, attrs) {
+		elm.slimScroll({
+			height: attrs.height,
+			railVisible: true,
+			alwaysVisible: true,
+			railColor: '#f00',
+			start: attrs.start || 'top'
+		});
+	};
+});
+
+/**
  * Hapus foto di galery foto
  */
 app.directive('removePhotoLink', function() {
@@ -214,23 +229,29 @@ app.directive('simpleFileInput', ['notify', function(notify) {
  */
 app.directive('showModal', ['$http', 'notify', function($http, notify) {
 	return function($scope, elm, attrs) {
-		var el = elm[0], overlay = document.querySelector( '.md-overlay' );
-		var modal = document.querySelector( '#' + el.getAttribute( 'data-target' ) ),
-			close = modal.querySelector( '.md-close' ),
-			btnClose = modal.querySelector( '.btn-default' ),
-			btnSave = modal.querySelector( '.btn-primary' );
-		function removeModal( hasPerspective ) {
-			classie.remove( modal, 'md-show' );
-			if( hasPerspective ) { classie.remove( document.documentElement, 'md-perspective' ); }
-		}
-		function removeModalHandler() { removeModal( classie.has( el, 'md-setperspective' ) ); }
-		function showModal() {
-			classie.add( modal, 'md-show' );
-			overlay.removeEventListener( 'click', removeModalHandler );
-			overlay.addEventListener( 'click', removeModalHandler );
+		var el = elm[0], showModal = function() {
+			var $target = $('#' + attrs.target);
+			$target.addClass('md-show').find('.btn-default').on('click', function() {
+				$target.removeClass('md-show');
+			});
+			$('.md-overlay, .md-close').on('click', function() {
+				$target.removeClass('md-show');
+			});
 			if( classie.has( el, 'md-setperspective' ) ) {
 				setTimeout( function() { classie.add( document.documentElement, 'md-perspective' ); }, 25 );
 			}
+		}
+		
+		// data untuk pengaturan profil
+		if (attrs.target == 'modal-0') {
+			var $text = $('#modalInputNama');
+			$(el).on('click', function(e) {
+				$text.closest('.form-group').removeClass('has-error');
+				$('#modalInputPassword').closest('.form-group').removeClass('has-error');
+				$('#modalInputPassword2').closest('.form-group').removeClass('has-error');
+				showModal();
+				setTimeout(function() { $text.focus(); }, 500); 
+			});
 		}
 		
 		// data info untuk direktori dan anggota
@@ -241,7 +262,6 @@ app.directive('showModal', ['$http', 'notify', function($http, notify) {
 				success(function(d) {
 					// set info data
 					$scope.setInfoData(d[attrs.type]);
-					
 				}).error(function(e, s, h) {
 					alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
 				});
@@ -252,34 +272,13 @@ app.directive('showModal', ['$http', 'notify', function($http, notify) {
 		if (attrs.target == 'modal-2') {
 			var $text = $('#modalInputText');
 			$(el).on('click', function(e) {
-				var r = $scope.anggotaList[attrs.showModal];
+				var r = (attrs.type == 'anggota' ? $scope.anggotaList[attrs.showModal] : $scope.adminList[attrs.showModal] );
 				$text.closest('.form-group').removeClass('has-error');
 				$scope.setMessage({ forCode: r.kode, forName: r.nama, type: attrs.type, message: '' });
 				$scope.$apply(); showModal();
 				setTimeout(function() { $text.focus(); }, 500); 
 			});
-			$('#message-send').off('click').on('click', function(ev) {
-				if ($text.val().length < 3) {
-					$text.focus();
-					return $text.closest('.form-group').addClass('has-error');
-				}
-				$http.post($scope.server + '/pesan', $scope.message).
-				success(function(d) {
-					removeModalHandler();
-					notify.flip.info('Pesan yang Anda kirim berhasil tersimpan');
-				}).error(function(e, s, h) {
-					alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
-				});
-			});
 		}
-		
-		// close modal
-		close.addEventListener( 'click', function( ev ) { 
-			ev.stopPropagation(); removeModalHandler();
-		});
-		btnClose.addEventListener( 'click', function( ev ) { 
-			ev.stopPropagation(); removeModalHandler();
-		});
 	};
 }]);
 

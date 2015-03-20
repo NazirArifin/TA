@@ -17,28 +17,46 @@ class Loader {
 	}
 	
 	/**
+	 * Tema untuk halaman depan
+	 */
+	private $theme = 'simplist';
+	
+	/**
 	 * Load controller dan router
 	 */
 	public function controller() {
 		// set timezone
 		date_default_timezone_set('Asia/Jakarta');
-		
 		// max execution time
 		@set_time_limit(300);
 		
+		// twig template
+		require_once 'lib/Twig/Autoloader.php';
+		\Twig_Autoloader::register();
+		$this->twig = new \Twig_Environment(new \Twig_Loader_Filesystem('view/' . $this->theme));
+		$twig =& $this->twig;
+		
 		// router dengan Slim
-		require 'lib/Slim/Slim.php';
+		require_once 'lib/Slim/Slim.php';
 		\Slim\Slim::registerAutoloader();
 		$this->app = new \Slim\Slim();
-		
 		$this->load('helper', 'controller');
 		$app =& $this->app;
 		$ctr = $this;
 		
+		// custom 404
+		$this->app->notFound(function() use ($twig) {
+			print $twig->render('404.html', array());
+		});
+		/* $this->app->error(function() {
+			// custom error_get_last
+		}); */
+		
 		// controller file
 		foreach (scandir('controller') as $file) {
-			if (is_file('controller/' . $file))
+			if (is_file('controller/' . $file)) {
 				require('controller/' . $file);
+			}
 		}
 		
 		$this->app->run();
@@ -77,7 +95,7 @@ class Loader {
 	/**
 	 * Load interface
 	 */
-	public function load($type, $param) {
+	public function load($type, $param, $param2 = null) {
 		switch ($type) {
 			case 'model':
 				$m = $this->model($param);
@@ -90,7 +108,7 @@ class Loader {
 				$this->file($param);
 				break;
 			case 'view':
-				$this->view($view, $param = array());
+				$this->view($param, $param2);
 				break;
 		}
 	}
@@ -128,7 +146,6 @@ class Loader {
 	 * Load View
 	 */
 	protected function view($v, $p) {
-		if (count($p) === 0) extract($p);
-		require_once 'view/' . $v . '.php';
+		print $this->twig->render($v, $p);
 	}
 }

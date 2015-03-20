@@ -17,8 +17,8 @@ class AdminanggotaModel extends ModelBase {
 	
 	public function show() {
 		extract($this->prepare_get(array('cpage', 'numpage', 'query', 'order', 'sort', 'num', 'type', 'status', 'date')));
-		$cpage 	= intval($cpage);
-		$num	= intval($num);
+		$cpage 	= filter_var($cpage, FILTER_SANITIZE_NUMBER_INT);
+		$num	= filter_var($num, FILTER_SANITIZE_NUMBER_INT);
 		$query	= $this->db->escape_str($query);
 		$sort	= ($sort == 'asc' ? 'ASC' : 'DESC');
 		if ( ! in_array($order, array('nama', 'daftar', 'email'))) $order 	= 'daftar';

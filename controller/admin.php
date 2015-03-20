@@ -47,6 +47,156 @@ $app->get('/admin/me', function() use($app, $ctr) {
 
 // ----------------------------------------------------------------
 /**
+ * Method: POST
+ * Verb: me
+ */
+$app->post('/admin/me', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('file', 'lib/IOFiles.php');
+	$r = $ctr->MainModel->save_profil($token, new IOFiles());
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: admin
+ */
+$app->options('/admin/admin', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/admin', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminmain');
+	$r = $ctr->AdminmainModel->show_admin($token);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: admin
+ */
+$app->post('/admin/admin', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$r = $ctr->MainModel->save_admin($token);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: admin/:id
+ */
+$app->options('/admin/admin/:id', function() use($app) { $app->status(200); $app->stop(); });
+$app->post('/admin/admin/:id', function($id) use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$r = $ctr->MainModel->save_admin($token, $id);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: DELETE
+ * Verb: produk/:Id
+ */
+$app->delete('/admin/admin/:id', function($id) use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminmain');
+	$r = $ctr->AdminmainModel->delete_admin($id, $token);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: pesan
+ */
+$app->options('/admin/pesan', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/pesan', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminmain');
+	$ctr->load('helper', 'date');
+	$r = $ctr->AdminmainModel->show_message($token);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: pesan
+ */
+$app->post('/admin/pesan', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminmain');
+	$r = $ctr->AdminmainModel->save_message($token);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: pesan
+ */
+$app->options('/admin/pesan/daftar', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/pesan/daftar', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminmain');
+	$ctr->load('helper', 'date');
+	$r = $ctr->AdminmainModel->show_message_list($token);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: pesan
+ */
+$app->options('/admin/pesan/data', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/pesan/data', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminmain');
+	$ctr->load('helper', 'date');
+	$r = $ctr->AdminmainModel->show_message_data($token);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
  * Method: GET
  * Verb: data
  */
@@ -306,22 +456,6 @@ $app->delete('/admin/anggota/:kode', function($kode) use($app, $ctr) {
 	
 	$ctr->load('model', 'adminanggota');
 	$r = $ctr->AdminanggotaModel->delete($kode);
-	if ($r === FALSE) return halt401($app);
-	json_output($app, $r);
-});
-
-// ----------------------------------------------------------------
-/**
- * Method: POST
- * Verb: pesan
- */
-$app->options('/admin/pesan', function() use($app) { $app->status(200); $app->stop(); });
-$app->post('/admin/pesan', function() use($app, $ctr) {
-	$ctr->load('model', 'main');
-	$token = validate_token($ctr);
-	if ($token === FALSE) return halt403($app);
-	
-	$r = $ctr->MainModel->save_message($token);
 	if ($r === FALSE) return halt401($app);
 	json_output($app, $r);
 });

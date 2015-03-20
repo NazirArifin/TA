@@ -119,8 +119,8 @@ class AdminberitaModel extends ModelBase {
 		$path	= 'upload/news/';
 		if ($type == 'bisnis') {
 			$data	= unserialize($run->ISI_BERITA);
-			if ( ! empty($val->FOTO_BERITA)) {
-				$foto 	= $path . $val->FOTO_BERITA;
+			if ( ! empty($run->FOTO_BERITA)) {
+				$foto 	= $path . $run->FOTO_BERITA;
 			} else $foto = $path . 'default.png';
 			$berita = array(
 				'id'		=> $run->ID_BERITA,
@@ -132,8 +132,8 @@ class AdminberitaModel extends ModelBase {
 			);
 		}
 		if ($type == 'info') {
-			if ( ! empty($val->FOTO_INFO)) {
-				$foto 	= $path . $val->FOTO_INFO;
+			if ( ! empty($run->FOTO_INFO)) {
+				$foto 	= $path . $run->FOTO_INFO;
 			} else $foto = $path . 'default.png';
 			$berita = array(
 				'id' 	=> $run->ID_INFO,
