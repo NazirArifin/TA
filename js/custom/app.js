@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('mdbz', ['ngRoute', 'ngAnimate', 'ngStorage', 'angular-loading-bar']).
+var app = angular.module('mdbz', ['ngRoute', 'ngAnimate', 'ngSanitize', 'ngStorage', 'angular-loading-bar']).
 config(function($httpProvider, $locationProvider, cfpLoadingBarProvider) {
 	// loading-bar
 	cfpLoadingBarProvider.includeSpinner = false;

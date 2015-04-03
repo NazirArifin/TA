@@ -15,6 +15,84 @@ class MainModel extends ModelBase {
 	private $salt = 'mdbz0955201579';
 	
 	/**
+	 * Validasi email
+	 */
+	public function validate_email($type) {
+		extract($this->prepare_get(array('email')));
+		$email	= $this->db->escape_str($email);
+		$valid	= TRUE;
+		if ( ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			// validate email
+			$valid = FALSE;
+		} else {
+			// apakah sudah digunakan
+			if ($type == 'used') {
+				$run 	= $this->db->query("SELECT COUNT(ID_ANGGOTA) AS HASIL FROM anggota WHERE EMAIL_ANGGOTA = '$email'", TRUE);
+				if ($run->HASIL > 0) $valid = FALSE;
+				$run	= $this->db->query("SELECT COUNT(ID_ADMIN) AS HASIL FROM admin WHERE EMAIL_ADMIN = '$email'", TRUE);
+				if ($run->HASIL > 0) $valid = FALSE;
+			}
+		}
+		return array(
+			'type'	=> TRUE,
+			'valid'	=> $valid
+		);
+	}
+	
+	/**
+	 * Validate token
+	 * Periksa adakah token, jika ada dan tidak expired = perpanjang, 
+	 * jika tidak ada = invalid, jika ada tapi expired = invalid
+	 */
+	public function validate_token($token = '') {
+		// token dari header
+		if (empty($token)) {
+			$header		= apache_request_headers();
+			if ( ! isset($header['Authorization'])) return FALSE;		
+			list($a, $token) = explode(' ', $header['Authorization']);
+		}
+		$token 		= (array) \JWT::decode($token, $this->salt);
+		$data 		= array('id', 'email', 'tokenid', 'user', 'level', 'source');
+		foreach ($data as $v) {
+			if ( ! isset($token[$v])) return FALSE;
+		}
+		extract($token);
+		
+		// cek apakah status anggota atau admin valid atau tidak
+		if ($user == 'admin') {
+			$cek	= $this->db->query("SELECT a.STATUS_ADMIN FROM admin a, token b WHERE a.EMAIL_ADMIN = b.EMAIL_TOKEN AND a.EMAIL_ADMIN = '$email'", TRUE);
+			if ($cek->STATUS_ADMIN != '1') return FALSE;
+		}
+		if ($user == 'member') {
+			$cek 	= $this->db->query("SELECT a.STATUS_ANGGOTA FROM anggota a, token b WHERE a.EMAIL_ANGGOTA = b.EMAIL_TOKEN AND a.EMAIL_ANGGOTA = '$email'", TRUE);
+			if ($cek->STATUS_ANGGOTA != '1') return FALSE;
+		}
+		
+		// periksa di database tabel token
+		$tokenid 	= floatval($tokenid);
+		$cari 		= $this->db->query("SELECT * FROM token WHERE ID_TOKEN = '$tokenid' AND SOURCE_TOKEN = '$source'", TRUE);
+		// hapus semua jika tidak valid
+		if (empty($cari)) {
+			$del 	= $this->db->query("DELETE FROM token WHERE EMAIL_TOKEN = '$email'");
+			return FALSE;
+		}
+		
+		// cek apakah expired
+		$tgldb 		= datedb_to_tanggal($cari->EXPIRED_TOKEN, 'U');
+		if (time() > $tgldb) {
+			$del 	= $this->db->query("DELETE FROM token WHERE ID_TOKEN = '" . $cari->ID_TOKEN . "'");
+			return FALSE;
+		}
+		
+		// perbarui token
+		$exp 		= ($cari->INGAT_TOKEN == '1' ? time() + (5 * 24 * 3600) : time() + 600);
+		$upd 		= $this->db->query("UPDATE token SET EXPIRED_TOKEN = '" . date('Y-m-d H:i:s', $exp) . "' WHERE ID_TOKEN = '" . $cari->ID_TOKEN . "'");
+		
+		return $token;
+	}
+	
+	
+	/**
 	 * Admin login
 	 * Generate token baru, hapus yang lama jika ada
 	 */
@@ -31,7 +109,7 @@ class MainModel extends ModelBase {
 		$r 			= array( 'type' => FALSE, 'data' => 'Email / Password Invalid!' );
 		
 		// cari di tabel admin
-		$cari 		= $this->db->query("SELECT ID_ADMIN, LEVEL_ADMIN FROM admin WHERE EMAIL_ADMIN = '$email' AND PASSWORD_ADMIN = '$password'", TRUE);
+		$cari 		= $this->db->query("SELECT ID_ADMIN, LEVEL_ADMIN FROM admin WHERE EMAIL_ADMIN = '$email' AND PASSWORD_ADMIN = '$password' AND STATUS_ADMIN = '1'", TRUE);
 		if ( ! empty($cari)) {
 			$iduser = $cari->ID_ADMIN;
 			$lvuser = $cari->LEVEL_ADMIN;
@@ -62,46 +140,6 @@ class MainModel extends ModelBase {
 		
 		// jika tidak ada
 		return $r;
-	}
-	
-	/**
-	 * Validate token
-	 * Periksa adakah token, jika ada dan tidak expired = perpanjang, 
-	 * jika tidak ada = invalid, jika ada tapi expired = invalid
-	 */
-	public function validate_token() {
-		$header		= apache_request_headers();
-		if ( ! isset($header['Authorization'])) return FALSE;		
-		
-		list($a, $token) = explode(' ', $header['Authorization']);
-		$token 		= (array) \JWT::decode($token, $this->salt);
-		$data 		= array('id', 'email', 'tokenid', 'user', 'level', 'source');
-		foreach ($data as $v) {
-			if ( ! isset($token[$v])) return FALSE;
-		}
-		extract($token);
-		
-		// periksa di database tabel token
-		$tokenid 	= floatval($tokenid);
-		$cari 		= $this->db->query("SELECT * FROM token WHERE ID_TOKEN = '$tokenid' AND SOURCE_TOKEN = '$source'", TRUE);
-		// hapus semua jika tidak valid
-		if (empty($cari)) {
-			$del 	= $this->db->query("DELETE FROM token WHERE EMAIL_TOKEN = '$email'");
-			return FALSE;
-		}
-		
-		// cek apakah expired
-		$tgldb 		= datedb_to_tanggal($cari->EXPIRED_TOKEN, 'U');
-		if (time() > $tgldb) {
-			$del 	= $this->db->query("DELETE FROM token WHERE ID_TOKEN = '" . $cari->ID_TOKEN . "'");
-			return FALSE;
-		}
-		
-		// perbarui token
-		$exp 		= ($cari->INGAT_TOKEN == '1' ? time() + (5 * 24 * 3600) : time() + 600);
-		$upd 		= $this->db->query("UPDATE token SET EXPIRED_TOKEN = '" . date('Y-m-d H:i:s', $exp) . "' WHERE ID_TOKEN = '" . $cari->ID_TOKEN . "'");
-		
-		return $token;
 	}
 	
 	/**
@@ -139,7 +177,7 @@ class MainModel extends ModelBase {
 	/**
 	 * Menyimpan data user
 	 */
-	public function save_profil($token, $iofiles) {
+	public function admin_profil($token, $iofiles) {
 		extract($token);
 		extract($this->prepare_post(array('nama', 'pass', 'pass2')));
 		$run	= $this->db->query("SELECT NAMA_ADMIN FROM admin WHERE ID_ADMIN = '$id'", TRUE);
@@ -183,7 +221,7 @@ class MainModel extends ModelBase {
 	/**
 	 * Tambah admin
 	 */
-	public function save_admin($token, $kode = '') {
+	public function admin_save($token, $kode = '') {
 		extract($token);
 		extract($this->prepare_post(array('email', 'nama', 'pass', 'pass2', 'status')));
 		$email	= $this->db->escape_str($email);
@@ -203,8 +241,8 @@ class MainModel extends ModelBase {
 	/**
 	 * Mendapatkan data dari tabel
 	 */
-	public function get_data_table() {
-		extract($this->prepare_get(array('t')));
+	public function get_data_table($t = '') {
+		if (empty($t)) extract($this->prepare_get(array('t')));
 		$tabel 	= explode(',', $t);
 		$stabel	= array();
 		foreach ($tabel as $val) {
@@ -215,6 +253,8 @@ class MainModel extends ModelBase {
 					$stabel[] 	= array('katdir', 'kategori_direktori'); break;
 				case 'kategori_produk':	
 					$stabel[] 	= array('katproduk', 'kategori_produk'); break;
+				case 'anggota':
+					$stabel[]	= array('anggota', 'anggota'); break;
 				default: continue;
 			}
 		}
@@ -225,7 +265,10 @@ class MainModel extends ModelBase {
 			$t 		= $val[0];
 			$tu		= strtoupper($t);
 			$l 		= $val[1];
-			$run 	= $this->db->query("SELECT * FROM $t WHERE STATUS_$tu != '0' ORDER  BY NAMA_$tu", FALSE, FALSE);
+			$where	= array("STATUS_$tu != '0'");
+			if ($t == 'anggota') $where[]	= "JENIS_ANGGOTA = '2'";
+			
+			$run 	= $this->db->query("SELECT * FROM $t WHERE " . implode(' AND ', $where) . " ORDER  BY NAMA_$tu", FALSE, FALSE);
 			if ( ! empty($run)) {
 				foreach ($run as $v) {
 					$r[$l][]	= array(
@@ -279,6 +322,149 @@ class MainModel extends ModelBase {
 		$id 	= intval($id);
 		$del 	= $this->db->query("UPDATE $tabel SET STATUS_" . strtoupper($tabel) . " = '0' WHERE ID_" . strtoupper($tabel) . " = '$id'");
 		return array('type' => TRUE);
+	}
+
+	
+	/**
+	 * simpan anggota
+	 */
+	private function member_password( $length = 8 ) {
+		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&?";
+		$password = substr( str_shuffle( $chars ), 0, $length );
+		return $password;
+	}
+	
+	public function member_save($mail) {
+		extract($this->prepare_post(array('email', 'nama', 'telepon')));
+		$email	= $this->db->escape_str($email);
+		$nama	= $this->db->escape_str($nama);
+		$telp	= $this->db->escape_str($telepon);
+		if ( ! filter_var($email, FILTER_VALIDATE_EMAIL)) $valid = FALSE;
+		if (strlen($nama) < 3) $valid = FALSE;
+		if ( ! preg_match('/\+62\-[0-9]{4,20}/', $telp)) $valid = FALSE;
+		
+		// periksa email
+		$run	= $this->db->query("SELECT COUNT(ID_ANGGOTA) AS HASIL FROM anggota WHERE EMAIL_ANGGOTA = '$email'", TRUE);
+		if ($run->HASIL > 0) return array('type' => FALSE);
+		// generate kode
+		$kode 	= preg_replace('/[^a-z0-9]/', '', uniqid('mdbz'));
+		// generate password
+		$pass	= $this->member_password(10);
+		$ins	= $this->db->query("INSERT INTO anggota VALUES(0, '$kode', '$email', '" . crypt($pass, $this->salt) . "', '$nama', '', '$telepon', '', '', '0', NOW(), '1', '1')");
+		
+		// kirim email
+		$pesanHTML 			= 'Selamat datang di situs MADURA.BZ, situs direktori bisnis dan jual beli di Madura. Mulai saat ini Anda dapat menggunakan fasilitas yang ada di situs kami menggunakan akun:<br><strong>Email: ' . $email . '<br>Password: ' . $pass . '</strong><br>Kami sangat mengharapkan keaktifan Anda dalam menggunakan situs kami. Terima kasih<br><br>Administrator';
+		$pesanPlain 		= 'Selamat datang di situs MADURA.BZ, situs direktori bisnis dan jual beli di Madura. Mulai saat ini Anda dapat menggunakan fasilitas yang ada di situs kami menggunakan akun:
+		Email: ' . $email . '
+		Password: ' . $pass . '
+		Kami sangat mengharapkan keaktifan Anda dalam menggunakan situs kami. Terima kasih
+		
+		Administrator';
+		$subject			= 'Selamat. Anda terdaftar di MADURA.BZ';
+		$mail->isSMTP();
+		$mail->From 		= 'admin@madura.bz';
+		$mail->FromName		= 'MADURA.BZ';
+		$mail->Subject		= $subject;
+		$mail->Body			= $pesanHTML;
+		$mail->AltBody		= wordwrap($pesanPlain, 70);
+		$mail->addAddress($email, $nama);
+		$mail->addReplyTo('noreply@madura.bz', 'Jangan dibalas');
+		$mail->isHTML(true);
+		if ( ! @$mail->send()) {
+			$headers		= 'From: admin@madura.bz' . "\r\n" .
+				'Reply-To: noreply@madura.bz' . "\r\n" . 
+				'X-Mailer: PHP/' . phpversion();
+			@mail($email, $subject, wordwrap($pesanPlain, 70), $headers);
+		}
+		return array(
+			'type'		=> TRUE,
+			'password'	=> $pass
+		);
+	}
+	
+	/**
+	 * Login anggota
+	 */
+	public function member_authenticate() {
+		extract($this->prepare_post(array('email', 'password')));
+		$password	= crypt($password, $this->salt);
+		$email		= $this->db->escape_str($email);
+		$remember	= TRUE;
+		$source		= 'web';
+		$r			= array('type' => FALSE, 'data' => 'Email / Password Invalid!');
+		// cari di tabel admin
+		$cari		= $this->db->query("SELECT ID_ANGGOTA, JENIS_ANGGOTA FROM anggota WHERE EMAIL_ANGGOTA = '$email' AND PASSWORD_ANGGOTA = '$password' AND STATUS_ANGGOTA = '1'", TRUE);
+		if ( ! empty($cari)) {
+			$iduser	= $cari->ID_ANGGOTA;
+			$jnuser	= $cari->JENIS_ANGGOTA;
+			// cari token
+			$cari	= $this->db->query("SELECT ID_TOKEN FROM token WHERE EMAIL_TOKEN = '$email' AND SOURCE_TOKEN = '$source'", TRUE);
+			if ( ! empty($cari)) $hapus = $this->db->query("DELETE FROM token WHERE ID_TOKEN = '" . $cari->ID_TOKEN . "'");
+			// insert new token
+			$exp	= time() + (5 * 24 * 3600);
+			$ins	= $this->db->query("INSERT INTO token VALUES(0, '$email', '', '" . date('Y-m-d H:i:s', $exp) . "', '1', 'web')");
+			$tokenid= $this->db->get_insert_id();
+			$token	= array(
+				'id'		=> $iduser,
+				'email'		=> $email,
+				'tokenid'	=> $tokenid,
+				'user'		=> 'member',
+				'level'		=> $jnuser,
+				'source'	=> $source
+			);
+			$token	= \JWT::encode($token, $this->salt);
+			$upd	= $this->db->query("UPDATE token SET DATA_TOKEN = '$token' WHERE ID_TOKEN = '$tokenid'");
+			
+			$r['type']	= TRUE;
+			$r['data']	= array('token' => $token, 'expired' => $exp);
+			return $r;
+		}
+		
+		return $r;
+	}
+	
+	/**
+	 * Member signout
+	 */
+	public function member_signout($token) {
+		// hapus token
+		$token 		= (array) \JWT::decode($token, $this->salt);
+		$data 		= array('id', 'email', 'tokenid', 'user', 'level', 'source');
+		foreach ($data as $v) {
+			if ( ! isset($token[$v])) return FALSE;
+		}
+		extract($token);
+		
+		// periksa di database tabel token
+		$tokenid 	= floatval($tokenid);
+		$del 		= $this->db->query("DELETE FROM token WHERE ID_TOKEN = '$tokenid'");
+		return array( 'type' => TRUE );
+	}
+	
+	/**
+	 * Dapatkan detail member
+	 */
+	public function member_me($token, $kode = '') {
+		$token 		= (array) \JWT::decode($token, $this->salt);
+		$r			= array(
+			'type'	=> TRUE,
+			'data'	=> array()
+		);
+		$cari		= $this->db->query("SELECT KODE_ANGGOTA, NAMA_ANGGOTA, ALAMAT_ANGGOTA, TELEPON_ANGGOTA, FOTO_ANGGOTA, INFO_ANGGOTA, VALID_ANGGOTA, JENIS_ANGGOTA FROM anggota WHERE ID_ANGGOTA = '{$token['id']}'", TRUE);
+		$r['data']['member_kode']	= $cari->KODE_ANGGOTA;
+		$r['data']['member_nama']	= $cari->NAMA_ANGGOTA;
+		$r['data']['member_alamat']	= $cari->ALAMAT_ANGGOTA;
+		$r['data']['member_telepon']= $cari->TELEPON_ANGGOTA;
+		$r['data']['member_foto']	= '/upload/member/' . (empty($cari->FOTO_ANGGOTA) ? 'default.png' : str_replace('.', '_thumb.', $cari->FOTO_ANGGOTA));
+		$r['data']['member_info']	= $cari->INFO_ANGGOTA;
+		$r['data']['member_valid'] 	= ($cari->VALID_ANGGOTA == '1' ? TRUE : FALSE);
+		$r['data']['member_jenis']	= ($cari->JENIS_ANGGOTA == '1' ? 'Reguler' : 'Premium');
+		$r['data']['member_me']		= ($kode == $cari->KODE_ANGGOTA);
+		
+		// apakah memiliki direktori
+		$cari		= $this->db->query("SELECT ID_DIREKTORI FROM direktori WHERE PEMILIK_DIREKTORI = '{$token['id']}'", TRUE);
+		$r['data']['member_direktori'] = (empty($cari) ? FALSE : $cari->ID_DIREKTORI);
+		return $r;
 	}
 }
 

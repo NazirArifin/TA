@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+	<meta charset="UTF-8">
+	<title>MADURA.BZ &mdash; Data Produk</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	{% include 'pre-page.html' %}
+
+</head>
+<body>
+
+<div class="container">
+	
+	{% include 'header.html' %}
+	
+	<hr class="header">
+	
+	<div class="row">
+		<div class="col-md-4">
+			<h5 class="text-muted" style="letter-spacing: 5px;">
+				<i class="fa fa-gift"></i> PRODUK
+			</h5>
+		</div>
+		<div class="col-md-8">
+			<form class="form-inline pull-right" action="/fproduk">
+				<div class="form-group">
+					<label for="query" class="sr-only">Pencarian</label>
+					<input type="text" name="query" id="query" class="form-control" value="{{param.query}}" style="width: 200px;">
+					
+					<label for="kategori" class="sr-only">Kategori</label>
+					<select name="kategori" id="kategori" class="form-control" style="width: 200px;" value="{{param.kategori}}">
+						<option value="">-- kategori --</option>
+						{% for c in kategori %}
+						<option value="{{c.id}}"{% if param.kategori == c.id %} selected{% endif %}>{{c.nama}}</option>
+						{% endfor %}
+					</select>
+					
+					<button class="btn btn-default"><i class="fa fa-search"></i> CARI</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<hr class="main">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-12">
+						<a href="" class="btn btn-default pull-right"><i class="fa fa-download"></i> UNDUH KATALOG</a>
+					</div>
+				</div>
+				<div class="row" style="margin-bottom: 40px; margin-top: 10px;">
+					{% for c in produk %}
+					<div class="col-md-4">
+						<div class="media">
+							<a class="media-left" href="{{c.link}}">
+								<img src="{{c.foto}}" alt="" class="img-rounded" width="65px">
+							</a>
+							<div class="media-body">
+								<h4 class="media-heading">
+									<a href="{{c.link}}">{{c.nama}}</a>
+									{% if c.stok > 0 %}<small class="label label-warning pull-right" style="font-size: 0.67em">TERSEDIA</small>{% endif %}
+									{% if c.stok == 0 %}<small class="label label-danger pull-right" style="font-size: 0.67em">TERJUAL</small>{% endif %}
+								</h4>
+								<p>
+									{{c.info}}<br><br>
+									<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
+									<strong class="label label-success pull-right" style="font-size: 1em;">Rp. {{c.harga}}</strong>
+								</p>
+								<div>
+									{% if c.stok > 0 %}
+									<button class="btn btn-primary btn-xs pull-right" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">TAMBAH KE KERANJANG <i class="fa fa-cart-plus"></i></button>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="panel-footer text-center">
+				{% if produk %}
+				<ul class="pagination pagination-sm" style="margin: 10px 0;">
+					<li{% if cpage == 0 %} class="disabled"{% endif %}><a href="/fproduk?{{link}}&cpage=0">&laquo;</a></li>
+					{% for i in 0..(numpage - 1) %}
+					<li{% if cpage == loop.index0 %} class="active"{% endif %}><a href="/fproduk?{{link}}&cpage={{loop.index0}}">{{loop.index}} <span class="sr-only">(current)</span></a></li>
+					{% endfor %}
+					<li{% if cpage == (numpage - 1) %} class="disabled"{% endif %}><a href="/fproduk?{{link}}&cpage={{numpage - 1}}">&raquo;</a></li>
+				</ul>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	
+	<hr class="main">
+	
+	{% include 'footer.html' %}
+
+</div>
+
+{% include 'post-page.html' %}
+
+</body>
+</html>

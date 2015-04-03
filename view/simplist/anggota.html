@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+	<meta charset="UTF-8">
+	<title>MADURA.BZ &mdash; {{nama}}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	{% include 'pre-page.html' %}
+	
+	<script>
+var url = window.location.href.split('/');
+window.you = url[url.length - 1];
+window.me = '{{member_kode}}';
+	</script>
+
+</head>
+<body data-ng-controller="AnggotaCtrl">
+
+<div class="container">
+	
+	{% include 'header.html' %}
+	
+	<hr class="header">
+	
+	<div class="col-lg-3 col-md-4 col-sm-4">
+		<div class="main-box clearfix">
+			<header class="main-box-header clearfix">
+				<h2 class="text-center">
+					{% if valid %}<i class="fa fa-check-circle text-primary"></i> {% endif %}{{nama}}
+					{% if direktori.nama %}<br><small>pemilik</small><br>
+					<a href="{{direktori.link}}">{{direktori.nama}}</a>{% endif %}
+				</h2>
+			</header>
+			<div class="main-box-body clearfix">
+				<img src="{{foto}}" alt="" class="profile-img img-responsive center-block">
+				<div class="profile-label">
+					<span class="label label-primary">Anggota {{jenis}}</span>
+				</div>
+				<div class="profile-since"><i class="fa fa-user-plus"></i> {{daftar}}</div>
+				{% if telepon %}<div class="profile-since"><small class="text-muted"><i class="fa fa-phone-square"></i> {{telepon}}</small></div>{% endif %}
+				<div class="profile-details">
+					<table class="table table-condensed">
+						<tbody>
+							<tr>
+								<td><i class="fa fa-thumbs-up"></i> Testimoni</td>
+								<td>: <strong class="label label-{% if testi %}success{% else %}danger{% endif %}">
+									{{testi}}
+									</strong>
+								</td>
+							</tr>
+							<tr>
+								<td><i class="fa fa-envelope-square"></i> Kiriman</td>
+								<td>: <strong class="label label-{% if post %}success{% else %}danger{% endif %}">{{post}}</strong></td>
+							</tr>
+							<tr>
+								<td><i class="fa fa-certificate"></i> Review</td>
+								<td>: <strong class="label label-{% if review %}success{% else %}danger{% endif %}">{{review}}</strong></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="well" style="font-style: italic;">{{info}}</div>
+				{% if not member_me and authenticate %}
+				<div class="profile-message-btn center-block text-center">
+					<a href="" class="btn btn-success" show-modal="" data-target="modal-2" data-nama="{{nama}}" data-type="4"><i class="fa fa-envelope"></i> Kirim Pesan</a>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-9 col-md-8 col-sm-8">
+		<div class="main-box clearfix">
+			<div class="tabs-wrapper profile-tabs">
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="" data-toggle="tab" data-target="#tab-testi"><i class="fa fa-thumbs-up"></i> TESTIMONI</a></li>
+					<li><a href="" data-toggle="tab" data-target="#tab-post"><i class="fa fa-envelope-square"></i> KIRIMAN</a></li>
+					<li><a href="" data-toggle="tab" data-target="#tab-review"><i class="fa fa-certificate"></i> REVIEW PRODUK</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane fade in active" id="tab-testi">
+						<div class="well" data-ng-hide="testiList">
+							<h3 class="text-center text-info"><i class="fa fa-file-o"></i> Belum ada Testimoni</h3>
+						</div>
+						
+						{% verbatim %}
+						<div data-ng-repeat="c in testiList" data-ng-show="c.lihat">
+							<div class="media" style="padding-bottom: 5px;">
+								<a data-ng-href="{{c.link}}" class="pull-left">
+									<img data-ng-src="{{c.foto}}" alt="" class="post-image">
+								</a>
+								<div class="media-body full-width">
+									<h4 class="media-heading">
+										<a data-ng-href="{{c.link}}">{{c.nama}}</a>
+										<small class="text-muted pull-right"><i class="fa fa-clock-o"></i> {{c.tanggal}}</small>
+									</h4>
+									<p style="margin-bottom: 10px">
+										<span data-ng-bind-html="c.isi">{{c.isi}}</span>
+										<span>
+											<br><br>
+											<span class="btn-group pull-right">
+												<a href="" class="btn btn-primary btn-xs" data-ng-show="c.setuju" data-ng-click="setStatus(c.id, 2)"><i class="fa fa-check-square"></i> Tampil</a>
+												<a href="" class="btn btn-warning btn-xs" delete-testi="{{c.id}}" data-ng-show="c.hapus"><i class="fa fa-trash-o"></i> Hapus</a>
+											</span>
+										</span>
+									</p>
+								</div>
+							</div>
+							<hr class="main" data-ng-show="$index < testiList.length - 1">
+						</div>
+						{% endverbatim %}
+						
+						{% if member_me == false and member_valid %}
+						<div>
+							<hr class="main">
+							<form>
+								<div class="form-group">
+									<textarea name="" id="" cols="30" rows="5" class="form-control" placeholder="Anda dapat menambahkan testimoni Anda disini" data-ng-model="testi"></textarea>
+								</div>
+								<div class="clearfix">
+									<button class="btn btn-success pull-right" save-testimoni><i class="fa fa-check"></i> Tambahkan Testimoni</button>
+								</div>
+							</form>
+						</div>
+						{% endif %}
+						
+					</div>
+					<div class="tab-pane fade" id="tab-post">
+						<div class="wrapper"{% if postlist %} scrollable data-height="500px" style="border-bottom: 1px solid #eee"{% endif %}>
+							<div class="well" data-ng-hide="postList">
+								<h3 class="text-center text-info"><i class="fa fa-file-o"></i> Belum ada Kiriman</h3>
+							</div>
+							{% verbatim %}
+							<div class="media" data-ng-repeat="c in postList">
+								<a data-ng-href="{{c.link}}" class="pull-left">
+									<img data-ng-src="{{c.foto}}" alt="" class="post-image">
+								</a>
+								<div class="media-body full-width">
+									<h4 class="media-heading">
+										<a data-ng-href="{{c.link}}">{{c.judul}}</a>
+										<small class="text-muted pull-right"><i class="fa fa-clock-o"></i> {{c.tanggal}}</small>
+									</h4>
+									<p style="margin-bottom: 10px;">{{c.isi}}</p>
+									<p><i class="fa fa-comments"></i> {{c.komentar}} komentar</p>
+								</div>
+							</div>
+							{% endverbatim %}
+						</div>
+					</div>
+					<div class="tab-pane fade" id="tab-review">
+						<div class="wrapper"{% if reviewlist %} scrollable data-height="500px" style="border-bottom: 1px solid #eee{% endif %}">
+							<div class="well" data-ng-hide="reviewList">
+								<h3 class="text-center text-info"><i class="fa fa-file-o"></i> Belum ada Review</h3>
+							</div>
+							
+							{% verbatim %}
+							<div data-ng-repeat="c in reviewList">
+								<div class="media" style="padding-bottom: 5px;">
+									<a data-ng-href="{{c.link}}" class="pull-left">
+										<img data-ng-src="{{c.foto}}" alt="" class="post-image">
+									</a>
+									<div class="media-body full-width">
+										<h4 class="media-heading">
+											<a data-ng-href="{{c.link}}">{{c.nama}}</a>
+											<small class="text-muted pull-right"><i class="fa fa-clock-o"></i> {{c.tanggal}}</small>
+										</h4>
+										<p style="margin-bottom: 10px">{{c.isi}}</p>
+									</div>
+								</div>
+								<hr class="main">
+							</div>
+							{% endverbatim %}
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<hr class="main">
+	
+	{% include 'footer.html' %}
+	
+</div>
+
+{% include 'post-page.html' %}
+
+</body>
+</html>

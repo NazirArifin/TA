@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+	<meta charset="UTF-8">
+	<title>MADURA.BZ &mdash; Beranda &mdash; {{member_nama}}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	{% include 'pre-page.html' %}
+	
+<script>
+	window.member = '{{member_kode}}';
+	window.valid = '{{member_valid}}';
+</script>
+	
+</head>
+<body>
+<div class="container">
+	
+	{% include 'header.html' %}
+	
+	<div class="navbar navbar-default" style="margin-top: 10px;">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		</div>
+		<div class="navbar-collapse collapse navbar-responsive-collapse">
+			<ul class="nav navbar-nav">
+				<li><img src="{{member_foto}}" alt=""></li>
+				<li{% if path == '' %} class="active"{% endif %}><a href="/home">BERANDA</a></li>
+				<li{% if path == 'post' %} class="active"{% endif %}><a href="/home/post">KIRIMAN</a></li>				
+				{% if member_direktori %}
+				<li{% if path == 'direktori' %} class="active"{% endif %}><a href="/home/direktori">DIREKTORI</a></li>				
+				<li{% if path == 'produk' %} class="active"{% endif %}><a href="/home/produk">PRODUK</a></li>
+				{% endif %}
+				<li{% if path == 'order' %} class="active"{% endif %}><a href="/home/order">PEMESANAN</a></li>	
+			</ul>
+		</div>
+	</div>
+	
+	<hr class="header">
+	
+	{% verbatim %}
+	<div class="row" data-ng-controller="HomePostCtrl" data-ng-cloak>
+		<div class="col-md-12" data-ng-hide="editing">
+			<h5 style="width: 100%">
+				DATA KIRIMAN
+				<a href="" class="btn btn-info pull-right" data-ng-click="editing = true"><i class="fa fa-plus-circle fa-lg"></i> Kirim Baru</a>
+			</h5>
+			<br>
+			<div data-ng-show="dataList">
+				<div class="table-responsive">
+					<table class="table table-condensed table-striped table-hover">
+						<tbody>
+							<tr data-ng-repeat="c in dataList">
+								<td style="padding-top: 18px;"><strong class="label" data-ng-class="c.tipe == 'jual' ? 'label-success' : 'label-info'">{{c.tipe|uppercase}}</strong></td>
+								<td><a data-ng-href="{{c.link}}"><img data-ng-src="{{c.foto}}" alt="" class="dirsearch-img"></a></td>
+								<td style="padding-top: 15px">
+									<a data-ng-href="{{c.link}}" style="font-size: 1.2em; line-height: 1.4em;">{{c.judul}}</a><br>
+									<small class="text-muted" style="font-size: 0.87em">
+										<i class="fa fa-comments"></i> {{c.komentar}} &nbsp; 
+										<i class="fa fa-calendar"></i> {{c.tanggal}}
+									</small> 
+								</td>
+								<td style="padding-top: 10px; width: 60%;"><p>{{c.isi}}</p></td>
+								<td style="padding-top: 18px;">
+									<span class="btn-group">
+										<a href="" class="btn btn-default btn-sm" data-ng-click="setEdit(c.id)" data-ng-show="c.status == '1'"><i class="fa fa-pencil-square"></i></a>
+										<a href="" class="btn btn-warning btn-sm" data-ng-click="setStatus(c.id, 2)" data-ng-show="c.status == '1'"><i class="fa fa-ban"></i></a>
+										<a href="" class="btn btn-success btn-sm" data-ng-click="setStatus(c.id, 1)" data-ng-show="c.status == '2'"><i class="fa fa-recycle"></i></a>
+										<a href="" class="btn btn-danger btn-sm" delete-data="{{c.id}}" data-type="post" data-ng-show="c.status == '2'"><i class="fa fa-trash-o"></i></a>
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<ul class="pagination pagination-sm pull-right" data-ng-show="dataList">
+					<li data-ng-class="{ disabled: cpage == 0 }">
+						<a href="" data-ng-click="prevPage()"><i class="fa fa-chevron-left"></i></a>
+					</li>
+					<li data-ng-repeat="n in range(numpage)" data-ng-class="{ active: n == cpage }">
+						<a href="" data-ng-click="setPage()" data-ng-bind="n + 1">1</a>
+					</li>
+					<li data-ng-class="{ disabled: cpage == numpage - 1 }">
+						<a href="" data-ng-click="nextPage()"><i class="fa fa-chevron-right"></i></a>
+					</li>
+				</ul>
+			</div>
+			<div data-ng-hide="dataList">
+				<div class="well">
+					<h3 class="text-center text-info"><i class="fa fa-file-o"></i> Belum ada Data</h3>
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-md-12" data-ng-show="editing">
+			<h5 style="width: 100%">
+				TAMBAH/EDIT DATA KIRIMAN
+				<a href="" class="btn btn-default pull-right" cancel-form><i class="fa fa-chevron-circle-left fa-lg"></i> Batalkan</a>
+			</h5>
+			<br>
+			<hr class="main">
+			<div class="row">
+				<div class="col-md-9">
+					<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="tipe" class="col-lg-3 control-label">JENIS KIRIMAN</label>
+							<div class="col-lg-4">
+								<div class="radio">
+									<label><input type="radio" name="tipe" id="tipe-jual" value="1" data-ng-model="post.tipe"> JUAL</label> &nbsp; 
+									<label><input type="radio" name="tipe" id="tipe-jual" value="2" data-ng-model="post.tipe"> BELI</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="judul" class="col-lg-3 control-label">JUDUL *</label>
+							<div class="col-lg-9">
+								<input type="text" name="judul" id="judul" maxlength="80" class="form-control" placeholder="Judul Kiriman" data-ng-model="post.judul">
+								<span class="help-block"><em><small class="text-muted">sebaiknya unik, singkat dan deskriptif</small></em></span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="isi" class="col-lg-3 control-label">ISI KIRIMAN *</label>
+							<div class="col-lg-9">
+								<textarea name="isi" id="isi" cols="30" rows="10" class="form-control" data-ng-model="post.isi"></textarea>
+							</div>
+						</div>
+						<div class="form-group" data-ng-show="post.foto.length > 0">
+							<div class="col-lg-12 gallery-photos-wrapper">
+								<ul id="gallery-photos" class="clearfix gallery-photos gallery-photos-hover" sortable data-type="post">
+									<li id="foto_{{getFotoId(c)}}" class="col-md-2 col-sm-3 col-xs-6" data-ng-repeat="c in post.foto">
+										<div class="photo-box" style="background-image: url('{{c}}');"></div>
+										<a href="" class="remove-photo-link" data-type="post">
+											<span class="fa-stack fa-lg">
+												<i class="fa fa-circle fa-stack-2x"></i>
+												<i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+											</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="" class="col-lg-3 control-label">FOTO *</label>
+							<div class="col-lg-9">
+								<span class="btn btn-success btn-sm btn-file">
+									<span><i class="fa fa-file-o"></i> Pilih Berkas</span>
+									<input type="file" name="file" id="file" accept=".png,.jpg,.jpeg" multiple simple-file-input>
+								</span>
+								<span class="help-block"><em><small class="text-muted">format file jpg, jpeg, png, maksimal berukuran 2 MB, Anda dapat memilih hingga {{maxUpload}} file, <strong class="text-warning">file lama akan tertindih</strong> bila lebih dari {{maxUpload}}</small></em></span>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-9 col-lg-offset-3">
+								<button class="btn btn-primary" save-kiriman><i class="fa fa-check"></i> SIMPAN KIRIMAN</button> 
+								<a href="" class="btn btn-default" cancel-form>BATALKAN</a>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="col-md-3">
+					<div class="well well-sm"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	{% endverbatim %}
+	
+	<hr class="main">
+	
+	{% include 'footer.html' %}
+	
+</div>
+
+{% include 'post-page.html' %}
+
+</body>
+</html>

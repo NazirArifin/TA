@@ -21,7 +21,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						Berita Bisnis
+						<a href="/berita">Berita Bisnis</a>
 						<a href="/berita" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-link"></i></a>
 					</h3>
 				</div>
@@ -45,7 +45,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						Sekilas Madura
+						<a href="/info">Sekilas Madura</a>
 						<a href="/info" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-link"></i></a>
 					</h3>
 				</div>
@@ -67,19 +67,22 @@
 		</div>
 	</div>
 	<hr class="main">
+	<div class="row">
 		<h2 class="text-center">DIREKTORI BISNIS</h2>
 		<div class="col-md-8 col-md-offset-2">
-			<div class="input-group">
-				<input type="text" class="form-control input-lg" placeholder="Cari data direktori">
-				<span class="input-group-btn">
-					<button class="btn btn-default btn-lg" type="button"><i class="fa fa-search"></i> Cari</button>
-				</span>
-			</div>
+			<form action="/direktori">
+				<div class="input-group has-warning">
+					<input type="text" name="query" class="form-control input-lg" placeholder="Direktori yang Anda Cari?">
+					<span class="input-group-btn">
+						<button class="btn btn-default btn-lg" type="submit"><i class="fa fa-search"></i> Cari</button>
+					</span>
+				</div>
+			</form>
 		</div>
 		<div class="text-center col-md-12">
 			<ul class="pagination pagination-sm hidden-xs">
 				{% for c in direktori %}
-				<li{% if not c.h %} class="disabled"{% endif %}><a href="" class="tooltips" title="Lihat direktori {{c.a}}"{% if c.h %} show-modal="{{c.a}}" data-target="modal-1"{% endif %}>{{c.a}}</a></li>
+				<li{% if not c.h %} class="disabled"{% endif %}><a href="" class="tooltips" title="Lihat direktori {{c.a}}"{% if c.h %} data-ng-click="loadDirektoriList('{{c.a}}')"{% endif %}>{{c.a}}</a></li>
 				{% endfor %}
 			</ul>
 			<ul class="pagination pagination-sm visible-xs">
@@ -89,13 +92,29 @@
 			</ul>
 			<p class="visible-xs">&nbsp;</p>
 		</div>
+		{% verbatim %}
+		<div class="col-md-8 col-md-offset-2" data-ng-show="direktoriList.length > 0" data-ng-cloak>
+			<table class="table table-condensed table-striped">
+				<tbody>
+					<tr data-ng-repeat="c in direktoriList">
+						<td data-ng-repeat="d in c">
+							<a data-ng-href="/direktori/{{d.link}}">
+								<strong data-ng-show="d.nama.length > 0">&bull; {{d.nama}}</strong>
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		{% endverbatim %}
+	</div>
 	<hr class="main">
 	<div class="row">
 		<div class="col-md-6">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						Jual Barang
+						<a href="/jual">Jual Barang</a>
 						<a href="/jual" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-link"></i></a>
 					</h3>
 				</div>
@@ -103,12 +122,12 @@
 					{% for c in jual %}
 					<div class="media">
 						<a class="media-left" href="{{c.link}}">
-							<img src="{{c.foto}}" class="img-rounded" alt="" style="width: 64px;">
+							<img src="{{c.foto}}" class="img-rounded" alt="" style="width: 54px;">
 						</a>
 						<div class="media-body">
 							<h4 class="media-heading"><a href="{{c.link}}">{{c.judul}}</a></h4>
 							<p class="text-justify">{{c.isi}}</p>
-							<p class="text-muted sender"><i class="fa fa-edit"></i> <a href="">{{c.anggota}}</a> &mdash; {{c.tanggal}}</p></p>
+							<p class="text-muted sender"><i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a> &mdash; {{c.tanggal}}</p></p>
 						</div>
 					</div>
 					{% endfor %}
@@ -122,7 +141,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						Beli Barang
+						<a href="/beli">Beli Barang</a>
 						<a href="/beli" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-link"></i></a>
 					</h3>
 				</div>
@@ -130,12 +149,12 @@
 					{% for c in beli %}
 					<div class="media">
 						<a class="media-left" href="{{c.link}}">
-							<img src="{{c.foto}}" class="img-rounded" alt="" style="width: 64px;">
+							<img src="{{c.foto}}" class="img-rounded" alt="" style="width: 54px;">
 						</a>
 						<div class="media-body">
 							<h4 class="media-heading"><a href="{{c.link}}">{{c.judul}}</a></h4>
 							<p class="text-justify">{{c.isi}}</p>
-							<p class="text-muted sender"><i class="fa fa-edit"></i> <a href="">{{c.anggota}}</a> &mdash; {{c.tanggal}}</p></p>
+							<p class="text-muted sender"><i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a> &mdash; {{c.tanggal}}</p></p>
 						</div>
 					</div>
 					{% endfor %}
@@ -154,12 +173,12 @@
 			<div class="panel panel-default">
 				<div class="panel-body">
 					<div class="media">
-						<a class="media-left" href="#">
+						<a class="media-left" href="{{c.link}}">
 							<img src="{{c.foto}}" class="img-rounded" alt="" style="width: 64px;">
 						</a>
 						<div class="media-body">
 							<h4 class="media-heading produk">
-								<a href="">{{c.nama}}</a>
+								<a href="{{c.link}}">{{c.nama}}</a>
 								{% if c.stok > 0 %}<small class="label label-warning pull-right">TERSEDIA</small>{% endif %}
 								{% if c.stok == 0 %}<small class="label label-danger pull-right">TERJUAL</small>{% endif %}
 							</h4>
@@ -178,7 +197,8 @@
 		{% endfor %}
 		<div class="col-md-12">
 			<p class="text-center">
-				<button class="btn btn-default"><i class="fa fa-search"></i> LIHAT SEMUA PRODUK</button>
+				<a href="/fproduk" class="btn btn-default"><i class="fa fa-search"></i> LIHAT SEMUA PRODUK</a> 
+				<button class="btn btn-default"><i class="fa fa-download"></i> UNDUH KATALOG</button>
 			</p>
 		</div>
 	</div>

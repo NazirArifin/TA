@@ -1,112 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
 <head>
 	<meta charset="UTF-8">
-	<title>Madura BZ</title>
-	<link rel="stylesheet" href="assets/bootstrap/css/paper.css">
-	<link rel="stylesheet" href="css/style.css">
-	<style>
+	<title>MADURA.BZ &mdash; {{nama|upper}}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	{% include 'pre-page.html' %}
 
-	</style>
+{% if direktori != 'Semua Produk' %}
+<script>
+	window.produk = '{{id}}';
+	window.member = '{{member_kode}}';
+</script>
+{% endif %}
+	
 </head>
 <body>
 <div class="container">
-	<div class="row">
-		<div class="col-md-9">
-			<a href="#"><img src="images/logo.png" alt=""></a>
-			<!--<h1><a href=""><img src="images/m.jpg" alt="" class="img-rounded img-responsive" width="80px" id="logo"></a> MADURA.BZ</h1>-->
-		</div>
-		<div class="col-md-3">
-			<div class="media">
-				<a class="media-left media-middle" href="#">
-					<img src="images/1.jpg" class="img-rounded img-responsive img-profil" alt="" style="width: 70px;">
-				</a>
-				<div class="media-body">
-					<ul class="nav nav-pills" id="status-but">
-						<li><a href="#">Ubah Profil</a></li>
-						<li><a href="#">Logout</a></li>
-					</ul>
+	
+	{% include 'header.html' %}
+	
+	<hr class="header">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="media">
+					<h5>
+						<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-code fa-stack-1x fa-inverse"></i></span>
+						{{nama|upper}} 
+						{% if stok %}<sup class="label label-success"><small style="color: #fff">TERSEDIA</small></sup>{% endif %}
+						{% if direktori == 'Semua Produk' and stok == 0 %}<sup class="label label-danger"><small style="color: #fff">TERJUAL</small></sup>{% endif %}
+						<small class="btn-group pull-right">
+							<a href="" class="btn btn-default"><i class="fa fa-download"></i> Katalog</a>
+							<a href="{{direktori_link}}" class="btn btn-warning"><i class="fa {% if direktori == 'Semua Produk' %}fa-search{% else %}fa-home{% endif %}"></i> {{direktori}}</a>
+						</small>
+					</h5><hr class="main">
+					<div class="pull-left col-md-3">
+						<img src="{{foto[0]}}" alt="" class="img-responsive zoomable-gallery" data-zoom-image="{{foto[0]}}">
+						<div style="margin-top: 10px;" class="well well-sm text-center">
+							<h5><strong class="text-success">Rp. {{harga}},-</strong></h5>
+						</div>
+					</div>
+					<div class="col-md-7">
+						{% autoescape false %}
+						<div style="line-height: 1.3em;">
+							<strong class="text-muted"><i class="fa fa-tags"></i> {{kategori}}</strong>
+							<br><br>
+							<div class="well well-sm">
+							{{info}}
+							</div>
+							{% if stok %}
+							<button class="btn btn-primary pull-right" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">TAMBAH KE KERANJANG <i class="fa fa-cart-plus"></i></button>
+							{% endif %}
+						</div>
+						{% endautoescape %}
+					</div>
+					<div class="col-md-2">
+						<div class="well">&nbsp;</div>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+				<ul id="gallery" class="clearfix">
+					{% for c in foto %}
+					<li id="0{{loop.index}}" class="col-md-2 col-sm-3 col-xs-6">
+						<a href="" data-zoom-image="{{c}}" data-image="{{c}}"><div class="photo-box" style="background-image: url('{{c}}');"></div></a>
+					</li>
+					{% endfor %}
+				</ul>
+				<hr class="main">
+				<div class="media">
+					{% if direktori != 'Semua Produk' %}
+					<h5>
+						<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-binoculars fa-stack-1x fa-inverse"></i></span>
+						REVIEW PRODUK
+					</h5>
+					<div class="col-md-8" data-ng-controller="ProdukCtrl" data-ng-cloak>
+						<div class="well" data-ng-hide="reviewList">
+							<h3 class="text-center text-info"><i class="fa fa-file-o"></i> Belum ada Review</h3>
+						</div>
+						
+						{% verbatim %}
+						<div data-ng-show="reviewList" data-ng-repeat="c in reviewList" data-ng-show="c.lihat">
+							<div class="media" style="padding-bottom: 5px;">
+								<a data-ng-href="{{c.link}}" class="pull-left">
+									<img data-ng-src="{{c.foto}}" alt="" class="post-image">
+								</a>
+								<div class="media-body full-width">
+									<h4 class="media-heading">
+										<a data-ng-href="{{c.link}}"><span data-ng-show="c.valid"><i class="fa fa-check-circle"></i> </span>{{c.nama}}</a>
+										<small class="text-muted pull-right"><i class="fa fa-clock-o"></i> {{c.tanggal}}</small>
+									</h4>
+									<p style="margin-bottom: 10px">
+										<span data-ng-bind-html="c.isi">{{c.isi}}</span>
+										<span>
+											<br><br>
+											<span class="btn-group pull-right">
+												<a href="" class="btn btn-primary btn-xs" data-ng-show="c.setuju" data-ng-click="setStatus(c.id, 2)"><i class="fa fa-check-square"></i> Tampil</a>
+												<a href="" class="btn btn-warning btn-xs" delete-data="{{c.id}}" data-type="review" data-ng-show="c.hapus"><i class="fa fa-trash-o"></i> Hapus</a>
+											</span>
+										</span>
+									</p>
+								</div>
+							</div>
+							<hr class="main" data-ng-show="$index < reviewList.length - 1">
+						</div>
+						{% endverbatim %}
+						
+						{% if member_direktori != direktori_id and member_valid %}
+						<div>
+							<hr class="main">
+							<form>
+								<div class="form-group">
+									<textarea name="" id="" cols="30" rows="8" class="form-control" placeholder="Anda dapat menambahkan review Anda disini" data-ng-model="review"></textarea>
+								</div>
+								<div class="clearfix">
+									<button class="btn btn-success pull-right" save-review><i class="fa fa-check"></i> Tambahkan Review</button>
+								</div>
+							</form>
+						</div>
+						{% endif %}
+						
+					</div>
+					{% endif %}
+					<div class="{% if direktori == 'Semua Produk' %}col-md-10 col-md-offset-1{% else %}col-md-4{% endif %}">
+						<ul class="widget-products">
+							{% for c in other %}
+							<li>
+								<a href="{{c.link}}">
+									<span class="img"><img src="{{c.foto}}" alt=""></span>
+									<span class="product clearfix">
+										<span class="name">{{c.nama}}</span>
+										<span class="price text-success">
+											<i class="fa fa-money"></i> Rp. {{c.harga}},-
+										</span>
+										{% if c.info %}
+										<strong class="warranty text-muted">
+											<i class="fa fa-info-circle"></i> {{c.info}}
+										</strong>
+										{% endif %}
+									</span>
+								</a>
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="navbar navbar-default">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-		</div>
-		<div class="navbar-collapse collapse navbar-responsive-collapse">
-			<ul class="nav navbar-nav">
-				<li><a href="#">BERANDA</a></li>
-				<li class="active"><a href="#">PRODUK</a></li>				
-				<li><a href="#">TRANSAKSI</a></li>				
-			</ul>
-		</div>
-	</div>
-	<hr class="header">
-	<h2 class="text-center">PRODUK</h2>
-	<hr class="maho">
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<div class="table-responsive">			
-				<table class="table">
-					<tr>
-						<thead>
-							<th>Foto</th>
-							<th>Nama</th>
-							<th>Harga</th>
-							<th>Stok</th>
-							<th>Aksi</th>
-						</thead>
-					</tr>
-					<tbody>
-						<tr>
-							<td><img src="images/1.jpg" alt="" class="img-responsive img-rounded" width="50"></td>
-							<td>Sabun</td>
-							<td>Rp.2000.000</td>
-							<td>10</td>
-							<td><button class="btn btn-xs btn-warning">Edit</button> | <button class="btn btn-xs btn-danger">Hapus</button></td>
-						</tr>
-						<tr>
-							<td><img src="images/1.jpg" alt="" class="img-responsive img-rounded" width="50"></td>
-							<td>Sabun</td>
-							<td>Rp.2000</td>
-							<td>10</td>
-							<td><button class="btn btn-xs btn-warning">Edit</button> | <button class="btn btn-xs btn-danger">Hapus</button></td>
-						</tr>
-						<tr>
-							<td><img src="images/1.jpg" alt="" class="img-responsive img-rounded" width="50"></td>
-							<td>Sabun</td>
-							<td>Rp.200.000</td>
-							<td>10</td>
-							<td><button class="btn btn-xs btn-warning">Edit</button> | <button class="btn btn-xs btn-danger">Hapus</button></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="text-center">
-				<ul class="pagination">
-					<li><a href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
-					<li><a href="#">1</a></li>
-					<li><a href="#">2</a></li>
-					<li><a href="#">3</a></li>
-					<li><a href="#">4</a></li>
-					<li><a href="#">5</a></li>
-					<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
-	<hr class="maho">
-	<div class="footer">
-		<h4 class="text-center"><img src="images/m.jpg" alt="" class="img-rounded" width="30px"> <br>MADURA.BZ</h4>
-	</div>
+	<hr class="main">
+	
+	{% include 'footer.html' %}
+	
 </div>
 
-<script type="text/javascript" src="assets/js/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="assets/bootstrap/js/bootstrap.js"></script>
+{% include 'post-page.html' %}
+
 </body>
 </html>

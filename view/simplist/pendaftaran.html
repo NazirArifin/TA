@@ -1,109 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
 <head>
 	<meta charset="UTF-8">
-	<title>Madura BZ</title>
-	<link rel="stylesheet" href="assets/bootstrap/css/paper.css">
-	<link rel="stylesheet" href="css/style.css">
-	<style>
-
-	</style>
+	<title>MADURA.BZ &mdash; Pendaftaran Anggota</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	{% include 'pre-page.html' %}
 </head>
 <body>
+
 <div class="container">
-	<ul class="nav nav-pills kanan">
-		<li role="presentation"><a href="pendaftaran.html">Daftar</a></li>
-		<li role="presentation"><a href="#" data-toggle="modal" data-target="#login">Login</a></li>
-	</ul>
-	<div class="row">
-		<div class="col-md-10">
-			<a href="#"><img src="images/logo.png" alt=""></a>
-		</div>
-		<div class="col-md-2">
-			<button type="button" class="btn btn-default btn-lg" id="chart"><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Chart <span class="label label-default">4</span></button>
-		</div>
-	</div>
+	{% include 'header.html' %}
+	
 	<hr class="header">
 	<h2 class="text-center">PENDAFTARAN</h2>
-	<hr class="maho">
-	<div class="row">
+	<hr class="main">
+	<div class="row" data-ng-controller="LoginCtrl">
 		<div class="col-md-6">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<form>
+					<div data-ng-show="registered" class="reveal-animation" data-ng-cloak>
+						<h3 class="text-center text-success"><i class="fa fa-check-circle"></i> Pendaftaran Berhasil</h3>
+						<div class="alert alert-warning">
+							<p class="alert alert-warning">Anda berhasil terdaftar di situs web MADURA.BZ dan siap menggunakan layanan yang ada pada situs web ini. <strong>Silakan login menggunakan email yang telah Anda masukkan dan gunakan password berikut:</strong></p>
+							{% verbatim %}
+							<p class="text-center"><strong style="font-size: 2em;">{{password}}</strong></p>
+							{% endverbatim %}
+							<p><br><em><small>* segera ganti password Anda setelah masuk ke sistem</small></em></p>
+						</div>
+						<form role="form" action="/login" method="post" class="form-inline text-center">
+							<div class="form-group">
+								<label for="email-login" class="sr-only">Alamat Email</label>
+								<input type="email" name="email" id="email-login" class="form-control" data-ng-model="user.email">
+							</div>
+							<div class="form-group">
+								<label for="password-login" class="sr-only">Password</label>
+								<input type="password" name="password" id="password-login" class="form-control" data-ng-model="password">
+							</div>
+							<button type="submit" class="btn btn-primary"><i class="fa fa-sign-in"></i> LOGIN</button>
+						</form>
+					</div>
+					
+					<form style="margin-top: 20px; margin-bottom: 20px;" class="reveal-animation" novalidate data-ng-hide="registered" data-ng-cloak>
 						<div class="form-group">
-							<label for="email">Alamat Email</label>
-							<input type="email" class="form-control" id="email" placeholder="Masukkan Email">
+							<label for="email">
+								<span class="text-muted hide"><i class="fa fa-refresh fa-spin"></i> &nbsp;</span>Alamat Email
+							</label>
+							<input type="email" class="form-control" id="email" placeholder="Masukkan Email" data-ng-model="user.email" required check-email-saved>
 						</div>
 						<div class="form-group">
 							<label for="nama">Nama Lengkap</label>
-							<input type="password" class="form-control" id="nama" placeholder="Nama Lengkap">
-						</div>
-						<div class="form-group">
-							<label for="alamat">Alamat</label>
-							<input type="password" class="form-control" id="alamat" placeholder="Alamat Lengkap">
+							<input type="text" class="form-control" id="nama" placeholder="Nama Lengkap" data-ng-model="user.nama" required>
 						</div>
 						<div class="form-group">
 							<label for="telp">Telepon</label>
-							<input type="password" class="form-control" id="telp" placeholder="Nomor Telepon">
+							<input type="text" class="form-control" id="telp" placeholder="+62-___________" data-ng-model="user.telepon" masked-input="+62-999999999?99" required>
 						</div>
 						<div class="checkbox">
-							<label>
-								<input type="checkbox"> Saya yakin dengan keputusan saya
+							<label style="line-height: 1em; font-style: italic;">
+								<strong><input type="checkbox" data-ng-model="user.agree"> Dengan ini saya menyatakan bahwa telah membaca dan patuh pada <a href="/termofservice">Peraturan dan Kesepakatan</a> dalam menggunakan layanan di situs web MADURA.BZ</strong>
 							</label>
 						</div>
-						<button type="submit" class="btn btn-default">Daftar</button>
+						<div class="form-group text-center">
+							<button type="button" class="btn btn-primary btn-lg" save-register><i class="fa fa-check-circle-o"></i> Daftar Sekarang</button>
+						</div>
 					</form>
 				</div>
 			</div>
 		</div>
-		<div class="col-md-6">
-			<div class="panel panel-default">
-				<div class="panel-body">
-					<div class="thumbnail">						
-					<img src="images/adele.jpg" alt="" class="img-responsive img-rounded" width="300">
-						<div class="caption">
-							<h4>Adele <span class="label label-default">Member</span></h4>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam quibusdam dolores provident eius maxime culpa distinctio accusantium sapiente excepturi cum quam officia nisi pariatur rerum dignissimos commodi nostrum perspiciatis aperiam!</p>
-						</div>
-					</div>
-				</div>
+		<div class="col-md-6 hidden-xs hidden-sm" style="position: relative;">				
+			<img src="/img/register.jpg" alt="" class="img-responsive img-rounded" style="position: absolute; top: 0px; width: 98%;">
+			<div class="caption" style="position: absolute; top: 0px; opacity: 0.9; width: 98%;">
+				<p class="alert alert-success">
+					<i class="fa fa-user-plus fa-3x pull-left"></i> Untuk menjadi anggota sangatlah mudah, cukup isikan <strong>Email, Nama dan Nomor Telepon</strong> maka Anda sudah dapat mulai bertransaksi dan berbisnis di situs MADURA.BZ.
+				</p>
 			</div>
 		</div>
 	</div>
-	<hr class="maho">
-	<div class="footer">
-		<h4 class="text-center"><img src="images/m.jpg" alt="" class="img-rounded" width="30px"> <br>MADURA.BZ</h4>
-	</div>
+	<hr class="main">
+	
+	{% include 'footer.html' %}
+
 </div>
-<!-- Modal -->
-<div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title">LOGIN APLIKASI</h4>
-			</div>
-			<div class="modal-body">
-				<form>
-					<div class="form-group">
-						<label for="exampleInputEmail1">Email address</label>
-						<input type="email" class="form-control" id="" placeholder="Masukkan Email">
-					</div>
-					<div class="form-group">
-						<label for="exampleInputPassword1">Password</label>
-						<input type="password" class="form-control" id="" placeholder="Password">
-					</div>
-				
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default">Login</button>
-			</div>
-				</form>
-		</div>
-	</div>
-</div>
-<script type="text/javascript" src="assets/js/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="assets/bootstrap/js/bootstrap.js"></script>
+
+{% include 'post-page.html' %}
+
 </body>
 </html>

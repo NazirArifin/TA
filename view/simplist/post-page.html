@@ -2,6 +2,7 @@
 <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
+			<form method="post" action="/login">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title">
@@ -10,49 +11,55 @@
 				</h4>
 			</div>
 			<div class="modal-body">
-				<form>
-					<div class="form-group">
-						<label for="email">Alamat email</label>
-						<input type="email" class="form-control" id="email" placeholder="Masukkan Email">
-					</div>
-					<div class="form-group">
-						<label for="pass">Password</label>
-						<input type="password" class="form-control" id="pass" placeholder="Password">
-					</div>
-				</form>
+				<div class="form-group">
+					<label for="email">Alamat email</label>
+					<input type="email" class="form-control" name="email" id="email" placeholder="Masukkan Email">
+				</div>
+				<div class="form-group">
+					<label for="pass">Password</label>
+					<input type="password" class="form-control" name="password" id="pass" placeholder="Password">
+				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default"><strong><i class="fa fa-key"></i> MASUK</strong></button>
+				<button type="submit" class="btn btn-default"><strong><i class="fa fa-key"></i> MASUK</strong></button>
 			</div>
+			</form>
 		</div>
 	</div>
 </div>
 
-<!-- modal untuk data direktori -->
-{% verbatim %}
-<div class="md-modal md-effect-11" id="modal-1">
+<!-- modal untuk mengirim pesan -->
+<div class="md-modal md-effect-5" id="modal-2">
 	<div class="md-content">
 		<div class="modal-header">
 			<button class="md-close close">&times;</button>
-			<h4 class="modal-title">Data Direktori <a data-ng-href="/direktori/{{direktoriAlpha}}">{{direktoriAlpha}}</a></h4>
+			<h4 class="modal-title">Kirim Pesan</h4>
 		</div>
 		<div class="modal-body">
-			<div class="container-fluid" scrollable data-height="350px">
-				<table class="table table-condensed table-striped table-hover">
-					<tbody>
-						<tr data-ng-repeat="c in direktoriList">
-							<td data-ng-repeat="d in c"><a data-ng-href="/direktori/{{d.link}}"><span data-ng-show="d.nama.length > 0">&bull; {{d.nama}}</span></a></td>
-						</tr>
-					</tbody>
-				</table>
+			<div class="container-fluid">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label for="modalInputFor" class="col-md-3 control-label">Penerima</label>
+						<div class="col-md-8">
+							<input type="text" name="for" id="modalInputFor" class="form-control" data-ng-model="message.forName" disabled>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="modalInputText" class="col-md-3 control-label">Pesan<br><small class="text-muted"><span class="type-maximal-counter">160</span> karakter tersisa</small></label>
+						<div class="col-md-8">
+							<textarea name="" id="modalInputText" cols="30" rows="4" class="form-control" data-ng-model="message.message" data-ng-focus="message.message.length == 0" type-maximal="160"></textarea>
+						</div>
+					</div>
+				</form>
 			</div>
 		</div>
 		<div class="modal-footer">
-			<button type="button" class="btn btn-default"><i class="fa fa-close"></i> TUTUP</button>
+			<button type="button" class="btn btn-default"><i class="fa fa-close"></i> BATAL</button>
+			<button type="button" class="btn btn-primary" id="message-send" save-message-modal><i class="fa fa-send"></i> KIRIMKAN</button>
 		</div>
 	</div>
 </div>
-{% endverbatim %}
+<!-- akhir modal -->
 
 <div class="md-overlay"></div><!-- the overlay element -->
 

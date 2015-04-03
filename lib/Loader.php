@@ -33,6 +33,11 @@ class Loader {
 		// twig template
 		require_once 'lib/Twig/Autoloader.php';
 		\Twig_Autoloader::register();
+		/*
+		$this->twig = new \Twig_Environment(new \Twig_Loader_Filesystem('view/' . $this->theme), array(
+			'cache' => 'config/cache'
+		));
+		*/
 		$this->twig = new \Twig_Environment(new \Twig_Loader_Filesystem('view/' . $this->theme));
 		$twig =& $this->twig;
 		
@@ -123,7 +128,7 @@ class Loader {
 			$this->app->stop();
 		}
 		require_once 'model/ModelBase.php';
-		require $model;
+		require_once $model;
 		$class = '\\Model\\' . ucfirst($m) . 'Model';
 		return array(ucfirst($m) . 'Model', new $class);
 	}

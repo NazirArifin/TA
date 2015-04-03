@@ -78,11 +78,13 @@ app.controller('DirektoriCtrl', function($scope, $location, $http, notify) {
 	// load kota dan kategori
 	$scope.kota = [];
 	$scope.kategori = [];
+	$scope.anggota = [];
 	$scope.loadTable = function() {
-		$http.get($scope.server + '/data?t=kota,kategori_direktori').
+		$http.get($scope.server + '/data?t=kota,kategori_direktori,anggota').
 		success(function(d) {
 			$scope.kota = d.kota;
 			$scope.kategori = d.kategori_direktori;
+			$scope.anggota = d.anggota;
 		}).error(function(e, s, h) {
 			alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
 		});

@@ -56,7 +56,7 @@ $app->post('/admin/me', function() use($app, $ctr) {
 	if ($token === FALSE) return halt403($app);
 	
 	$ctr->load('file', 'lib/IOFiles.php');
-	$r = $ctr->MainModel->save_profil($token, new IOFiles());
+	$r = $ctr->MainModel->admin_profil($token, new IOFiles());
 	if ($r === FALSE) return halt401($app);
 	json_output($app, $r);
 });
@@ -88,7 +88,7 @@ $app->post('/admin/admin', function() use($app, $ctr) {
 	$token = validate_token($ctr);
 	if ($token === FALSE) return halt403($app);
 	
-	$r = $ctr->MainModel->save_admin($token);
+	$r = $ctr->MainModel->admin_save($token);
 	if ($r === FALSE) return halt401($app);
 	json_output($app, $r);
 });
@@ -104,7 +104,7 @@ $app->post('/admin/admin/:id', function($id) use($app, $ctr) {
 	$token = validate_token($ctr);
 	if ($token === FALSE) return halt403($app);
 	
-	$r = $ctr->MainModel->save_admin($token, $id);
+	$r = $ctr->MainModel->admin_save($token, $id);
 	if ($r === FALSE) return halt401($app);
 	json_output($app, $r);
 });

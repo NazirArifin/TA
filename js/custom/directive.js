@@ -29,25 +29,6 @@ app.directive('popovers', function() {
 	}
 });
 
-/** dropdown toggle untuk menu sidebar */
-app.directive('dropdownToggle', function() {
-	return {
-		restrict: 'C',
-		link: function($scope, elm, attrs) {
-			elm.on('click', function() {
-				var $ul = elm.next().slideToggle(150, function() {
-					var $i = $(elm.find('.drop-icon')[0]);
-					if ($ul.is(':visible')) {
-						$i.transition({ rotate: '90deg' }, 'fast');
-					} else {
-						$i.transition({ rotate: '0deg' }, 'fast');
-					}
-				});
-			});
-		}
-	};
-});
-
 /**
  * Select2
  */
@@ -126,6 +107,78 @@ app.directive('scrollable', function() {
 });
 
 /**
+ * zoomable
+ */
+app.directive('zoomableGallery', function() {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			if (attrs.src.match(/default\.(png|jpg)$/)) return;
+			elm.elevateZoom({
+				gallery:'gallery', cursor: 'pointer', galleryActiveClass: 'active',
+				zoomWindowFadeIn: 500, zoomWindowFadeOut: 500, lensFadeIn: 500, lensFadeOut: 500,
+				zoomWindowOffetx: 10
+			});
+			elm.bind("click", function(e) { var ez = elm.data('elevateZoom');	$.fancybox(ez.getGalleryList()); return false; });
+		}
+	};
+});
+
+/**
+ * Sortable
+ */
+app.directive('sortable', function() {
+	return function($scope, elm, attrs) { 
+		var t = attrs.type;
+		elm.sortable({
+			update: function(event, ui) {
+				var sorted = elm.sortable("toArray");
+				for (var i = 0; i < sorted.length; i++)
+					sorted[i] = '/upload/' + t + '/' + sorted[i].replace(/^foto_/, '').replace(/(jpg|jpeg|png)$/, '.$1');
+				$scope.$apply(function() { $scope[t].foto = sorted; });
+			}
+		}); 
+	};
+});
+
+/**
+ * Hapus foto di galery foto
+ */
+app.directive('removePhotoLink', function() {
+	return {
+		restrict: 'C',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(e) {
+				var t = attrs.type;
+				var $li = $(this).closest('li').fadeOut('slow', function() {
+					var id = '/upload/' + t + '/' + $li.attr('id').replace(/^foto_/, '').replace(/(jpg|jpeg|png)$/, '.$1');
+					var index = $scope[t].foto.indexOf(id);
+					$scope.$apply(function() { $scope[t].foto.splice(index, 1); });
+					$li.remove();
+				});
+			});
+		}
+	};
+});
+
+/**
+ * Input maksimal
+ */
+app.directive('typeMaximal', function() {
+	return function($scope, elm, attrs) {
+		elm.on('keyup', function(e) {
+			var len = $(this).val().length,
+				max	= parseInt(attrs.typeMaximal),
+				rest = max - len;
+			$('.type-maximal-counter').html(rest < 0 ? 0 : rest);
+			if (len > max) {
+				$(this).val($(this).val().substr(0, 159));
+			}
+		});
+	};
+});
+
+/**
  * Input file sederhana, diset $scope.file
  */
 app.directive('simpleFileInput', ['notify', function(notify) {
@@ -196,15 +249,90 @@ app.directive('showModal', ['$http', 'notify', function($http, notify) {
 			}
 		}
 		
-		// data untuk pengaturan profil
-		if (attrs.target == 'modal-1') {
+		// kirim pesan ke anggota
+		if (attrs.target == 'modal-2') {
+			var $text = $('#modalInputText');
 			$(el).on('click', function(e) {
-				$http.get('/direktori/' + attrs.showModal).
-				success(function(d) {
-					$scope.setDirektori(attrs.showModal, d.direktori);
-					showModal();
-				}).error(function(e, s, h) { }); 
+				$text.closest('.form-group').removeClass('has-error');
+				$scope.setMessage({ forCode: you, forName: attrs.nama, fromCode: me, type: attrs.type, message: '' });
+				$scope.$apply(); showModal();
+				setTimeout(function() { $text.focus(); }, 500); 
 			});
 		}
+	};
+}]);
+
+/**
+ * Cancel Form
+ */
+app.directive('cancelForm', function() {
+	return function($scope, elm, attrs) { 
+		elm.on('click', function(e) {
+			$('.form-group').removeClass('has-error');
+			$scope.$apply(function() { $scope.cancel(); });
+		});
+	};
+});
+
+/**
+ * check email apakah ada
+ */
+app.directive('checkEmailSaved', ['$http', 'notify', function($http, notify) {
+	return function($scope, elm, attrs) {
+		elm.on('change', function(e) {
+			var $loader = $($(this).prev().find('span')[0]);
+			if (angular.isDefined($scope.user.email) && $scope.user.email.length > 0) {
+				$loader.toggleClass('hide');
+				$http.get('/email/used?email=' + $(this).val()).
+				success(function(d) {
+					$loader.toggleClass('hide');
+					if ( ! d.valid) {
+						elm.val('').closest('.form-group').addClass('has-error');
+						notify.slideTop.error('Maaf, email sudah pernah digunakan!. Masukkan alamat email lain');
+					} else {
+						elm.closest('.form-group').removeClass('has-error');
+					}
+				});
+			} else $(this).closest('.form-group').addClass('has-error');
+		});
+	};
+}]);
+
+/**
+ * Hapus testimoni
+ */
+app.directive('deleteTesti', ['$http', 'notify', function($http, notify) {
+	return function($scope, elm, attrs) {
+		elm.on('click', function(e) {
+			bootbox.setDefaults({ locale: "id" });
+			bootbox.confirm('<h3 class="text-danger"><i class="fa fa-question-circle fa-lg pull-left"></i> Apakah Anda yakin?</h3><p><strong>Data testimoni yang sudah dihapus kemungkinan tidak dapat dikembalikan lagi.</strong></p>', function(r) {
+				if (r) {
+					$http({ url: '/testimoni/' + attrs.deleteTesti, method: 'DELETE' }).
+					success(function(d) {
+						$scope.loadTesti();
+					});
+				}
+			});
+		});
+	};
+}]);
+
+/**
+ * Hapus data
+ */
+app.directive('deleteData', ['$http', 'notify', function($http, notify) {
+	return function($scope, elm, attrs) {
+		elm.on('click', function(e) {
+			bootbox.setDefaults({ locale: "id" });
+			bootbox.confirm('<h3 class="text-danger"><i class="fa fa-question-circle fa-lg pull-left"></i> Apakah Anda yakin?</h3><p><strong>Data yang sudah dihapus kemungkinan tidak dapat dikembalikan lagi.</strong></p>', function(r) {
+				if (r) {
+					$http({ url: '/' + attrs.type + '/' + attrs.deleteData, method: 'DELETE' }).
+					success(function(d) {
+						$scope.loadData();
+						notify.bounce.error('Data berhasil dihapus!');
+					});
+				}
+			});
+		});
 	};
 }]);
