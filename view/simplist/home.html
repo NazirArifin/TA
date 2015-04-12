@@ -14,31 +14,26 @@
 	
 	{% include 'header.html' %}
 	
-	<div class="navbar navbar-default" style="margin-top: 10px;">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-		</div>
-		<div class="navbar-collapse collapse navbar-responsive-collapse">
-			<ul class="nav navbar-nav">
-				<li><img src="{{member_foto}}" alt=""></li>
-				<li{% if path == '' %} class="active"{% endif %}><a href="/home">BERANDA</a></li>
-				<li{% if path == 'post' %} class="active"{% endif %}><a href="/home/post">KIRIMAN</a></li>				
-				{% if member_direktori %}
-				<li{% if path == 'direktori' %} class="active"{% endif %}><a href="/home/direktori">DIREKTORI</a></li>				
-				<li{% if path == 'produk' %} class="active"{% endif %}><a href="/home/produk">PRODUK</a></li>
-				{% endif %}
-				<li{% if path == 'order' %} class="active"{% endif %}><a href="/home/order">PEMESANAN</a></li>	
-			</ul>
-		</div>
-	</div>
+	{% include 'home-menu.html' %}
 	
 	<hr class="header">
 	
-	
+	<div class="row">
+		<div class="col-md-8">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="media">
+						<h5><small class="text-muted">Selamat Datang {{member_nama}}</small></h5>
+						<hr>
+						<p>Anda berhasil login pada situs direktori bisnis dan jual beli MADURA.BZ.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 well well-sm">
+			
+		</div>
+	</div>
 	
 	<hr class="main">
 	

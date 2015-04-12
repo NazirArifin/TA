@@ -61,6 +61,138 @@
 </div>
 <!-- akhir modal -->
 
+<!-- modal untuk ubah profil -->
+<div class="md-modal md-effect-3" id="modal-3">
+	<div class="md-content">
+		<div class="modal-header">
+			<button class="md-close close">&times;</button>
+			<h4 class="modal-title">Edit Profil</h4>
+		</div>
+		<div class="modal-body" scrollable data-height="400px">
+			<form class="form-horizontal" role="form" id="form-edit-profil">
+				<div class="form-group">
+					<label for="profil-nama" class="col-lg-3 control-label"><strong>Nama Lengkap *</strong></label>
+					<div class="col-lg-8">
+						<input type="text" name="nama" id="profil-nama" class="form-control" placeholder="Nama Lengkap" maxlength="60" value="{{member_nama}}" required>
+						<small class="help-block text-muted"><em>&mdash; minimal 3 karakter</em></small>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="profil-alamat" class="col-lg-3 control-label"><strong>Alamat *</strong></label>
+					<div class="col-lg-8">
+						<input type="text" name="alamat" id="profil-alamat" class="form-control" placeholder="Alamat" maxlength="120" value="{{member_alamat}}" required>
+						<small class="help-block text-muted"><em>&mdash; minimal 3 karakter</em></small>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="profil-telepon" class="col-lg-3 control-label"><strong>Telepon *</strong></label>
+					<div class="col-lg-4">
+						<input type="text" name="telepon" id="profil-telepon" class="form-control" placeholder="+62-___________" maxlength="20" value="{{member_telepon}}" masked-input="+62-999999999?99" required>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="profil-info" class="col-lg-3 control-label"><strong>Tentang Anda</strong></label>
+					<div class="col-lg-8">
+						<input type="text" name="info" id="profil-info" class="form-control" placeholder="Tentang Anda" maxlength="240" value="{{member_info}}">
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-lg-4 col-lg-offset-3">
+						<img data-ng-src="{{member_foto}}" alt="thumb" class="img-thumbnail">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="file" class="col-lg-3 control-label">Gambar</label>
+					<div class="col-lg-8">
+						<span class="btn btn-success btn-sm btn-file">
+							<span><i class="fa fa-file-o"></i> Pilih Berkas</span>
+							<input type="file" name="file" id="file" accept=".png,.jpg,.jpeg" simple-file-input>
+						</span>
+						<small class="help-block text-muted"><em>&mdash; format file jpg, jpeg, png, maksimal berukuran 2 MB</em></small>
+					</div>
+				</div>
+				<fieldset>
+					<legend>Ubah Password</legend>
+					<div class="form-group">
+						<label for="profil-password" class="col-lg-3 control-label"><strong>Password Baru</strong></label>
+						<div class="col-lg-5">
+							<input type="password" name="password" id="profil-password" class="form-control" placeholder="" maxlength="40" data-ng-model="profil.password">
+							<small class="help-block text-muted"><em>&mdash; biarkan bila tidak ingin mengubah</em></small>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="profil-password2" class="col-lg-3 control-label"><strong>Ulangi Password</strong></label>
+						<div class="col-lg-5">
+							<input type="password" name="password2" id="profil-password2" class="form-control" placeholder="" maxlength="40" data-ng-model="profil.password2">
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-default"><i class="fa fa-close"></i> BATAL</button>
+			<button class="btn btn-primary" data-kode="{{member_kode}}" save-profil><i class="fa fa-floppy-o"></i> SIMPAN</button>
+		</div>
+	</div>
+</div>
+
+<!-- modal untuk konfirmasi order -->
+<div class="md-modal md-effect-2" id="modal-4">
+	<div class="md-content">
+		<div class="modal-header">
+			<button class="md-close close">&times;</button>
+			<h4 class="modal-title">Konfirmasi Pembayaran</h4>
+		</div>
+		<div class="modal-body" scrollable data-height="350px">
+			<form class="form-horizontal">
+				<div class="form-group">
+					<label for="order-id" class="col-lg-3 control-label"><strong>ID ORDER</strong></label>
+					<div class="col-lg-3">
+						<input type="text" name="id" id="order-id" class="form-control" value="" disabled>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="" class="col-lg-3 control-label">PRODUK</label>
+					<div class="col-lg-9">
+						<ul id="order-produk" class="list-unstyled"></ul>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="" class="col-lg-3 control-label">REKENING</label>
+					<div class="col-lg-6">
+						{% for c in rekening %}
+						<div class="radio">
+							<label>
+								<input type="radio" name="rekening" id="rekening1" value="{{c.id}}" class="radio-input"> 
+								<strong>{{c.bank}}</strong><br>{{c.nomor}} <span class="text-muted">An.</span> {{c.an}}
+							</label>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="order-bayar" class="col-lg-3 control-label"><strong>BAYAR</strong></label>
+					<div class="col-lg-4 input-group">
+						<span class="input-group-addon">Rp.</span>
+						<input type="text" name="bayar" id="order-bayar" class="form-control" value="">
+						<span class="input-group-addon">,-</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="order-pesan" class="col-lg-3 control-label">PESAN ANDA</label>
+					<div class="col-lg-8">
+						<textarea name="pesan" id="order-pesan" cols="30" rows="5" class="form-control"></textarea>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-default"><i class="fa fa-close"></i> BATAL</button>
+			<button class="btn btn-primary" save-konfirmasi><i class="fa fa-send"></i> KIRIM</button>
+		</div>
+	</div>
+</div>
+
 <div class="md-overlay"></div><!-- the overlay element -->
 
 <script src="/js/bootstrap.min.js"></script>
@@ -68,7 +200,7 @@
 <script src="/js/helper.min.js"></script>
 <script src="/js/tools.min.js"></script>
 
-<script src="/js/custom/app.js"></script>
-<script src="/js/custom/directive.js"></script>
+<script src="/js/custom/app.min.js"></script>
+<script src="/js/custom/directive.min.js"></script>
 <script src="/js/custom/directive-form.js"></script>
 <script src="/js/custom/main-ctrl.js"></script>

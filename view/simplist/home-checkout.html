@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+	<meta charset="UTF-8">
+	<title>MADURA.BZ &mdash; Beranda &mdash; Checkout</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	{% include 'pre-page.html' %}
+	
+</head>
+<body>
+<div class="container">
+	
+	{% include 'header.html' %}
+	
+	{% include 'home-menu.html' %}
+	
+	<hr class="header">
+	
+	<div class="col-md-12">
+		<div class="panel panel-default" data-ng-cloak>
+			<div class="panel-body">
+				<h5>CHEKOUT</h5>
+				<div class="row" data-ng-show="item.length == 0">
+					<div class="col-md-12">
+						<div class="well well-sm text-center">
+							<h2 class="pull-left text-muted" style="margin-top: 0;"><span class="fa-stack"><i class="fa fa-ban fa-stack-2x"></i><i class="fa fa-cart-arrow-down fa-stack-1x"></i></span></h2>
+							<br>
+							<h5><strong class="text-danger">Keranjang belanja Anda kosong. Lihat <a href="/fproduk">Semua Produk</a></strong></h5><br>
+						</div>
+					</div>
+				</div>
+				
+				<p class="alert alert-success" data-ng-show="item.length > 0">
+					<strong>Masukkan rincian data berikut ini untuk melengkapi pembelian yang Anda lakukan.</strong>
+				</p>
+				<div class="row" data-ng-show="item.length > 0" data-ng-controller="HomeCheckoutCtrl">
+					<div class="col-md-5">
+						<h6>
+							<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-male fa-stack-1x fa-inverse"></i></span>
+							Informasi Pemesan
+						</h6>
+						<p class="text-muted"><small><strong>&mdash; Anda dapat mengganti nama dan alamat dengan identitas lain untuk tujuan pengiriman yang berbeda. Hanya melayani pengiriman dalam negeri.</strong></small></p>
+						<br>
+						<form role="form">
+							<div class="form-group">
+								<label for="c-nama">Nama Lengkap *</label>
+								<input type="text" name="nama" id="c-nama" class="form-control" value="{{member_nama}}">
+							</div>
+							<div class="form-group">
+								<label for="c-alamat">Alamat Lengkap *</label>
+								<input type="text" name="alamat" id="c-alamat" class="form-control" value="{{member_alamat}}">
+							</div>
+							<div class="form-group">
+								<label for="c-tujuan">Kota</label>
+								<select name="tujuan" id="c-tujuan" data-ng-model="tujuan" data-ng-options="c.id as c.nama for c in kota" style="width: 100%" data-value="{{tujuan}}" data-ng-change="loadOngkir()" select2 required>
+									<option value="">-- pilih tujuan --</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="c-telepon">Telepon *</label>
+								<input type="text" name="telepon" id="c-telepon" class="form-control" placeholder="+62-___________" maxlength="20" masked-input="+62-999999999?99" value="{{member_telepon}}">
+							</div>
+						</form>
+						<br>
+						<h6>
+							<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-truck fa-stack-1x fa-inverse"></i></span> 
+							Biaya Pengiriman
+						</h6>
+						{% verbatim %}
+						<p><strong>Ongkos Kirim</strong><br>Rp. {{shipRate|number:0}},-</p>
+						{% endverbatim %}
+					</div>
+					<div class="col-md-7">
+						<h6>
+							<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-credit-card fa-stack-1x fa-inverse"></i></span>
+							Informasi Pembayaran
+						</h6>
+						<p>Untuk melakukan pembayaran, Anda dapat menggunakan transfer ke rekening berikut ini:</p>
+						{% verbatim %}
+						<ul>
+							<li data-ng-repeat="c in rekeningList">
+								<address>
+									<strong>{{c.bank}}</strong><br>
+									Nomor Rekening: {{c.nomor}}<br>
+									AN: {{c.an}}
+								</address>
+							</li>
+						</ul>
+						{% endverbatim %}
+						<br>
+						<h6>
+							<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+							Rincian Pembelian
+						</h6>
+						{% verbatim %}
+						<table class="table">
+							<thead>
+								<tr>
+									<th>&nbsp;</th>
+									<th>Nama Produk</th>
+									<th>Harga</th>
+									<th>Jumlah</th>
+									<th>Subtotal</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="c in itemList">
+									<td>
+										<a href="" data-ng-click="itemRemove(c.id)"><span class="fa-stack text-danger"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-remove fa-stack-1x fa-inverse"></i></span></a>
+									</td>
+									<td>{{c.nama}}</td>
+									<td>{{c.harga|number:0}},-</td>
+									<td><input type="text" name="" id="" class="form-control" style="width: 50px" data-ng-model="itemList[$index].jumlah" data-ng-change="reCalculate()" masked-input="9?999"></td>
+									<td class="text-right">{{c.total|number:0}},-</td>
+								</tr>
+								<tr>
+									<td colspan="4"><strong class="text-muted">Subtotal</strong></td>
+									<td class="text-right text-muted">{{subTotal|number:0}}</td>
+								</tr>
+								<tr>
+									<td colspan="4"><strong class="text-muted">Biaya Kirim</strong></td>
+									<td class="text-right text-muted">{{shipRate|number:0}}</td>
+								</tr>
+								<tr>
+									<td colspan="4"><strong class="text-muted">TOTAL BIAYA</strong></td>
+									<td class="text-right"><strong>Rp. {{grandTotal|number:0}}</strong></td>
+								</tr>
+							</tbody>
+						</table>
+						{% endverbatim %}
+						<a href="" class="btn btn-default btn-sm pull-right" onclick="window.history.back()">BATALKAN</a>
+						<br>
+						<hr class="main">
+						<button class="btn btn-primary pull-right" save-order><i class="fa fa-check"></i> SIMPAN PESANAN</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<hr class="main">
+	
+	{% include 'footer.html' %}
+	
+</div>
+
+{% include 'post-page.html' %}
+
+</body>
+</html>

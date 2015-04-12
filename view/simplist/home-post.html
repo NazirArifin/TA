@@ -19,27 +19,7 @@
 	
 	{% include 'header.html' %}
 	
-	<div class="navbar navbar-default" style="margin-top: 10px;">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-		</div>
-		<div class="navbar-collapse collapse navbar-responsive-collapse">
-			<ul class="nav navbar-nav">
-				<li><img src="{{member_foto}}" alt=""></li>
-				<li{% if path == '' %} class="active"{% endif %}><a href="/home">BERANDA</a></li>
-				<li{% if path == 'post' %} class="active"{% endif %}><a href="/home/post">KIRIMAN</a></li>				
-				{% if member_direktori %}
-				<li{% if path == 'direktori' %} class="active"{% endif %}><a href="/home/direktori">DIREKTORI</a></li>				
-				<li{% if path == 'produk' %} class="active"{% endif %}><a href="/home/produk">PRODUK</a></li>
-				{% endif %}
-				<li{% if path == 'order' %} class="active"{% endif %}><a href="/home/order">PEMESANAN</a></li>	
-			</ul>
-		</div>
-	</div>
+	{% include 'home-menu.html' %}
 	
 	<hr class="header">
 	
@@ -56,7 +36,6 @@
 					<table class="table table-condensed table-striped table-hover">
 						<tbody>
 							<tr data-ng-repeat="c in dataList">
-								<td style="padding-top: 18px;"><strong class="label" data-ng-class="c.tipe == 'jual' ? 'label-success' : 'label-info'">{{c.tipe|uppercase}}</strong></td>
 								<td><a data-ng-href="{{c.link}}"><img data-ng-src="{{c.foto}}" alt="" class="dirsearch-img"></a></td>
 								<td style="padding-top: 15px">
 									<a data-ng-href="{{c.link}}" style="font-size: 1.2em; line-height: 1.4em;">{{c.judul}}</a><br>
@@ -65,7 +44,11 @@
 										<i class="fa fa-calendar"></i> {{c.tanggal}}
 									</small> 
 								</td>
-								<td style="padding-top: 10px; width: 60%;"><p>{{c.isi}}</p></td>
+								<td style="padding-top: 10px;">
+									<strong class="label" data-ng-class="c.tipe == 'jual' ? 'label-success' : 'label-info'">{{c.tipe|uppercase}}</strong><br>
+									<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
+								</td>
+								<td style="padding-top: 10px; width: 50%;"><p>{{c.isi}}</p></td>
 								<td style="padding-top: 18px;">
 									<span class="btn-group">
 										<a href="" class="btn btn-default btn-sm" data-ng-click="setEdit(c.id)" data-ng-show="c.status == '1'"><i class="fa fa-pencil-square"></i></a>
@@ -114,6 +97,14 @@
 									<label><input type="radio" name="tipe" id="tipe-jual" value="1" data-ng-model="post.tipe"> JUAL</label> &nbsp; 
 									<label><input type="radio" name="tipe" id="tipe-jual" value="2" data-ng-model="post.tipe"> BELI</label>
 								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="kategori" class="col-lg-3 control-label"><strong>KATEGORI *</strong></label>
+							<div class="col-lg-4">
+								<select name="kategori" id="kategori" class="form-control" data-ng-options="c.id as c.nama for c in kategori" data-ng-model="post.kategori">
+									<option value="">-- pilih kategori --</option>
+								</select>
 							</div>
 						</div>
 						<div class="form-group">

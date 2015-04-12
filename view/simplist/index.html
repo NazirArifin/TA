@@ -127,7 +127,10 @@
 						<div class="media-body">
 							<h4 class="media-heading"><a href="{{c.link}}">{{c.judul}}</a></h4>
 							<p class="text-justify">{{c.isi}}</p>
-							<p class="text-muted sender"><i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a> &mdash; {{c.tanggal}}</p></p>
+							<p class="text-muted sender">
+								<i class="fa fa-tag"></i> {{c.kategori}} &nbsp;  
+								<i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a> &mdash; {{c.tanggal}}
+							</p>
 						</div>
 					</div>
 					{% endfor %}
@@ -154,7 +157,10 @@
 						<div class="media-body">
 							<h4 class="media-heading"><a href="{{c.link}}">{{c.judul}}</a></h4>
 							<p class="text-justify">{{c.isi}}</p>
-							<p class="text-muted sender"><i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a> &mdash; {{c.tanggal}}</p></p>
+							<p class="text-muted sender">
+								<i class="fa fa-tag"></i> {{c.kategori}} &nbsp;  
+								<i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a> &mdash; {{c.tanggal}}
+							</p>
 						</div>
 					</div>
 					{% endfor %}

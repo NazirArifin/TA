@@ -14,49 +14,238 @@
 	
 	{% include 'header.html' %}
 	
-	<div class="navbar navbar-default" style="margin-top: 10px;">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-		</div>
-		<div class="navbar-collapse collapse navbar-responsive-collapse">
-			<ul class="nav navbar-nav">
-				<li><img src="{{member_foto}}" alt=""></li>
-				<li{% if path == '' %} class="active"{% endif %}><a href="/home">BERANDA</a></li>
-				<li{% if path == 'post' %} class="active"{% endif %}><a href="/home/post">KIRIMAN</a></li>				
-				{% if member_direktori %}
-				<li{% if path == 'direktori' %} class="active"{% endif %}><a href="/home/direktori">DIREKTORI</a></li>				
-				<li{% if path == 'produk' %} class="active"{% endif %}><a href="/home/produk">PRODUK</a></li>
-				{% endif %}
-				<li{% if path == 'order' %} class="active"{% endif %}><a href="/home/order">PEMESANAN</a></li>	
-			</ul>
-		</div>
-	</div>
+	{% include 'home-menu.html' %}
 	
 	<hr class="header">
 	
-	<div class="row">
-		<!--<div class="col-md-8 col-md-offset-2">
-			<p class="lead text-center"><strong><i class="fa fa-file-o"></i> Tidak Ada Direktori</strong></p>
-			<p class="well text-center text-info">
-				<strong>Saat ini Anda tidak memiliki direktori yang dapat Anda atur. Hubungi Administrator untuk mendapatkan direktori Anda</strong>
-			</p>
-		</div>-->
+	<div class="row" data-ng-controller="HomeDirektoriCtrl" data-ng-cloak>
 		<div class="col-md-3">
 			<h5>DIREKTORI ANDA</h5><hr class="main">
+			{% for c in direktori %}
 			<div class="list-group">
-				<a href="" class="list-group-item">
-					Fahirah Boutique<i class="fa fa-chevron-circle-right fa-lg pull-right"></i>
-				</a>
+				<a href="" class="list-group-item" data-ng-click="setActiveDirektori({{c.id}}, '{{c.nama}}')"><i class="fa fa-location-arrow"></i> {{c.nama}}</a>
+			</div>
+			{% endfor %}
+		</div>
+		{% verbatim %}
+		<div class="col-md-9">
+			<div data-ng-show="activeDirektori.length == 0">
+				<h5>DATA DIREKTORI</h5>
+				<br>
+				<small class="well">
+					<i class="fa fa-info-circle fa-lg"></i> <strong>Pilih nama direktori disebelah kiri untuk mengatur direktori yang bersangkutan</strong>
+				</small>
+			</div>
+			
+			<div data-ng-show="activeDirektori.length != 0">
+				<h5>
+					{{namaDirektori|uppercase}}
+					<a data-ng-href="{{getDirektoriLink()}}" class="btn btn-primary pull-right"><i class="fa fa-location-arrow fa-lg"></i> LIHAT DIREKTORI</a>
+					<a href="" class="btn btn-default pull-right" data-ng-click="cancel()" style="margin-right: 5px;"><i class="fa fa-times-circle"></i> BATALKAN</a>
+				</h5>
+				<br>
+				<form role="form" novalidate>
+					<fieldset class="form-horizontal">
+						<legend>Data Utama</legend>
+						<div class="form-group">
+							<label for="kategori" class="col-lg-2 control-label"><strong>Kategori *</strong></label>
+							<div class="col-lg-3">
+								<select name="kategori" id="kategori" data-ng-model="direktori.kategori" data-ng-options="c.id as c.nama for c in kategori" style="width: 100%" data-value="{{direktori.kategori}}" select2 required><option value="">-- pilih kategori --</option></select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="nama" class="col-lg-2 control-label"><strong>Nama Usaha *</strong></label>
+							<div class="col-lg-5">
+								<input type="text" name="nama" id="nama" class="form-control" placeholder="Nama Usaha" maxlength="80" data-ng-model="direktori.nama" required>
+								<small class="help-block text-muted"><em>&mdash; minimal 5 karakter</em></small>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="kota" class="col-lg-2 control-label"><strong>Kota Asal *</strong></label>
+							<div class="col-lg-4">
+								<select name="kota" id="kota" class="form-control" data-ng-options="c.id as c.nama for c in kota" data-ng-model="direktori.kota">
+									<option value="">-- pilih kota --</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="alamat" class="col-lg-2 control-label"><strong>Alamat 1 *</strong></label>
+							<div class="col-lg-8">
+								<input type="text" name="alamat" id="alamat" class="form-control" placeholder="Alamat 1" maxlength="120" data-ng-model="direktori.alamat" required>
+								<small class="help-block text-muted"><em>&mdash; alamat harus lengkap, minimal 5 karakter</em></small>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="alamat2" class="col-lg-2 control-label">Alamat 2</label>
+							<div class="col-lg-8">
+								<input type="text" name="alamat2" id="alamat2" class="form-control" placeholder="Alamat 2" maxlength="120" data-ng-model="direktori.alamat2">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="telepon" class="col-lg-2 control-label"><strong>Telepon 1 *</strong></label>
+							<div class="col-lg-3">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-phone-square"></i></span>
+									<input type="text" name="telepon" id="telepon" class="form-control" placeholder="+62-___________" maxlength="30" data-ng-model="direktori.telepon" masked-input="+62-999999999?99" required>
+								</div>
+								<small class="help-block text-muted"><em>&mdash; +62-xxxxxxxxxx</em></small>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="telepon2" class="col-lg-2 control-label">Telepon 2</label>
+							<div class="col-lg-3">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-phone"></i></span>
+									<input type="text" name="telepon2" id="telepon2" class="form-control" placeholder="+62-___________" maxlength="30" data-ng-model="direktori.telepon2" masked-input="+62-999999999?99">
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="info" class="col-lg-2 control-label"><strong>Keterangan *</strong></label>
+							<div class="col-lg-8">
+								<textarea name="info" id="info" cols="30" rows="4" class="form-control" data-ng-model="direktori.info" required></textarea>
+								<small class="help-block text-muted"><em>&mdash; minimal 5 karakter</em></small>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="email" class="col-lg-2 control-label">Email</label>
+							<div class="col-lg-3">
+								<input type="email" name="email" id="email" class="form-control" placeholder="Email" maxlength="60" data-ng-model="direktori.email">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="website" class="col-lg-2 control-label">Website</label>
+							<div class="col-lg-5">
+								<input type="text" name="website" id="website" class="form-control" placeholder="http://" maxlength="60" data-ng-model="direktori.web">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="koordinat" class="col-lg-2 control-label">Koordinat 1</label>
+							<div class="col-lg-5">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-map-marker"></i></span>
+									<input type="text" name="koordinat" id="koordinat" class="form-control" placeholder="Koordinat 1" maxlength="60" data-ng-model="direktori.koordinat">
+								</div>
+								<small class="help-block text-muted"><em>&mdash; latitude,longitude</em></small>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="koordinat2" class="col-lg-2 control-label">Koordinat 2</label>
+							<div class="col-lg-5">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-map-marker"></i></span>
+									<input type="text" name="koordinat2" id="koordinat2" class="form-control" placeholder="Koordinat 2" maxlength="60" data-ng-model="direktori.koordinat2">
+								</div>
+							</div>
+						</div>
+						<div class="form-group" data-ng-show="direktori.image">
+							<div class="col-lg-4 col-lg-offset-2">
+								<img data-ng-src="{{direktori.image}}" alt="thumb" class="img-thumbnail">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="file" class="col-lg-2 control-label">Gambar</label>
+							<div class="col-lg-6">
+								<span class="btn btn-success btn-file">
+									<span><i class="fa fa-file-o"></i> Pilih Berkas</span>
+									<input type="file" name="file" id="file" accept=".png,.jpg,.jpeg" simple-file-input>
+								</span>
+								<small class="help-block text-muted"><em>&mdash; format file jpg, jpeg, png, maksimal berukuran 2 MB</em></small>
+							</div>
+						</div>
+					</fieldset>
+					<fieldset class="form-inline">
+						<legend>IM dan Social Media</legend>
+						<div class="col-lg-3">
+							<div class="form-group">
+								<label class="sr-only" for="wa">whatsapp</label>
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-whatsapp"></i></span>
+									<input type="text" name="wa" id="wa" class="form-control" placeholder="whatsapp" maxlength="20" data-ng-model="direktori.im.wa">
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-3">
+							<div class="form-group">
+								<label class="sr-only" for="bbm">bbm</label>
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-comments"></i></span>
+									<input type="text" name="bbm" id="bbm" class="form-control" placeholder="bbm" maxlength="20" data-ng-model="direktori.im.bbm">
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-3">
+							<div class="form-group">
+								<label class="sr-only" for="wa">line</label>
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-comments"></i></span>
+									<input type="text" name="line" id="line" class="form-control" placeholder="line" maxlength="20" data-ng-model="direktori.im.line">
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-3">
+							<div class="form-group">
+								<label class="sr-only" for="wechat">wechat</label>
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-wechat"></i></span>
+									<input type="text" name="wechat" id="wechat" class="form-control" placeholder="wechat" maxlength="20" data-ng-model="direktori.im.wechat">
+								</div>
+							</div>
+						</div>
+					</fieldset>
+					<br>
+					<fieldset class="form-horizontal">
+						<div class="col-lg-6">
+							<div class="form-group">
+								<label class="sr-only" for="facebook">facebook</label>
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-facebook-official"></i></span>
+									<input type="text" name="fb" id="fb" class="form-control" placeholder="facebook" maxlength="60" data-ng-model="direktori.sm.fb">
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div class="form-group">
+								<label class="sr-only" for="facebook">twitter</label>
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-twitter"></i></span>
+									<input type="text" name="twitter" id="twitter" class="form-control" placeholder="twitter" maxlength="60" data-ng-model="direktori.sm.twitter">
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div class="form-group">
+								<label class="sr-only" for="gplus">gplus</label>
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-google-plus"></i></span>
+									<input type="text" name="gplus" id="gplus" class="form-control" placeholder="google plus" maxlength="60" data-ng-model="direktori.sm.gplus">
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div class="form-group">
+								<label class="sr-only" for="ig">instagram</label>
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-instagram"></i></span>
+									<input type="text" name="ig" id="ig" class="form-control" placeholder="instagram" maxlength="60" data-ng-model="direktori.sm.ig">
+								</div>
+							</div>
+						</div>
+					</fieldset>
+					<hr>
+					<fieldset class="form-horizontal">
+						<legend>Selesai dan Simpan</legend>
+						<div class="form-group">
+							<div class="col-lg-offset-2 col-lg-5">
+								<button class="btn btn-primary" save-direktori><i class="fa fa-lg fa-check-square-o"></i> SIMPAN DATA DIREKTORI</button>
+								<a href="" class="btn btn-default pull-right" data-ng-click="cancel()"><i class="fa fa-times-circle"></i> BATALKAN</a>
+							</div>
+						</div>
+					</fieldset>
+				</form>
 			</div>
 		</div>
-		<div class="col-md-9">
-			<h5>DATA DIREKTORI</h5>
-			
-		</div>
+		{% endverbatim %}
 	</div>
 	
 	<hr class="main">

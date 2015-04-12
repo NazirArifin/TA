@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('mdbz', ['ngRoute', 'ngAnimate', 'ngStorage', 'angular-loading-bar', 'summernote']).
+var app = angular.module('mdbz', ['ngRoute', 'ngAnimate', 'ngSanitize', 'ngStorage', 'angular-loading-bar', 'summernote']).
 config(function($routeProvider, $httpProvider, $locationProvider, cfpLoadingBarProvider) {
 	// router
 	$routeProvider

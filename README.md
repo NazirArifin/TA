@@ -34,11 +34,13 @@ komentar
 0	Dihapus
 
 penjualan
-1	Tertunda
+1	Tertunda / Pending
 2	Lewat
 3	Batal
-4 	Diproses
-5	Selesai
+4 	Dikonfirmasi
+5 	Diproses / Dipacking
+6 	Dikirim
+7	Selesai
 0	Dihapus
 
 testimoni
@@ -62,6 +64,7 @@ pesan
 2	Admin ke Anggota
 3	Anggota ke Admin
 4	Anggota ke Anggota
+5	Sistem
 
 anggota
 1	Anggota Reguler

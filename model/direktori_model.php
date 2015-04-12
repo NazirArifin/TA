@@ -33,6 +33,26 @@ class DirektoriModel extends ModelBase {
 		);
 	}
 	
+	public function get_direktori_list($kode) {
+		$r 		= array();
+		// cari id
+		$kode	= $this->db->escape_str($kode);
+		$run	= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$kode'", TRUE);
+		if (empty($run)) return FALSE;
+		// cari direktori
+		$idmember	= $run->ID_ANGGOTA;
+		$run	= $this->db->query("SELECT ID_DIREKTORI, NAMA_DIREKTORI FROM direktori WHERE PEMILIK_DIREKTORI = '$idmember' AND STATUS_DIREKTORI = '1' ORDER BY NAMA_DIREKTORI");
+		if ( ! empty($run)) {
+			foreach ($run as $val) {
+				$r[] = array(
+					'id'	=> $val->ID_DIREKTORI,
+					'nama'	=> str_replace(array("'", '"'), '`', $val->NAMA_DIREKTORI)
+				);
+			}
+		}
+		return $r;
+	}
+	
 	public function view() {
 		extract($this->prepare_get(array('query', 'nama', 'alamat', 'kategori', 'kota', 'cpage', 'type')));
 		$cpage	= filter_var($cpage, FILTER_SANITIZE_NUMBER_INT);
@@ -145,6 +165,123 @@ class DirektoriModel extends ModelBase {
 		$r['chat']		= json_decode($run->CHAT_DIREKTORI);
 		$r['socmed']	= json_decode($run->SOCMED_DIREKTORI);
 		$r['foto']		= '/upload/direktori/' . (empty($run->FOTO_DIREKTORI) ? 'default.png' : $run->FOTO_DIREKTORI);
+		return $r;
+	}
+	
+	public function save_direktori($id, $iofiles, $member) {
+		$member		= $this->db->escape_str($member);
+		$run		= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$member'", TRUE);
+		if (empty($run)) return FALSE;
+		$idmember	= $run->ID_ANGGOTA;
+		// cek post
+		$run		= $this->db->query("SELECT COUNT(ID_DIREKTORI) AS HASIL FROM direktori WHERE ID_DIREKTORI = '$id' AND PEMILIK_DIREKTORI = '$idmember'", TRUE);
+		if ($run->HASIL == 0) return FALSE;
+		
+		$r 			= array( 'type' => TRUE );
+		extract($this->prepare_post(array('kategori', 'nama', 'pemilik', 'kota', 'alamat', 'alamat2', 'telepon', 'telepon2', 'info', 'email', 'koordinat', 'koordinat2', 'im', 'sm', 'web', 'status')));
+		// casting
+		$id 		= intval($id);
+		$kategori 	= intval($kategori);
+		$kota 		= intval($kota);
+		$nama 		= $this->db->escape_str($nama);
+		$pemilik 	= $this->db->escape_str($pemilik);
+		$alamat 	= $this->db->escape_str($alamat);
+		$alamat2 	= $this->db->escape_str($alamat2);
+		$telepon 	= $this->db->escape_str($telepon);
+		$telepon2 	= $this->db->escape_str($telepon2);
+		$info 		= $this->db->escape_str($info);
+		$email 		= $this->db->escape_str(filter_var($email, FILTER_SANITIZE_EMAIL));
+		$web 		= $this->db->escape_str(filter_var($web, FILTER_SANITIZE_URL));
+		$koordinat 	= $this->db->escape_str($koordinat);
+		$koordinat2 = $this->db->escape_str($koordinat2);
+		// validasi
+		$v = TRUE;
+		if ( ! is_array($im)) 		$v = FALSE;
+		if ( ! is_array($sm)) 		$v = FALSE;
+		$imt 	= array('wa', 'bbm', 'line', 'wechat');
+		$smt 	= array('fb', 'twitter', 'gplus', 'ig');
+		foreach ($imt as $val) {
+			if ( ! isset($im[$val])) $im[$val] = '';
+		}
+		foreach ($smt as $val) {
+			if ( ! isset($sm[$val])) $sm[$val] = '';
+			else $sm[$val] = filter_var($sm[$val], FILTER_SANITIZE_URL);
+		}
+		if (empty($kategori)) 		$v = FALSE;
+		if (strlen($nama) < 5) 		$v = FALSE;
+		if (empty($kota)) 			$v = FALSE;
+		if (strlen($telepon) < 6) 	$v = FALSE;
+		if (strlen($info) < 5) 		$v = FALSE;
+		
+		if ( ! $v) return array( 'type' => FALSE );;
+		
+		// kumpulkan
+		$calamat 	= array($alamat, $alamat2);
+		$ctelepon 	= array($telepon, $telepon2);
+		$ckoordinat = array($koordinat, $koordinat2);
+		
+		$getid 		= $id;
+		$upd		= array();
+		$jalamat	= json_encode($calamat);
+		$jtelepon	= json_encode($ctelepon);
+		$jkoordinat	= json_encode($ckoordinat);
+		$jim		= json_encode($im);
+		$jsm		= json_encode($sm);
+		$run 		= $this->db->query("SELECT * FROM direktori WHERE ID_DIREKTORI = '$id'", TRUE);
+		if (empty($run)) return FALSE;
+		
+		$ubahnama		= FALSE;
+		if ($nama != $run->NAMA_DIREKTORI) {
+			$upd[] 		= "NAMA_DIREKTORI = '$nama'";
+			$ubahnama	= TRUE; 
+		}
+		if ($kategori != $run->ID_KATDIR) 				$upd[] = "ID_KATDIR = '$kategori'";
+		if ($kota != $run->ID_KOTA) 					$upd[] = "ID_KOTA = '$kota'";
+		if ($email != $run->EMAIL_DIREKTORI) 			$upd[] = "EMAIL_DIREKTORI = '$email'";
+		if ($jalamat != $run->ALAMAT_DIREKTORI) 		$upd[] = "ALAMAT_DIREKTORI = '$jalamat'";
+		if ($jtelepon != $run->TELEPON_DIREKTORI) 		$upd[] = "TELEPON_DIREKTORI = '$jtelepon'";
+		if ($pemilik != $run->PEMILIK_DIREKTORI) 		$upd[] = "PEMILIK_DIREKTORI = '$pemilik'";
+		if ($jkoordinat != $run->KOORDINAT_DIREKTORI) 	$upd[] = "KOORDINAT_DIREKTORI = '$jkoordinat'";
+		if ($info != $run->INFO_DIREKTORI) 				$upd[] = "INFO_DIREKTORI = '$info'";
+		if ($web != $run->WEB_DIREKTORI) 				$upd[] = "WEB_DIREKTORI = '$web'";
+		if ($jim != $run->CHAT_DIREKTORI) 				$upd[] = "CHAT_DIREKTORI = '$jim'";
+		if ($jsm != $run->SOCMED_DIREKTORI) 			$upd[] = "SOCMED_DIREKTORI = '$jsm'";
+		if ( ! empty($upd)) $run = $this->db->query("UPDATE direktori SET " . implode(', ', $upd) . " WHERE ID_DIREKTORI = '$id'");
+		
+		// jika ada file foto
+		if (isset($_FILES['file'])) {
+			if ( ! empty($getid)) {
+				// hapus foto
+				$run = $this->db->query("SELECT FOTO_DIREKTORI FROM direktori WHERE ID_DIREKTORI = '$getid'", TRUE);
+				if ( ! empty($run)) @unlink('upload/direktori/' . $run->FOTO_DIREKTORI);
+				
+				$config['upload_path']		= 'upload/direktori/';
+				$config['allowed_types']	= 'jpeg|jpg|png';
+				$config['encrypt_name']		= TRUE;
+				$config['overwrite']		= TRUE;
+				$iofiles->upload_config($config);
+				$iofiles->upload('file');
+				
+				// buat thumbnail
+				$filename 					= $iofiles->upload_get_param('file_name');
+				$filepath					= 'upload/direktori/' . $filename;
+				$config 					= array();
+				$filethumb					= str_replace('.', '_thumb.', $filepath);
+				$config['source_image']		= $filepath;
+				$config['new_image']		= $filethumb;
+				$config['maintain_ratio']	= TRUE;
+				$config['width']			= 120;
+				$config['height']			= 120;
+				$iofiles->image_config($config);
+				$iofiles->image_resize();
+				
+				// update tabel
+				$upd = $this->db->query("UPDATE direktori SET FOTO_DIREKTORI = '$filename' WHERE ID_DIREKTORI = '$getid'");
+			}
+		}
+		
+		// jika ubah nama
+		if ($ubahnama)	$r['data']	= $nama;
 		return $r;
 	}
 }

@@ -151,8 +151,12 @@ $app->get('/admin/pesan', function() use($app, $ctr) {
 $app->post('/admin/pesan', function() use($app, $ctr) {
 	$ctr->load('model', 'main');
 	$token = validate_token($ctr);
-	if ($token === FALSE) return halt403($app);
-	
+	if ($token === FALSE) {
+		if (isset($_COOKIE['token'])) {
+			$token = validate_token($ctr, $_COOKIE['token']);
+			if ($token === FALSE) halt403($app);
+		} else halt403($app);
+	}
 	$ctr->load('model', 'adminmain');
 	$r = $ctr->AdminmainModel->save_message($token);
 	if ($r === FALSE) return halt401($app);
@@ -168,8 +172,12 @@ $app->options('/admin/pesan/daftar', function() use($app) { $app->status(200); $
 $app->get('/admin/pesan/daftar', function() use($app, $ctr) {
 	$ctr->load('model', 'main');
 	$token = validate_token($ctr);
-	if ($token === FALSE) return halt403($app);
-	
+	if ($token === FALSE) {
+		if (isset($_COOKIE['token'])) {
+			$token = validate_token($ctr, $_COOKIE['token']);
+			if ($token === FALSE) halt403($app);
+		} else halt403($app);
+	}
 	$ctr->load('model', 'adminmain');
 	$ctr->load('helper', 'date');
 	$r = $ctr->AdminmainModel->show_message_list($token);
@@ -186,8 +194,12 @@ $app->options('/admin/pesan/data', function() use($app) { $app->status(200); $ap
 $app->get('/admin/pesan/data', function() use($app, $ctr) {
 	$ctr->load('model', 'main');
 	$token = validate_token($ctr);
-	if ($token === FALSE) return halt403($app);
-	
+	if ($token === FALSE) {
+		if (isset($_COOKIE['token'])) {
+			$token = validate_token($ctr, $_COOKIE['token']);
+			if ($token === FALSE) halt403($app);
+		} else halt403($app);
+	}
 	$ctr->load('model', 'adminmain');
 	$ctr->load('helper', 'date');
 	$r = $ctr->AdminmainModel->show_message_data($token);

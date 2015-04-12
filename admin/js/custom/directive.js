@@ -254,20 +254,6 @@ app.directive('showModal', ['$http', 'notify', function($http, notify) {
 			});
 		}
 		
-		// data info untuk direktori dan anggota
-		if (attrs.target == 'modal-1') {
-			$(el).on('click', function(ev) {
-				showModal();
-				$http.get($scope.server + '/' + attrs.type + '/' + attrs.showModal).
-				success(function(d) {
-					// set info data
-					$scope.setInfoData(d[attrs.type]);
-				}).error(function(e, s, h) {
-					alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
-				});
-			});
-		}
-		
 		// kirim pesan ke anggota
 		if (attrs.target == 'modal-2') {
 			var $text = $('#modalInputText');
@@ -277,6 +263,30 @@ app.directive('showModal', ['$http', 'notify', function($http, notify) {
 				$scope.setMessage({ forCode: r.kode, forName: r.nama, type: attrs.type, message: '' });
 				$scope.$apply(); showModal();
 				setTimeout(function() { $text.focus(); }, 500); 
+			});
+		}
+		
+		// kirim rekening
+		if (attrs.target == 'modal-3') {
+			$(el).on('click', function(e) {
+				$('#modal-3').find('.form-group').removeClass('has-error');
+				if ( ! angular.isUndefined($scope.rekening[parseInt(attrs.showModal)])) {
+					$scope.setRekening($scope.rekening[parseInt(attrs.showModal)]);
+					$scope.$apply(); 
+				} else $scope.rekeningReset();
+				showModal();
+			});
+		}
+		
+		// kirim ongkir
+		if (attrs.target == 'modal-4') {
+			$(el).on('click', function(e) {
+				$('#modal-4').find('.form-group').removeClass('has-error');
+				if ( ! angular.isUndefined($scope.ongkir[parseInt(attrs.showModal)])) {
+					$scope.setOngkir($scope.ongkir[parseInt(attrs.showModal)]);
+					$scope.$apply(); 
+				} else $scope.ongkirReset();
+				showModal();
 			});
 		}
 	};
@@ -364,7 +374,10 @@ app.directive('deleteButton', ['$http', function($http) {
 						url: url,
 						method: 'DELETE'
 					}).
-					success(function(d) { $scope.loadData(); }).
+					success(function(d) { 
+						if (attrs.load) $scope.loadData(attrs.load);
+						else $scope.loadData(); 
+					}).
 					error(function(e, s, h) {
 						alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
 					});

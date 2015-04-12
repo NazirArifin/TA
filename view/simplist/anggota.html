@@ -28,8 +28,12 @@ window.me = '{{member_kode}}';
 			<header class="main-box-header clearfix">
 				<h2 class="text-center">
 					{% if valid %}<i class="fa fa-check-circle text-primary"></i> {% endif %}{{nama}}
-					{% if direktori.nama %}<br><small>pemilik</small><br>
-					<a href="{{direktori.link}}">{{direktori.nama}}</a>{% endif %}
+					{% if direktori %}
+					<br><small>pemilik</small><br>
+					{% for c in direktori %}
+					<a href="{{c.link}}">{{c.nama}}</a>
+					{% endfor %}
+					{% endif %}
 				</h2>
 			</header>
 			<div class="main-box-body clearfix">

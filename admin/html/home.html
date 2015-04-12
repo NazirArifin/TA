@@ -72,24 +72,6 @@
 	</div>
 </div>
 
-<!-- modal untuk info direktori -->
-<div class="md-modal md-effect-8" id="modal-1">
-	<div class="md-content">
-		<div class="modal-header">
-			<button class="md-close close">&times;</button>
-			<h4 class="modal-title">{{infoData.nama}}</h4>
-		</div>
-		<div class="modal-body">
-			<div class="container">
-				hahh
-			</div>
-		</div>
-		<div class="modal-footer">
-			<button type="button" class="btn btn-default"><i class="fa fa-close"></i> TUTUP</button>
-		</div>
-	</div>
-</div>
-
 <!-- modal untuk mengirim pesan -->
 <div class="md-modal md-effect-5" id="modal-2">
 	<div class="md-content">
@@ -121,4 +103,87 @@
 		</div>
 	</div>
 </div>
+
+<div class="md-modal md-effect-2" id="modal-3">
+	<div class="md-content">
+		<div class="modal-header">
+			<button class="md-close close">&times;</button>
+			<h4 class="modal-title">Data Rekening</h4>
+		</div>
+		<div class="modal-body">
+			<div class="container">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label for="dr-an" class="control-label col-md-3">Atas Nama</label>
+						<div class="col-md-8">
+							<input type="text" name="an" id="dr-an" class="form-control" placeholder="Atas Nama" data-ng-model="rekeningSelected.an">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="dr-nomor" class="control-label col-md-3">Nomor Rekening</label>
+						<div class="col-md-6">
+							<input type="text" name="nomor" id="dr-nomor" class="form-control" placeholder="Nomor Rekening" data-ng-model="rekeningSelected.nomor">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="dr-bank" class="control-label col-md-3">Nama Bank</label>
+						<div class="col-md-8">
+							<input type="text" name="bank" id="dr-bank" class="form-control" placeholder="Nama Bank" data-ng-model="rekeningSelected.bank">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default"><i class="fa fa-close"></i> BATAL</button>
+			<button type="button" class="btn btn-primary" simpan-rekening-modal><i class="fa fa-send"></i> SIMPAN DATA</button>
+		</div>
+	</div>
+</div>
+
+
+<div class="md-modal md-effect-2" id="modal-4">
+	<div class="md-content">
+		<div class="modal-header">
+			<button class="md-close close">&times;</button>
+			<h4 class="modal-title">Data Ongkos Kirim</h4>
+		</div>
+		<div class="modal-body">
+			<div class="container">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label for="do-kurir" class="control-label col-md-3">Kurir</label>
+						<div class="col-md-6">
+							<select name="kurir" id="do-kurir" class="form-control" data-ng-options="c.id as c.nama for c in kurir" data-ng-model="ongkirSelected.ki">
+								<option value="">-- pilih kurir --</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="do-kota" class="control-label col-md-3">Tujuan</label>
+						<div class="col-md-6">
+							<select name="kota" id="do-kota" class="form-control" data-ng-options="c.id as c.nama for c in kota" data-ng-model="ongkirSelected.oi">
+								<option value="">-- pilih kota --</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="do-biaya" class="control-label col-md-3">Biaya</label>
+						<div class="col-md-4">
+							<div class="input-group">
+								<span class="input-group-addon">Rp.</span>
+								<input type="text" name="biaya" id="do-biaya" price-input class="form-control" placeholder="" data-ng-model="ongkirSelected.b">
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default"><i class="fa fa-close"></i> BATAL</button>
+			<button type="button" class="btn btn-primary" simpan-ongkir-modal><i class="fa fa-send"></i> SIMPAN DATA</button>
+		</div>
+	</div>
+</div>
+
 <div class="md-overlay"></div><!-- the overlay element -->

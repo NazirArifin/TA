@@ -50,6 +50,7 @@ class AdmindirektoriModel extends ModelBase {
 				$tlp	= (empty($tlp[1]) ? $tlp[0] : implode('<br>', $tlp));
 				$status	= ($val->STATUS_DIREKTORI == 1 ? 'Aktif' : 'Non Aktif');
 				$r[] = array(
+					'link' =>	'direktori/' . $val->ID_DIREKTORI . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_DIREKTORI)),
 					'id' => 	$val->ID_DIREKTORI,
 					'nama' => 	$val->NAMA_DIREKTORI,
 					'kat' => 	$val->NAMA_KATDIR,
@@ -92,7 +93,7 @@ class AdmindirektoriModel extends ModelBase {
 			'telepon2'	=> $telepon[1],
 			'koordinat'	=> $koordinat[0],
 			'koordinat2'=> $koordinat[1],
-			'image'		=> (empty($run->FOTO_DIREKTORI) ? '' : 'upload/direktori/' . str_replace('.', '_thumb.', $run->FOTO_DIREKTORI))
+			'image'		=> (empty($run->FOTO_DIREKTORI) ? 'upload/direktori/default.png' : 'upload/direktori/' . str_replace('.', '_thumb.', $run->FOTO_DIREKTORI))
 		);
 		return array(
 			'type' 		=> TRUE,

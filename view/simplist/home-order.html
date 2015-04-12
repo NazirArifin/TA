@@ -14,31 +14,76 @@
 	
 	{% include 'header.html' %}
 	
-	<div class="navbar navbar-default" style="margin-top: 10px;">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-		</div>
-		<div class="navbar-collapse collapse navbar-responsive-collapse">
-			<ul class="nav navbar-nav">
-				<li><img src="{{member_foto}}" alt=""></li>
-				<li{% if path == '' %} class="active"{% endif %}><a href="/home">BERANDA</a></li>
-				<li{% if path == 'post' %} class="active"{% endif %}><a href="/home/post">KIRIMAN</a></li>				
-				{% if member_direktori %}
-				<li{% if path == 'direktori' %} class="active"{% endif %}><a href="/home/direktori">DIREKTORI</a></li>				
-				<li{% if path == 'produk' %} class="active"{% endif %}><a href="/home/produk">PRODUK</a></li>
-				{% endif %}
-				<li{% if path == 'order' %} class="active"{% endif %}><a href="/home/order">PEMESANAN</a></li>	
-			</ul>
-		</div>
-	</div>
+	{% include 'home-menu.html' %}
 	
 	<hr class="header">
 	
-	
+	<div class="row">
+		<div class="col-md-12" data-ng-controller="HomeOrderCtrl" data-ng-cloak>
+			<h5>DATA PEMESANAN</h5>
+			<br>
+			<div class="text-center well well-sm" data-ng-hide="orderList">
+				<h4><i class="fa fa-file-o"></i> Tidak Ada Data Pemesanan</h4>
+			</div>
+			
+			<div class="table-responsive" data-ng-show="orderList">
+				<table class="table table-condensed table-striped table-hover">
+					<thead>
+						<tr>
+							<th>KODE</th>
+							<th>TANGGAL</th>
+							<th>PRODUK</th>
+							<th>PENERIMA</th>
+							<th>BIAYA</th>
+							<th>STATUS</th>
+							<th>&nbsp;</th>
+						</tr>
+					</thead>
+					{% verbatim %}
+					<tbody style="font-size: 0.9em;">
+						<tr data-ng-repeat="c in orderList">
+							<td class="text-info" style="font-size: 1.4em">
+								<a data-ng-href="/home/invoice?kode={{c.id}}" class="popovers" data-content="{{c.info}}" title="INFORMASI" data-placement="right" data-ng-show="c.info.length > 0">#{{c.id}}</a>
+								<a data-ng-href="/home/invoice?kode={{c.id}}" data-ng-show="c.info.length == 0">#{{c.id}}</a>
+							</td>
+							<td>
+								<span class="text-muted"><i class="fa fa-calendar"></i> {{c.tanggal[0]}}</span>
+								<br><span class="text-danger"><i class="fa fa-calendar"></i> {{c.tanggal[1]}}</span>
+								<span data-ng-show="c.tanggal[2]"><br><span class="text-success"><i class="fa fa-calendar"></i> {{c.tanggal[2]}}</span></span>
+							</td>
+							<td>
+								<ul class="list-unstyled">
+									<li data-ng-repeat="d in c.produk">{{d}}</li>
+								</ul>
+							</td>
+							<td>
+								<ul class="list-unstyled">
+									<li>Nama: {{c.nama}}</li>
+									<li>Alamat: {{c.alamat}}</li>
+									<li>Telepon: {{c.telepon}}</li>
+								</ul>
+							</td>
+							<td>
+								<ul class="list-unstyled">
+									<li class="text-muted"><i class="fa fa-fw fa-gift"></i> Rp. {{c.harga}}</li>
+									<li class="text-muted"><i class="fa fa-fw fa-truck"></i> Rp. {{c.ongkir}}</li>
+									<li><strong><i class="fa fa-fw fa-money"></i> Rp. {{c.total}}</strong></li>
+								</ul>
+							</td>
+							<td><span class="label" data-ng-class="c.status == 'tertunda' ? 'label-default' : 'label-success'">{{c.status_data|uppercase}}</span></td>
+							<td>
+								<a href="" class="btn btn-primary btn-xs tooltips" title="konfirmasi pembayaran" show-modal data-target="modal-4" data-index="{{$index}}" data-ng-show="c.status == '1'"><i class="fa fa-check-circle"></i></a> 
+								<a href="" class="btn btn-danger btn-xs tooltips" title="batalkan" data-ng-click="setStatus(c.id, 3)" data-ng-show="c.status == '1'"><i class="fa fa-remove"></i></a>
+								<a href="" class="btn btn-default btn-xs tooltips" title="simpan invoice"><i class="fa fa-floppy-o"></i></a>
+								
+							</td>
+						</tr>
+					</tbody>
+					{% endverbatim %}
+				</table>
+			</div>
+		</div>
+	</div>
 	
 	<hr class="main">
 	

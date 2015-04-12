@@ -21,6 +21,8 @@
 	{% include 'header.html' %}
 	
 	<hr class="header">
+	
+	<div class="row">
 	<div class="col-md-12">
 		<div class="panel panel-default">
 			<div class="panel-body">
@@ -38,7 +40,7 @@
 					<div class="col-md-7">
 						{% autoescape false %}
 						<div style="line-height: 1.3em;">
-							<!--<small class="text-muted"><i class="fa fa-tags"></i> Burung</small>-->
+							<small class="text-muted"><i class="fa fa-tags"></i> {{kategori}}</small>
 							<small class="text-muted pull-right"><i class="fa fa-calendar"></i> {{tanggal}}</small>
 							<br><br>
 							<div class="well well-sm">
@@ -137,6 +139,8 @@
 			</div>
 		</div>
 	</div>
+	</div>
+	
 	<hr class="main">
 	
 	{% include 'footer.html' %}

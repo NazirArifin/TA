@@ -14,31 +14,143 @@
 	
 	{% include 'header.html' %}
 	
-	<div class="navbar navbar-default" style="margin-top: 10px;">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-		</div>
-		<div class="navbar-collapse collapse navbar-responsive-collapse">
-			<ul class="nav navbar-nav">
-				<li><img src="{{member_foto}}" alt=""></li>
-				<li{% if path == '' %} class="active"{% endif %}><a href="/home">BERANDA</a></li>
-				<li{% if path == 'post' %} class="active"{% endif %}><a href="/home/post">KIRIMAN</a></li>				
-				{% if member_direktori %}
-				<li{% if path == 'direktori' %} class="active"{% endif %}><a href="/home/direktori">DIREKTORI</a></li>				
-				<li{% if path == 'produk' %} class="active"{% endif %}><a href="/home/produk">PRODUK</a></li>
-				{% endif %}
-				<li{% if path == 'order' %} class="active"{% endif %}><a href="/home/order">PEMESANAN</a></li>	
-			</ul>
-		</div>
-	</div>
+	{% include 'home-menu.html' %}
 	
 	<hr class="header">
 	
-	
+	<div class="row" data-ng-controller="HomeProdukCtrl" data-ng-cloak>
+		<div class="col-md-3">
+			<h5>DIREKTORI ANDA</h5><hr class="main">
+			{% for c in direktori %}
+			<div class="list-group">
+				<a href="" class="list-group-item" data-ng-click="setActiveDirektori({{c.id}}, '{{c.nama}}')"><i class="fa fa-location-arrow"></i> {{c.nama}}</a>
+			</div>
+			{% endfor %}
+		</div>
+		{% verbatim %}
+		<div class="col-md-9">
+			<div data-ng-show="activeDirektori.length == 0 && ! editing">
+				<h5>DATA PRODUK</h5>
+				<br>
+				<small class="well">
+					<i class="fa fa-info-circle fa-lg"></i> <strong>Pilih nama direktori disebelah kiri untuk mengatur produk dari direktori yang bersangkutan</strong>
+				</small>
+			</div>
+			
+			<div data-ng-show="activeDirektori.length != 0 && ! editing">
+				<h5>
+					{{namaDirektori|uppercase}}
+					<a data-ng-href="" class="btn btn-success pull-right" data-ng-click="addProduk()"><i class="fa fa-plus"></i> TAMBAH PRODUK</a>
+					<a href="" class="btn btn-default pull-right" data-ng-click="clear()" style="margin-right: 5px;"><i class="fa fa-times-circle"></i> BATALKAN</a>
+				</h5>
+				<br>
+				<div data-ng-show="produkList.length == 0">
+					<p class="well text-center"><strong><span class="text-danger">TIDAK ADA DATA PRODUK PADA DIREKTORI INI</span><br>
+					Tambahkan produk dengan menekan tombol TAMBAH PRODUK dipojok kanan atas halaman ini.</strong></p>
+				</div>
+				<div class="table-responsive" data-ng-show="produkList">
+					<table class="table table-hover table-condensed table-striped">
+						<tbody>
+							<tr data-ng-repeat="c in produkList">
+								<td><a data-ng-href="{{c.link}}"><img data-ng-src="{{c.foto}}" alt="" class="dirsearch-img"></a></td>
+								<td>
+									<strong><a data-ng-href="{{c.link}}">{{c.nama}}</a></strong><br>
+									<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
+								</td>
+								<td>Rp. {{c.harga}},-</td>
+								<td>{{c.info}}</td>
+								<td style="padding-top: 18px;">
+									<span class="btn-group">
+										<a href="" class="btn btn-default btn-sm" data-ng-click="setEdit(c.id)" data-ng-show="c.status == '1'"><i class="fa fa-pencil-square"></i></a>
+										<a href="" class="btn btn-warning btn-sm" data-ng-click="setStatus(c.id, 2)" data-ng-show="c.status == '1'"><i class="fa fa-ban"></i></a>
+										<a href="" class="btn btn-success btn-sm" data-ng-click="setStatus(c.id, 1)" data-ng-show="c.status == '2'"><i class="fa fa-recycle"></i></a>
+										<a href="" class="btn btn-danger btn-sm" delete-data="{{c.id}}" data-type="produk" data-ng-show="c.status == '2'"><i class="fa fa-trash-o"></i></a>
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		
+			<div data-ng-show="editing">
+				<h5>TAMBAH / SUNTING PRODUK
+					<a href="" class="btn btn-default pull-right" data-ng-click="cancel()" style="margin-right: 5px;"><i class="fa fa-times-circle"></i> BATALKAN</a>
+				</h5>
+				<br>
+				<form class="form-horizontal" novalidate>
+					<fieldset class="form-horizontal">
+						<div class="form-group">
+							<label for="kategori" class="col-lg-2 control-label"><strong>Kategori *</strong></label>
+							<div class="col-lg-4">
+								<select name="kategori" id="kategori" class="form-control" data-ng-options="c.id as c.nama for c in kategori" data-ng-model="produk.kategori">
+									<option value="">-- pilih kategori --</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="nama" class="col-lg-2 control-label"><strong>Nama Produk *</strong></label>
+							<div class="col-lg-8">
+								<input type="text" name="nama" id="nama" class="form-control" placeholder="Nama Produk" maxlength="120" data-ng-model="produk.nama" required>
+								<small class="help-block text-muted"><em>&mdash; minimal 3 karakter</em></small>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="harga" class="col-lg-2 control-label"><strong>Harga *</strong></label>
+							<div class="col-lg-3">
+								<div class="input-group">
+									<span class="input-group-addon">Rp.</span>
+									<input type="text" name="harga" id="harga" class="form-control" placeholder="0" maxlength="20" data-ng-model="produk.harga" price-input required>
+								</div>
+								<small class="help-block text-muted"><em>&mdash; harga satuan</em></small>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="info" class="col-lg-2 control-label"><strong>Informasi *</strong></label>
+							<div class="col-lg-8">
+								<textarea name="info" id="info" cols="30" rows="5" class="form-control" data-ng-model="produk.info" required></textarea>
+							</div>
+						</div>
+						<div class="form-group" data-ng-show="produk.foto.length > 0">
+							<div class="col-lg-12 gallery-photos-wrapper">
+								<ul id="gallery-photos" class="clearfix gallery-photos gallery-photos-hover" sortable data-type="produk">
+									<li id="foto_{{getFotoId(c)}}" class="col-md-2 col-sm-3 col-xs-6" data-ng-repeat="c in produk.foto">
+										<div class="photo-box" style="background-image: url('{{c}}');"></div>
+										<a href="" class="remove-photo-link" data-type="produk">
+											<span class="fa-stack fa-lg">
+										<i class="fa fa-circle fa-stack-2x"></i>
+										<i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+											</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="file" class="col-lg-2 control-label">Gambar</label>
+							<div class="col-lg-10">
+								<span class="btn btn-success btn-sm btn-file">
+									<span><i class="fa fa-file-o"></i> Pilih Berkas</span>
+									<input type="file" name="file" id="file" accept=".png,.jpg,.jpeg" multiple simple-file-input>
+								</span>
+								<small class="help-block text-muted"><em>&mdash; format file jpg, jpeg, png, maksimal berukuran 2 MB<br>&mdash; Anda dapat memilih hingga 5 file, <strong class="text-warning">file lama akan tertindih</strong> bila lebih dari 5</em></small>
+							</div>
+						</div>
+					</fieldset>
+					<hr>
+					<fieldset class="form-horizontal">
+						<div class="form-group">
+							<div class="col-lg-offset-2 col-lg-5">
+								<button class="btn btn-primary" save-produk><i class="fa fa-lg fa-check-square-o"></i> SIMPAN PRODUK</button> 
+								<button class="btn btn-default" cancel-form>BATALKAN</button>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+		{% endverbatim %}
+	</div>
 	
 	<hr class="main">
 	

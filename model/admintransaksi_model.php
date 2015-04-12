@@ -52,17 +52,28 @@ class AdmintransaksiModel extends ModelBase {
 		$start	= $cpage * $numdt;
 		
 		$r		= array();
-		$run	= $this->db->query("SELECT a.ID_PENJUALAN, a.TANGGAL_PENJUALAN, a.BIAYA_PENJUALAN, a.STATUS_PENJUALAN, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA FROM penjualan a, anggota b WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND " . implode(" AND ", $where) . " ORDER BY " . implode(', ', $orderf) . " LIMIT $start, $numdt");
+		$run	= $this->db->query("SELECT a.ID_PENJUALAN, a.TANGGAL_PENJUALAN, a.STATUS_PENJUALAN, a.INFO_PENJUALAN, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA FROM penjualan a, anggota b WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND " . implode(" AND ", $where) . " ORDER BY " . implode(', ', $orderf) . " LIMIT $start, $numdt");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				switch ($val->STATUS_PENJUALAN) {
 					case 1: $status = 'Tertunda'; break;
 					case 2: $status = 'Lewat'; break;
 					case 3: $status = 'Batal'; break;
-					case 4: $status = 'Diproses'; break;
-					case 5: $status = 'Selesai'; break;
+					case 4: $status = 'Dikonfirmasi'; break;
+					case 5: $status = 'Diproses'; break;
+					case 6: $status = 'Dikirim'; break;
+					case 7: $status = 'Selesai'; break;
 				}
-				
+				/*
+				1	Tertunda / Pending
+				2	Lewat
+				3	Batal
+				4 	Dikonfirmasi
+				5 	Diproses / Dipacking
+				6 	Dikirim
+				7	Selesai
+				0	Dihapus
+				*/
 				$r[]	= array(
 					'id'		=> $val->ID_PENJUALAN,
 					'tanggal' 	=> datedb_to_tanggal($val->TANGGAL_PENJUALAN, 'd/m/Y H:i'),
@@ -72,7 +83,7 @@ class AdmintransaksiModel extends ModelBase {
 						'valid'	=> $val->VALID_ANGGOTA
 					),
 					'status'	=> $status,
-					'total'		=> number_format($val->BIAYA_PENJUALAN, 0, ',', '.')
+					'info'		=> $val->INFO_PENJUALAN
 				);
 			}
 		}
@@ -86,7 +97,7 @@ class AdmintransaksiModel extends ModelBase {
 		extract($this->prepare_post(array('status')));
 		$status 	= intval($status);
 		$id			= floatval($id);
-		if ($status < 0 || $status > 5) return FALSE;
+		if ($status < 0 || $status > 7) return FALSE;
 		
 		if ($type == 'jual') {
 			$run	= $this->db->query("UPDATE penjualan SET STATUS_PENJUALAN = '$status' WHERE ID_PENJUALAN = '$id'");

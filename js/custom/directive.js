@@ -259,6 +259,27 @@ app.directive('showModal', ['$http', 'notify', function($http, notify) {
 				setTimeout(function() { $text.focus(); }, 500); 
 			});
 		}
+		
+		// edit profil
+		if (attrs.target == 'modal-3') {
+			$(el).on('click', function(e) {
+				$('#form-edit-profil').find('.form-group').removeClass('has-error');
+				showModal();
+			});
+		}
+		
+		// konfirmasi order
+		if (attrs.target == 'modal-4') {
+			$(el).on('click', function(e) {
+				var order = $scope.orderList[attrs.index];
+				$('#order-id').val(order.id);
+				var t = ''
+				for (var i in order.produk) t += '<li>' + order.produk[i] + '</li>';
+				$('#order-produk').html(t);
+				$('#order-bayar').val(order.total);
+				showModal();
+			});
+		}
 	};
 }]);
 

@@ -40,10 +40,11 @@ function halt404($app) {
 /**
  * Cek token
  */
-function validate_token(&$ctr) {
+function validate_token(&$ctr, $token = '') {
 	$ctr->load('file', 'lib/JWT.php');
 	$ctr->load('helper', 'date');
-	return $ctr->MainModel->validate_token();
+	if (empty($token)) return $ctr->MainModel->validate_token();
+	else return $ctr->MainModel->validate_token($token);
 }
 
 /**

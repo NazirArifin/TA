@@ -46,7 +46,7 @@ class AdminemarketModel extends ModelBase {
 		$path	= 'upload/post/';
 		
 		$r 		= array();
-		$run	= $this->db->query("SELECT a.*, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA FROM postanggota a, anggota b WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND " . implode(" AND ", $where) . " ORDER BY $order $sort LIMIT $start, $numdt");
+		$run	= $this->db->query("SELECT a.*, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA, c.NAMA_KATPRODUK FROM postanggota a, anggota b, katproduk c WHERE a.ID_KATPRODUK = c.ID_KATPRODUK AND a.ID_ANGGOTA = b.ID_ANGGOTA AND " . implode(" AND ", $where) . " ORDER BY $order $sort LIMIT $start, $numdt");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				// hitung komentar
@@ -65,8 +65,10 @@ class AdminemarketModel extends ModelBase {
 					'isi'			=> token_truncate(strip_tags($val->ISI_POSTANGGOTA), 150) . (strlen($val->ISI_POSTANGGOTA) > 150 ? ' ...' : ''),
 					'id'			=> $val->ID_POSTANGGOTA,
 					'foto'			=> $foto,
+					'kategori'		=> $val->NAMA_KATPRODUK,
 					'judul'			=> $val->JUDUL_POSTANGGOTA,
-					'komentar'		=> $komentar->HASIL
+					'komentar'		=> $komentar->HASIL,
+					'link'			=> ($type == 1 ? 'jual' : 'beli') . '/' . $val->ID_POSTANGGOTA . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->JUDUL_POSTANGGOTA))
 				);
 			}
 		}

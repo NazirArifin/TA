@@ -12,6 +12,11 @@ app.controller('MainCtrl', function($rootScope, $scope, $location, $http, notify
 	$scope.itemTaken = function(id) {
 		return $localStorage.item.indexOf(id) != -1;
 	};
+	$scope.itemRemove = function(id) {
+		var index = $localStorage.item.indexOf(id);
+		if (index != -1) $localStorage.item.splice(index, 1);
+		notify.bounce.warning('Produk berhasil dihapus');
+	};
 	
 	// load data direktori saat deretan huruf direktori di klik
 	$scope.direktoriList = [];
@@ -41,6 +46,9 @@ app.controller('MainCtrl', function($rootScope, $scope, $location, $http, notify
 		for (var i = s; i < e; i++) r.push(i);
 		return r;
 	};
+	
+	// untuk upload terserah
+	$scope.file = null;
 });
 
 app.controller('LoginCtrl', function($scope) {
@@ -126,7 +134,7 @@ app.controller('HomePostCtrl', function($scope, $http, notify) {
 	$scope.post = {};
 	$scope.file = null;
 	$scope.resetData = function() {
-		$scope.post = { id: '', tipe: '1', judul: '', isi: '', foto: [] };
+		$scope.post = { id: '', tipe: '1', kategori: '', judul: '', isi: '', foto: [] };
 	}; $scope.resetData();
 	$scope.setEdit = function(id) {
 		$http.get('/post/' + id).
@@ -163,4 +171,261 @@ app.controller('HomePostCtrl', function($scope, $http, notify) {
 	$scope.getFotoId = function(f) {
 		return f.replace(/^\/upload\/post\//, '').replace(/\./, '')
 	};
+	$scope.kategori = [];
+	$scope.loadTable = function() {
+		$http.get('/data?t=kategori_produk').
+		success(function(d) { $scope.kategori = d.kategori_produk; }).
+		error(function(e, s, h) {
+			alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
+		});
+	}; $scope.loadTable();
+});
+
+/** untuk halaman home direktori **/
+app.controller('HomeDirektoriCtrl', function($scope, $http, notify) {
+	$scope.activeDirektori = '';
+	$scope.namaDirektori = '';
+	$scope.setActiveDirektori = function(id, nama) {
+		$scope.activeDirektori = id;
+		$scope.namaDirektori = nama.replace(/`/g, "'");
+		$http.get('/admin/direktori/' + id).
+		success(function(d) { 
+			$scope.direktori = d.direktori;
+			$scope.file = null;
+			$scope.direktori.image = '/' + $scope.direktori.image;
+		});
+	};
+	$scope.getDirektoriLink = function() {
+		return '/direktori/' + $scope.activeDirektori + '/' + $scope.namaDirektori.toLowerCase().replace(/[^a-z0-9]/, '-');
+	};
+	$scope.cancel = function() {
+		$scope.resetDirektori();
+		$scope.activeDirektori = $scope.namaDirektori = '';
+	};
+	
+	$scope.direktori = {};
+	$scope.file = null;
+	$scope.resetDirektori = function() {
+		$scope.direktori = {
+			id: 0,
+			kategori: '',
+			nama: '',
+			pemilik: '',
+			kota: '',
+			alamat: '', alamat2: '',
+			telepon: '', telepon2: '',
+			info: '',
+			image: '',
+			email: '',
+			web: '',
+			koordinat: '', koordinat2: '',
+			im: {
+				wa: '', bbm: '', line: '', wechat: ''
+			},
+			sm: {
+				fb: '', twitter: '', gplus: '', ig: ''
+			}
+		};
+		$scope.file = null;
+	}; $scope.resetDirektori();
+	
+	// load kota dan kategori
+	$scope.kota = [];
+	$scope.kategori = [];
+	$scope.loadTable = function() {
+		$http.get('/data?t=kota,kategori_direktori').
+		success(function(d) {
+			$scope.kota = d.kota;
+			$scope.kategori = d.kategori_direktori;
+		}).error(function(e, s, h) {
+			alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
+		});
+	}; $scope.loadTable();
+});
+
+/** untuk halaman home produk **/
+app.controller('HomeProdukCtrl', function($scope, $http, notify) {
+	$scope.activeDirektori = '';
+	$scope.namaDirektori = '';
+	$scope.produkList = [];
+	$scope.setActiveDirektori = function(id, nama) {
+		$scope.activeDirektori = id;
+		$scope.namaDirektori = nama.replace(/`/g, "'");
+		$scope.loadData();
+		$scope.resetProduk();
+	};
+	$scope.loadData = function() {
+		$http.get('/direktori/' + $scope.activeDirektori).
+		success(function(d) { $scope.produkList = d.produk; });
+	};
+	$scope.getDirektoriLink = function() {
+		return '/direktori/' + $scope.activeDirektori + '/' + $scope.namaDirektori.toLowerCase().replace(/[^a-z0-9]/, '-');
+	};
+	$scope.clear = function() {
+		$scope.produkList = [];
+		$scope.activeDirektori = $scope.namaDirektori = '';
+	};
+	
+	$scope.produk = {};
+	$scope.file = null;
+	$scope.resetProduk = function() {
+		$scope.produk = {
+			id: '', kategori: '', nama: '', harga: '', info: '', foto: [], direktori: $scope.activeDirektori
+		};
+	}; $scope.resetProduk();
+	$scope.cancel = function() {
+		$scope.resetProduk;
+		$scope.editing = false;
+		$scope.file = null;
+	};
+	$scope.editing = false;
+	$scope.addProduk = function() { $scope.editing = true; };
+	$scope.setEdit = function(id) {
+		$scope.editing = true;
+		$http.get('/produk/' + id).
+		success(function(d) { $scope.produk = d.produk; });
+	};
+	$scope.setStatus = function(id, status) {
+		$http.post('/produk/' + id, { id: id, status: status }).
+		success(function(d) { $scope.loadData(); });
+	};
+	
+	$scope.kategori = [];
+	$scope.loadTable = function() {
+		$http.get('/data?t=kategori_produk').
+		success(function(d) { $scope.kategori = d.kategori_produk; }).
+		error(function(e, s, h) {
+			alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
+		});
+	}; $scope.loadTable();
+	
+	$scope.getFotoId = function(f) {
+		return f.replace(/^\/upload\/produk\//, '').replace(/\./, '')
+	};
+});
+
+/** untuk home checkout **/
+app.controller('HomeCheckoutCtrl', function($scope, $http, notify) {
+	$scope.shipRate = 0;
+	$scope.subTotal = 0;
+	$scope.grandTotal = 0;
+	$scope.itemList = [];
+	$scope.rekeningList = [];
+	$scope.kota = [];
+	$scope.tujuan = '';
+	$scope.loadData = function() {
+		$http.get('/data?t=fproduk,rekening,kota').
+		success(function(d) {
+			angular.forEach(d.fproduk, function(value, key) {
+				var id = parseInt(value.id);
+				if ($scope.item.indexOf(id) != -1) {
+					var list = {
+						id: parseInt(id),
+						nama: value.nama,
+						harga: parseInt(value.harga),
+						jumlah: 1,
+						total: parseInt(value.harga)
+					};
+					$scope.itemList.push(list);
+					$scope.subTotal += parseInt(value.harga);
+				}
+			});
+			$scope.grandTotal = $scope.subTotal + $scope.shipRate;
+			$scope.rekeningList = d.rekening;
+			$scope.kota = d.kota;
+		});
+	}; $scope.loadData();
+	$scope.loadOngkir = function() {
+		$http.get('/ongkir?kota=' + $scope.tujuan).
+		success(function(d) { $scope.shipRate = d.biaya });
+	};
+	$scope.reCalculate = function(i) {
+		$scope.subTotal = 0;
+		angular.forEach($scope.itemList, function(value, key) {
+			if (value.jumlah == '') return;
+			var jumlah = parseInt(value.jumlah),
+				total = value.harga * jumlah;
+			value.total = total;
+			$scope.subTotal += total;
+		});
+		$scope.grandTotal = $scope.subTotal + $scope.shipRate;
+	};
+});
+
+/** untuk home order **/
+app.controller('HomeOrderCtrl', function($scope, $http, notify) {
+	$scope.orderList = [];
+	$scope.rekeningList = [];
+	$scope.loadData = function() {
+		$http.get('/order').
+		success(function(d) { $scope.orderList = d.order; });
+		// load rekening
+		$http.get('/data?t=rekening').
+		success(function(d) { $scope.rekeningList = d.rekening; });
+	}; $scope.loadData();
+	$scope.setStatus = function(id, status) {
+		$http.post('/order/' + id, { status: status }).
+		success(function(d) {
+			notify.bounce.info('Pemesanan berhasil dibatalkan');
+			$scope.loadData();
+		});
+	};
+});
+
+/** untuk chat */
+app.controller('HomeChatCtrl', function($scope, $http, notify, $interval) {
+	$scope.foto = window.foto;
+	$scope.nama = window.nama;
+	
+	// load member / admin di sebelah kiri
+	$scope.chatList = [];
+	$scope.loadChatList = function() {
+		$http.get('/admin/pesan/daftar', { ignoreLoadingBar: true }).
+		success(function(d) {
+			$scope.chatList = d.daftar;
+		});
+	}; $scope.loadChatList();
+	$scope.idSelected = '';
+	$scope.fotoSelected = '';
+	$scope.tipeSelected = '';
+	$scope.newMessage = '';
+	
+	$scope.chat = [];
+	$scope.loadPesan = function(id, tipe, foto) {
+		$http.get('/admin/pesan/data?' + jQuery.param({ kode: id, tipe: tipe }), { ignoreLoadingBar: false }).
+		success(function(d) {
+			$scope.newMessage = '';
+			$scope.idSelected = id;
+			$scope.fotoSelected = foto;
+			$scope.tipeSelected = tipe;
+			$scope.chat = d.pesan;
+		});
+	};
+	$scope.loadPesanAfter = function() {
+		$http.get('/admin/pesan/data?' + jQuery.param({ kode: $scope.idSelected, tipe: $scope.tipeSelected }), { ignoreLoadingBar: false }).
+		success(function(d) {
+			$scope.newMessage = '';
+			$scope.chat = d.pesan;
+		});
+	};
+	
+	/* periodically load chat */
+	var count;
+	var loadChat = function() {
+		if ($scope.idSelected == '') return;
+		$http.get('/admin/pesan/data?' + jQuery.param({ kode: $scope.idSelected, tipe: $scope.tipeSelected }), { ignoreLoadingBar: true }).
+		success(function(d) {
+			$scope.chat = d.pesan;
+		});
+	};
+	$scope.callLoadChat = function() {
+		if (angular.isDefined(count)) return;
+		count = $interval(function() {
+			loadChat();
+		}, 3000);
+	}; $scope.callLoadChat();
+	$scope.$on('$destroy', function() {
+		$interval.cancel(count);
+		count = undefined;
+	});
 });

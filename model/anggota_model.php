@@ -25,12 +25,15 @@ class AnggotaModel extends ModelBase {
 		$count	= $this->db->query("SELECT COUNT(ID_TESTIMONI) AS HASIL FROM testimoni WHERE ID_ANGGOTA = '$id' AND STATUS_TESTIMONI = '2'", TRUE);
 		$testi	= $count->HASIL;
 		// apakah memiliki direktori
-		$dir	= '';
-		$dirlink= '';
-		$cari	= $this->db->query("SELECT ID_DIREKTORI, NAMA_DIREKTORI FROM direktori WHERE PEMILIK_DIREKTORI = '$id'", TRUE);
+		$dir	= array();
+		$cari	= $this->db->query("SELECT ID_DIREKTORI, NAMA_DIREKTORI FROM direktori WHERE PEMILIK_DIREKTORI = '$id'");
 		if ( ! empty($cari)) { 
-			$dir		= $cari->NAMA_DIREKTORI;
-			$dirlink 	= '/direktori/' . $cari->ID_DIREKTORI . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($cari->NAMA_DIREKTORI));
+			foreach ($cari as $val) {
+				$dir[] = array(
+					'nama'	=> $val->NAMA_DIREKTORI,
+					'link'	=> '/direktori/' . $val->ID_DIREKTORI . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_DIREKTORI))
+				);
+			}
 		}
 		
 		$r['id']		= $id;
@@ -45,10 +48,7 @@ class AnggotaModel extends ModelBase {
 		$r['post']		= $post;
 		$r['review']	= $review;
 		$r['testi']		= $testi;
-		$r['direktori'] = array(
-			'nama'	=> $dir,
-			'link' 	=> $dirlink
-		);
+		$r['direktori'] = $dir;
 		return $r;
 	}
 }

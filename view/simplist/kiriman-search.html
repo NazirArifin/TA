@@ -28,6 +28,11 @@
 				<div class="form-group">
 					<label for="query" class="sr-only">Pencarian</label>
 					<input type="text" name="query" id="query" class="form-control" value="{{param.query}}">
+					<label for="kategori" class="sr-only">Kategori</label>
+					<select name="kategori" id="kategori" class="form-control">
+						<option value="">-- pilih kategori --</option>
+						{% for c in kategori %}<option value="{{c.id}}"{% if param.kategori == c.id %} selected{% endif %}>{{c.nama}}</option>{% endfor %}
+					</select>
 					<button class="btn btn-default"><i class="fa fa-search"></i> CARI</button>
 				</div>
 			</form>
@@ -55,7 +60,9 @@
 											<i class="fa fa-calendar"></i> {{c.tanggal}}
 										</small> 
 									</td>
-									<td style="padding-top: 10px; width: 60%;"><p>{{c.isi}}</p></td>
+									<td style="padding-top: 10px; width: 60%;">
+										<p>{{c.isi}}<br><small class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</small></p>
+									</td>
 									<td style="padding-top: 15px"><a href="{{c.anggota_link}}">{% if c.anggota_valid %}<i class="fa fa-check-circle"></i> {% endif %}{{c.anggota_nama}}</a></td>
 								</tr>
 								{% endfor %}

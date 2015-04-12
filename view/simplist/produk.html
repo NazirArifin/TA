@@ -51,7 +51,9 @@
 							{{info}}
 							</div>
 							{% if stok %}
-							<button class="btn btn-primary pull-right" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">TAMBAH KE KERANJANG <i class="fa fa-cart-plus"></i></button>
+						
+							<button class="btn btn-primary pull-right" data-ng-click="addItem({{id}})" data-ng-hide="itemTaken({{id}})">TAMBAH KE KERANJANG <i class="fa fa-cart-plus"></i></button>
+							
 							{% endif %}
 						</div>
 						{% endautoescape %}

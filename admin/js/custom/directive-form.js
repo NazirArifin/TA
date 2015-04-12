@@ -397,3 +397,63 @@ app.directive('simpanProfil', ['notify', '$http', '$localStorage', function(noti
 		}
 	};
 }]);
+
+/** simpan rekening dari modal */
+app.directive('simpanRekeningModal', ['$http', function($http) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(e) {
+				var b = $scope.rekeningSelected,
+					f = [];
+				if (b.an.length < 2) f.push('#dr-an');
+				if (b.nomor.length < 6) f.push('#dr-nomor');
+				if (b.bank.length < 3) f.push('#dr-bank');
+				if (f.length > 0) {
+					angular.forEach(f, function(val, key) {
+						$(val).closest('.form-group').addClass('has-error');
+					});
+					return;
+				}
+				var url = $scope.server + '/data?t=rekening';
+				if ($scope.rekeningSelected.id.length != '') url += '&id=' + $scope.rekeningSelected.id;
+				$http.post(url, $scope.rekeningSelected).
+				success(function(d) { 
+					$scope.loadData('rekening'); 
+					$('#modal-3').removeClass('md-show');
+					$scope.rekeningReset();
+				}).error(function(e, s, h) { $('#modal-3').removeClass('md-show'); });
+			});
+		}
+	};
+}]);
+
+/** simpan ongkir dari modal */
+app.directive('simpanOngkirModal', ['$http', function($http) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(e) {
+				var b = $scope.ongkirSelected,
+					f = [];
+				if (b.ki.length == 0 || b.ki == null) f.push('#do-kurir');
+				if (b.oi.length == 0 || b.oi == null) f.push('#do-kota');
+				if (b.b.length == 0 || b.b == null) f.push('#do-biaya');
+				if (f.length > 0) {
+					angular.forEach(f, function(val, key) {
+						$(val).closest('.form-group').addClass('has-error');
+					});
+					return;
+				}
+				var url = $scope.server + '/data?t=ongkir';
+				if ($scope.ongkirSelected.i == null || $scope.ongkirSelected.i.length != '') url += '&id=' + $scope.ongkirSelected.i;
+				$http.post(url, $scope.ongkirSelected).
+				success(function(d) { 
+					$scope.loadData('ongkir'); 
+					$('#modal-4').removeClass('md-show');
+					$scope.ongkirReset();
+				}).error(function(e, s, h) { $('#modal-4').removeClass('md-show'); });
+			});
+		}
+	};
+}]);

@@ -62,7 +62,7 @@
 								</thead>
 								<tbody>
 									<tr data-ng-repeat="c in direktoriList">
-										<td><a href="" show-modal="{{c.id}}" data-type="direktori" data-target="modal-1">{{c.nama}}</a></td>
+										<td><a data-ng-href="{{server|rootserver}}/{{c.link}}" target="_blank">{{c.nama}}</a></td>
 										<td>{{c.kat}}</td>
 										<td>{{c.kota}}</td>
 										<td>{{c.alamat}}</td>
@@ -148,7 +148,7 @@
 								<div class="form-group">
 									<label for="pemilik" class="col-lg-2 control-label">Pemilik</label>
 									<div class="col-lg-3">
-										<select name="pemilik" id="pemilik" data-ng-model="direktori.pemilik" data-ng-options="c.id as c.nama for c in anggota" style="width: 100%" data-value="{{direktori.pemilik}}" select2 required><option value="">-- pilih pemilik --</option></select>
+										<select name="pemilik" id="pemilik" data-ng-model="direktori.pemilik" data-ng-options="c.id as c.nama for c in anggota" style="width: 100%" data-value="{{direktori.pemilik}}" select2><option value="">-- pilih pemilik --</option></select>
 										<!--
 										<input type="text" name="pemilik" id="pemilik" class="form-control" maxlength="60" placeholder="Nama Pemilik" data-ng-model="direktori.pemilik">
 										-->
@@ -158,9 +158,12 @@
 								<div class="form-group">
 									<label for="kota" class="col-lg-2 control-label"><strong>Kota Asal</strong></label>
 									<div class="col-lg-2">
+										<select name="kota" id="kota" data-ng-model="direktori.kota" data-ng-options="c.id as c.nama for c in kota" style="width: 100%" data-value="{{direktori.kota}}" select2 required><option value="">-- pilih kota --</option></select>
+										<!--
 										<select name="kota" id="kota" class="form-control" data-ng-options="c.id as c.nama for c in kota" data-ng-model="direktori.kota">
 											<option value="">-- pilih kota --</option>
 										</select>
+										-->
 									</div>
 									<div class="col-lg-1"><strong>*</strong></div>
 								</div>

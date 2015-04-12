@@ -42,14 +42,14 @@
 									<tr data-ng-repeat="c in postList">
 										<td width="1"></td>
 										<td style="max-width: 250px;">
-											<h4><a href="">{{c.judul}}</a></h4>
+											<h4><a data-ng-href="{{server|rootserver}}/{{c.link}}" target="_blank">{{c.judul}}</a></h4>
 											<div class="clearfix">
 												<img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt="" class="search-img hidden-xs">
 												<div class="meta-info">
 													<div class="desc">{{c.isi}}</div>
 													<div class="info text-info">
 														<span class="label label-info"><i class="fa fa-comments"></i></span> {{c.komentar}} &nbsp; 
-														<span class="label label-default"><i class="fa fa-tags"></i></span> Batik, Madura
+														<span class="label label-default"><i class="fa fa-tag"></i></span> {{c.kategori}}
 													</div>
 												</div>
 											</div>

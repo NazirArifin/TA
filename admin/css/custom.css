@@ -167,3 +167,7 @@ html, body {
 .conversation-wrapper .conversation-user {
 	border-radius: 0;
 }
+
+.table-small td div {
+	font-size: 0.875em;
+}

@@ -61,10 +61,12 @@ class MainModel extends ModelBase {
 		// cek apakah status anggota atau admin valid atau tidak
 		if ($user == 'admin') {
 			$cek	= $this->db->query("SELECT a.STATUS_ADMIN FROM admin a, token b WHERE a.EMAIL_ADMIN = b.EMAIL_TOKEN AND a.EMAIL_ADMIN = '$email'", TRUE);
+			if (empty($cek)) return FALSE;
 			if ($cek->STATUS_ADMIN != '1') return FALSE;
 		}
 		if ($user == 'member') {
 			$cek 	= $this->db->query("SELECT a.STATUS_ANGGOTA FROM anggota a, token b WHERE a.EMAIL_ANGGOTA = b.EMAIL_TOKEN AND a.EMAIL_ANGGOTA = '$email'", TRUE);
+			if (empty($cek)) return FALSE;
 			if ($cek->STATUS_ANGGOTA != '1') return FALSE;
 		}
 		
@@ -255,29 +257,82 @@ class MainModel extends ModelBase {
 					$stabel[] 	= array('katproduk', 'kategori_produk'); break;
 				case 'anggota':
 					$stabel[]	= array('anggota', 'anggota'); break;
+				case 'kurir':
+					$stabel[]	= array('kurir', 'kurir'); break;
 				default: continue;
 			}
 		}
 		$r 		= array();
 		
 		$this->db->query("START TRANSACTION");
-		foreach ($stabel as $val) {
-			$t 		= $val[0];
-			$tu		= strtoupper($t);
-			$l 		= $val[1];
-			$where	= array("STATUS_$tu != '0'");
-			if ($t == 'anggota') $where[]	= "JENIS_ANGGOTA = '2'";
-			
-			$run 	= $this->db->query("SELECT * FROM $t WHERE " . implode(' AND ', $where) . " ORDER  BY NAMA_$tu", FALSE, FALSE);
+		
+		// fproduk
+		if (in_array('fproduk', $tabel)) {
+			$run 	= $this->db->query("SELECT ID_PRODUKUTAMA, NAMA_PRODUKUTAMA, HARGA_PRODUKUTAMA FROM produkutama WHERE STATUS_PRODUKUTAMA = '1' ORDER BY NAMA_PRODUKUTAMA");
 			if ( ! empty($run)) {
-				foreach ($run as $v) {
-					$r[$l][]	= array(
-						'id'	=> $v['ID_' . $tu],
-						'nama'	=> $v['NAMA_' . $tu]
+				foreach ($run as $val) {
+					$r['fproduk'][] = array(
+						'id'	=> $val->ID_PRODUKUTAMA,
+						'nama'	=> $val->NAMA_PRODUKUTAMA,
+						'harga'	=> $val->HARGA_PRODUKUTAMA
 					);
 				}
 			}
 		}
+		
+		// rekening
+		if (in_array('rekening', $tabel)) {
+			$run	= $this->db->query("SELECT * FROM rekening WHERE STATUS_REKENING = '1' ORDER BY BANK_REKENING");
+			if ( ! empty($run)) {
+				foreach ($run as $val) {
+					$r['rekening'][] = array(
+						'id'	=> $val->ID_REKENING,
+						'bank'	=> $val->BANK_REKENING,
+						'nomor'	=> $val->NOMOR_REKENING,
+						'an'	=> $val->AN_REKENING
+					);
+				}
+			}
+		}
+		
+		// biaya kurir
+		if (in_array('ongkir', $tabel)) {
+			$run 	= $this->db->query("SELECT a.ID_BIAYAKURIR, a.BIAYA_BIAYAKURIR, b.ID_KOTA, b.NAMA_KOTA, c.ID_KURIR, c.NAMA_KURIR FROM biayakurir a, kota b, kurir c WHERE a.ID_KOTA = b.ID_KOTA AND a.ID_KURIR = c.ID_KURIR ORDER BY c.NAMA_KURIR, b.NAMA_KOTA");
+			if ( ! empty($run)) {
+				foreach ($run as $val) {
+					$r['ongkir'][] = array(
+						'i'	=> $val->ID_BIAYAKURIR,
+						'o'	=> $val->NAMA_KOTA,
+						'oi'=> $val->ID_KOTA,
+						'b'	=> number_format($val->BIAYA_BIAYAKURIR, 0, ',', '.'),
+						'k'	=> $val->NAMA_KURIR,
+						'ki'=> $val->ID_KURIR
+					);
+				}
+			}
+		}
+		
+		// kota, kategori_direktori, kategori_produk, anggota
+		if ( ! empty($stabel)) {
+			foreach ($stabel as $val) {
+				$t 		= $val[0];
+				$tu		= strtoupper($t);
+				$l 		= $val[1];
+				$where	= array("STATUS_$tu != '0'");
+				if ($t == 'anggota') $where[]	= "JENIS_ANGGOTA = '2'";
+				
+				$run 	= $this->db->query("SELECT * FROM $t WHERE " . implode(' AND ', $where) . " ORDER  BY NAMA_$tu", FALSE, FALSE);
+				if ( ! empty($run)) {
+					foreach ($run as $v) {
+						$r[$l][]	= array(
+							'id'	=> $v['ID_' . $tu],
+							'nama'	=> $v['NAMA_' . $tu]
+						);
+					}
+				}
+			}
+		}
+		
 		$this->db->query("COMMIT");
 		return $r;
 	}
@@ -287,23 +342,65 @@ class MainModel extends ModelBase {
 	 */
 	public function set_data_table() {
 		extract($this->prepare_get(array('t', 'id')));
-		extract($this->prepare_post(array('nama')));
-		
 		switch ($t) {
 			case 'kota': $tabel = 'kota'; break;
 			case 'kategori_direktori': $tabel = 'katdir'; break;
 			case 'kategori_produk':	$tabel = 'katproduk'; break;
+			case 'kurir': $tabel = 'kurir'; break;
+			case 'rekening': $tabel = 'rekening'; break;
+			case 'ongkir': $tabel = 'ongkir'; break;
 			default: return FALSE;
 		}
 		$id = intval($id);
-		$nama = $this->db->escape_str(ucwords($nama));
-		if (empty($id)) {
-			if ($tabel == 'kota')
-				$ins = $this->db->query("INSERT INTO $tabel VALUES(0, '" . strtoupper(substr($nama, 0, 3)) . "', '$nama', '1')");
-			else
-				$ins = $this->db->query("INSERT INTO $tabel VALUES(0, '$nama', '1')");
-		} else {
-			$upd = $this->db->query("UPDATE $tabel SET NAMA_" . strtoupper($tabel) . " = '$nama' WHERE ID_" . strtoupper($tabel) . " = '$id'");
+		switch ($tabel) {
+			case 'rekening':
+				extract($this->prepare_post(array('id', 'bank', 'nomor', 'an')));
+				$an 	= $this->db->escape_str($an);
+				$bank 	= $this->db->escape_str($bank);
+				$nomor 	= $this->db->escape_str($nomor);
+				if (empty($id))
+					$ins = $this->db->query("INSERT INTO rekening VALUES(0, '$bank', '$nomor', '$an', '1')");
+				else {
+					$run = $this->db->query("SELECT * FROM rekening WHERE ID_REKENING = '$id'", TRUE);
+					if (empty($run)) return FALSE;
+					$upd = array();
+					if ($run->BANK_REKENING != $bank) 	$upd[] = "BANK_REKENING = '$bank'";
+					if ($run->NOMOR_REKENING != $nomor)	$upd[] = "NOMOR_REKENING = '$nomor'";
+					if ($run->AN_REKENING != $an) 		$upd[] = "AN_REKENING = '$an'";
+					if ( ! empty($upd))
+						$run = $this->db->query("UPDATE rekening SET " . implode(", ", $upd) . " WHERE ID_REKENING = '$id'");
+				}
+				break;
+			case 'ongkir':
+				extract($this->prepare_post(array('i', 'oi', 'ki', 'b')));
+				$kota	= filter_var($oi, FILTER_SANITIZE_NUMBER_INT);
+				$kurir	= filter_var($ki, FILTER_SANITIZE_NUMBER_INT);
+				$biaya	= preg_replace('/[^0-9]/', '', $b);
+				if (empty($id)) {
+					$ins = $this->db->query("INSERT INTO biayakurir VALUES(0, '$kurir', '$kota', '$biaya')");
+				} else {
+					$run = $this->db->query("SELECT * FROM biayakurir WHERE ID_BIAYAKURIR = '$id'", TRUE);
+					if (empty($run)) return FALSE;
+					$upd = array();
+					if ($run->ID_KURIR != $kurir)		$upd[] = "ID_KURIR = '$kurir'";
+					if ($run->ID_KOTA != $kota)			$upd[] = "ID_KOTA = '$kota'";
+					if ($run->BIAYA_BIAYAKURIR != $biaya)$upd[] = "BIAYA_BIAYAKURIR = '$biaya'";
+					if ( ! empty($upd)) {
+						$run = $this->db->query("UPDATE biayakurir SET " . implode(", ", $upd) . " WHERE ID_BIAYAKURIR = '$id'");
+					}
+				}
+				break;
+			default:
+				extract($this->prepare_post(array('nama')));
+				$nama = $this->db->escape_str(ucwords($nama));
+				if (empty($id)) {
+					if ($tabel == 'kota')
+						$ins = $this->db->query("INSERT INTO $tabel VALUES(0, '" . strtoupper(substr($nama, 0, 3)) . "', '$nama', '1')");
+					else
+						$ins = $this->db->query("INSERT INTO $tabel VALUES(0, '$nama', '1')");
+				} else {
+					$upd = $this->db->query("UPDATE $tabel SET NAMA_" . strtoupper($tabel) . " = '$nama' WHERE ID_" . strtoupper($tabel) . " = '$id'");
+				}
 		}
 		return array('type' => TRUE);
 	}
@@ -317,10 +414,16 @@ class MainModel extends ModelBase {
 			case 'kota': $tabel = 'kota'; break;
 			case 'kategori_direktori': $tabel = 'katdir'; break;
 			case 'kategori_produk':	$tabel = 'katproduk'; break;
+			case 'kurir': $tabel = 'kurir'; break;
+			case 'rekening': $tabel = 'rekening'; break;
+			case 'ongkir': $tabel = 'ongkir'; break;
 			default: return FALSE;
 		}
 		$id 	= intval($id);
-		$del 	= $this->db->query("UPDATE $tabel SET STATUS_" . strtoupper($tabel) . " = '0' WHERE ID_" . strtoupper($tabel) . " = '$id'");
+		if ($tabel == 'ongkir')
+			$del 	= $this->db->query("DELETE FROM biayakurir WHERE ID_BIAYAKURIR = '$id'");
+		else
+			$del 	= $this->db->query("UPDATE $tabel SET STATUS_" . strtoupper($tabel) . " = '0' WHERE ID_" . strtoupper($tabel) . " = '$id'");
 		return array('type' => TRUE);
 	}
 
@@ -463,8 +566,67 @@ class MainModel extends ModelBase {
 		
 		// apakah memiliki direktori
 		$cari		= $this->db->query("SELECT ID_DIREKTORI FROM direktori WHERE PEMILIK_DIREKTORI = '{$token['id']}'", TRUE);
-		$r['data']['member_direktori'] = (empty($cari) ? FALSE : $cari->ID_DIREKTORI);
+		$r['data']['member_direktori'] 	= (empty($cari) ? FALSE : $cari->ID_DIREKTORI);
+		// apakah memiliki order
+		$cari 		= $this->db->query("SELECT COUNT(ID_PENJUALAN) AS HASIL FROM penjualan WHERE ID_ANGGOTA = '{$token['id']}' AND STATUS_PENJUALAN NOT IN('2', '3')", TRUE);
+		$r['data']['member_order']		= $cari->HASIL > 0;
+		// apakah memiliki pesan tak terbaca
+		$cari		= $this->db->query("SELECT COUNT(ID_PESAN) AS HASIL FROM pesan WHERE PENERIMA_PESAN = '{$token['id']}' AND STATUS_PESAN = '1' AND JENIS_PESAN IN('2', '4')", TRUE);
+		$r['data']['member_pesan']		= $cari->HASIL > 0;
 		return $r;
+	}
+	
+	/**
+	 * Simpan profil anggota
+	 */
+	public function member_profil($token, $iofiles) {
+		extract($this->prepare_post(array('nama', 'alamat', 'telepon', 'pass', 'pass2')));
+		$nama	= $this->db->escape_str($nama);
+		$alamat	= $this->db->escape_str($alamat);
+		$telepon= $this->db->escape_str($telepon);
+		// validasi
+		if (strlen($nama) < 3) return FALSE;
+		if (strlen($alamat) < 5) return FALSE;
+		if ($pass != $pass2) return FALSE;
+		$token 	= (array) \JWT::decode($token, $this->salt);
+		$cari	= $this->db->query("SELECT * FROM anggota WHERE ID_ANGGOTA = '{$token['id']}'", TRUE);
+		$upd 	= array();
+		if ($cari->NAMA_ANGGOTA != $nama) 		$upd[] = "NAMA_ANGGOTA = '$nama'";
+		if ($cari->ALAMAT_ANGGOTA != $alamat) 	$upd[] = "ALAMAT_ANGGOTA = '$alamat'";
+		if ($cari->TELEPON_ANGGOTA != $telepon)	$upd[] = "TELEPON_ANGGOTA = '$telepon'";
+		if (strlen($pass) >= 6)					$upd[] = "PASSWORD_ANGGOTA = '" . crypt($pass, $this->salt) . "'";
+		if ( ! empty($upd)) {
+			$run = $this->db->query("UPDATE anggota SET " . implode(', ', $upd) . " WHERE ID_ANGGOTA = '{$token['id']}'");
+		}
+		
+		if (isset($_FILES['file'])) {
+			// foto
+			$run = $this->db->query("SELECT FOTO_ANGGOTA FROM anggota WHERE ID_ANGGOTA = '{$token['id']}'", TRUE);
+			if ( ! empty($run)) {
+				@unlink('upload/member/' . $run->FOTO_ANGGOTA);
+				@unlink('upload/member/' . str_replace('.', '_thumb.', $run->FOTO_ANGGOTA));
+			}
+			$config['upload_path']		= 'upload/member/';
+			$config['allowed_types']	= 'jpeg|jpg|png';
+			$config['encrypt_name']		= TRUE;
+			$config['overwrite']		= TRUE;
+			$iofiles->upload_config($config);
+			$iofiles->upload('file');
+			$filename 					= $iofiles->upload_get_param('file_name');
+			// buat thumbnail
+			$config						= array();
+			$config['source_image']		= 'upload/member/' . $filename;
+			$config['new_image']		= 'upload/member/' . str_replace('.', '_thumb.', $filename);
+			$config['maintain_ratio']	= TRUE;
+			$config['width']			= 120;
+			$config['height']			= 120;
+			$iofiles->image_config($config);
+			$iofiles->image_resize();
+			// update tabel
+			$upd = $this->db->query("UPDATE anggota SET FOTO_ANGGOTA = '$filename' WHERE ID_ANGGOTA = '{$token['id']}'");
+		}
+		
+		return array( 'type' => TRUE);
 	}
 }
 

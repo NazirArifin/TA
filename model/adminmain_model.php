@@ -135,7 +135,7 @@ class AdminmainModel extends ModelBase {
 				}
 				if ($val->JENIS_PESAN == '3') {
 					$sender	= $this->db->query("SELECT NAMA_ANGGOTA, FOTO_ANGGOTA FROM anggota WHERE ID_ANGGOTA = '" . $val->PENGIRIM_PESAN . "'", TRUE);
-					$foto	= 'upload/member/' . (empty($sender->FOTO_ANGGOTA) ? 'default.png' : $sender-FOTO_ANGGOTA);
+					$foto	= 'upload/member/' . (empty($sender->FOTO_ANGGOTA) ? 'default.png' : $sender->FOTO_ANGGOTA);
 					$nama	= $sender->NAMA_ANGGOTA;
 					$tipe	= 'Anggota';
 				}
@@ -143,7 +143,7 @@ class AdminmainModel extends ModelBase {
 				$return[]	= array(
 					'id'		=> $val->ID_PESAN,
 					'tanggal'	=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd/m/Y H:i'),
-					'isi'		=> html_entity_decode($val->ISI_PESAN),
+					'isi'		=> nl2br(html_entity_decode(str_replace('(-_____-)', '', $val->ISI_PESAN)), FALSE),
 					'status'	=> ($val->STATUS_PESAN == '1' ? 'Baru' : 'Terbaca'),
 					'waktu'		=> $swaktu,
 					'foto'		=> $foto,
@@ -167,21 +167,22 @@ class AdminmainModel extends ModelBase {
 	}
 	public function show_message_list($token) {
 		extract($token);
-		
 		$r = array();
 		$this->db->query("START TRANSACTION");
-		// cari di pesan tipe pesan 1,2 atau 3
 		if ($user == 'admin') {
+			// cari di pesan tipe pesan 1,2 atau 3, 5
 			$run = $this->db->query("SELECT MAX(a.TANGGAL_PESAN) AS TANGGAL_PESAN, b.ID_ADMIN, b.NAMA_ADMIN, b.FOTO_ADMIN FROM pesan a, admin b WHERE a.PENERIMA_PESAN = b.ID_ADMIN AND PENGIRIM_PESAN = '$id' AND JENIS_PESAN = '1' GROUP BY a.PENERIMA_PESAN ORDER BY a.TANGGAL_PESAN DESC");
 			if ( ! empty($run)) {
 				foreach ($run as $val) {
-					$r[] = array(
-						'id'	=> $val->ID_ADMIN,
-						'nama'	=> $val->NAMA_ADMIN,
-						'tipe'	=> 'Administrator',
-						'foto' 	=> 'upload/member/' . (empty($val->FOTO_ADMIN) ? 'default.png' : $val->FOTO_ADMIN),
-						'tanggal'=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd F Y H:i')
-					);
+					if ( ! $this->is_user_exist($val->ID_ADMIN, 'Administrator', $r)) {
+						$r[] = array(
+							'id'	=> $val->ID_ADMIN,
+							'nama'	=> $val->NAMA_ADMIN,
+							'tipe'	=> 'Administrator',
+							'foto' 	=> 'upload/member/' . (empty($val->FOTO_ADMIN) ? 'default.png' : $val->FOTO_ADMIN),
+							'tanggal'=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd F Y H:i')
+						);
+					}
 				}
 			}
 			$run = $this->db->query("SELECT MAX(a.TANGGAL_PESAN) AS TANGGAL_PESAN, b.ID_ADMIN, b.NAMA_ADMIN, b.FOTO_ADMIN FROM pesan a, admin b WHERE a.PENGIRIM_PESAN = b.ID_ADMIN AND PENERIMA_PESAN = '$id' AND JENIS_PESAN = '1' GROUP BY a.PENGIRIM_PESAN ORDER BY a.TANGGAL_PESAN DESC");
@@ -213,7 +214,70 @@ class AdminmainModel extends ModelBase {
 					}
 				}
 			}
-			$run = $this->db->query("SELECT MAX(a.TANGGAL_PESAN) AS TANGGAL_PESAN, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA, b.FOTO_ANGGOTA FROM pesan a, anggota b WHERE a.PENGIRIM_PESAN = b.ID_ANGGOTA AND PENERIMA_PESAN = '$id' AND JENIS_PESAN = '3' GROUP BY a.PENGIRIM_PESAN ORDER BY a.TANGGAL_PESAN DESC");
+			$run = $this->db->query("SELECT MAX(a.TANGGAL_PESAN) AS TANGGAL_PESAN, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA, b.FOTO_ANGGOTA FROM pesan a, anggota b WHERE a.PENGIRIM_PESAN = b.ID_ANGGOTA AND PENERIMA_PESAN = '$id' AND JENIS_PESAN IN('3', '5') GROUP BY a.PENGIRIM_PESAN ORDER BY a.TANGGAL_PESAN DESC");
+			if ( ! empty($run)) {
+				foreach ($run as $val) {
+					if ( ! $this->is_user_exist($val->KODE_ANGGOTA, 'Anggota', $r)) {
+						$r[] = array(
+							'id'	=> $val->KODE_ANGGOTA,
+							'nama'	=> $val->NAMA_ANGGOTA,
+							'tipe'	=> 'Anggota',
+							'valid'	=> $val->VALID_ANGGOTA,
+							'foto'	=> 'upload/member/' . (empty($val->FOTO_ANGGOTA) ? 'default.png' : $val->FOTO_ANGGOTA),
+							'tanggal'=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd F Y H:i')
+						);
+					}
+				}
+			}
+			
+		}
+		
+		if ($user == 'member') {
+			// cari di pesan tipe pesan 2,3 atau 4
+			$run = $this->db->query("SELECT MAX(a.TANGGAL_PESAN) AS TANGGAL_PESAN, b.ID_ADMIN, b.NAMA_ADMIN, b.FOTO_ADMIN FROM pesan a, admin b WHERE a.PENGIRIM_PESAN = b.ID_ADMIN AND PENERIMA_PESAN = '$id' AND JENIS_PESAN = '2' GROUP BY a.PENGIRIM_PESAN ORDER BY a.TANGGAL_PESAN DESC");
+			if ( ! empty($run)) {
+				foreach ($run as $val) {
+					if ( ! $this->is_user_exist($val->ID_ADMIN, 'Administrator', $r)) {
+						$r[] = array(
+							'id' 	=> $val->ID_ADMIN,
+							'nama'	=> $val->NAMA_ADMIN,
+							'tipe'	=> 'Administrator',
+							'foto'	=> 'upload/member/' . (empty($val->FOTO_ADMIN) ? 'default.png' : $val->FOTO_ADMIN),
+							'tanggal'=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd F Y H:i')
+						);
+					}
+				}
+			}
+			$run = $this->db->query("SELECT MAX(a.TANGGAL_PESAN) AS TANGGAL_PESAN, b.ID_ADMIN, b.NAMA_ADMIN, b.FOTO_ADMIN FROM pesan a, admin b WHERE a.PENGIRIM_PESAN = '$id' AND PENERIMA_PESAN = b.ID_ADMIN AND JENIS_PESAN = '3' GROUP BY a.PENERIMA_PESAN ORDER BY a.TANGGAL_PESAN DESC");
+			if ( ! empty($run)) {
+				foreach ($run as $val) {
+					if ( ! $this->is_user_exist($val->ID_ADMIN, 'Administrator', $r)) {
+						$r[] = array(
+							'id' 	=> $val->ID_ADMIN,
+							'nama'	=> $val->NAMA_ADMIN,
+							'tipe'	=> 'Administrator',
+							'foto'	=> 'upload/member/' . (empty($val->FOTO_ADMIN) ? 'default.png' : $val->FOTO_ADMIN),
+							'tanggal'=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd F Y H:i')
+						);
+					}
+				}
+			}
+			$run = $this->db->query("SELECT MAX(a.TANGGAL_PESAN) AS TANGGAL_PESAN, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA, b.FOTO_ANGGOTA FROM pesan a, anggota b WHERE a.PENERIMA_PESAN = b.ID_ANGGOTA AND PENGIRIM_PESAN = '$id' AND JENIS_PESAN = '4' GROUP BY a.PENERIMA_PESAN ORDER BY a.TANGGAL_PESAN DESC");
+			if ( ! empty($run)) {
+				foreach ($run as $val) {
+					if ( ! $this->is_user_exist($val->KODE_ANGGOTA, 'Anggota', $r)) {
+						$r[] = array(
+							'id'	=> $val->KODE_ANGGOTA,
+							'nama'	=> $val->NAMA_ANGGOTA,
+							'tipe'	=> 'Anggota',
+							'valid'	=> $val->VALID_ANGGOTA,
+							'foto'	=> 'upload/member/' . (empty($val->FOTO_ANGGOTA) ? 'default.png' : $val->FOTO_ANGGOTA),
+							'tanggal'=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd F Y H:i')
+						);
+					}
+				}
+			}
+			$run = $this->db->query("SELECT MAX(a.TANGGAL_PESAN) AS TANGGAL_PESAN, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA, b.FOTO_ANGGOTA FROM pesan a, anggota b WHERE a.PENERIMA_PESAN = '$id' AND PENGIRIM_PESAN = b.ID_ANGGOTA AND JENIS_PESAN = '4' GROUP BY a.PENGIRIM_PESAN ORDER BY a.TANGGAL_PESAN DESC");
 			if ( ! empty($run)) {
 				foreach ($run as $val) {
 					if ( ! $this->is_user_exist($val->KODE_ANGGOTA, 'Anggota', $r)) {
@@ -229,9 +293,7 @@ class AdminmainModel extends ModelBase {
 				}
 			}
 		}
-		
 		$this->db->query("COMMIT");
-		
 		return array(
 			'type'		=> TRUE,
 			'daftar' 	=> $r
@@ -242,12 +304,10 @@ class AdminmainModel extends ModelBase {
 		extract($token);
 		extract($this->prepare_get(array('kode', 'tipe')));
 		if ($tipe != 'Administrator' && $tipe != 'Anggota') return FALSE;
-		if ($tipe == 'Administator') $kode = filter_var($kode, FILTER_SANITIZE_NUMBER_INT);
-		else $kode = $this->db->escape_str($kode);
-		
+		if ($tipe == 'Administrator') $kode = filter_var($kode, FILTER_SANITIZE_NUMBER_INT);
+		else $kode 	= $this->db->escape_str($kode);
 		$r = array();
 		$this->db->query("START TRANSACTION");
-		
 		$unread = array();
 		if ($user == 'admin') {
 			if ($tipe == 'Administrator') {
@@ -260,37 +320,74 @@ class AdminmainModel extends ModelBase {
 						else $from = $you->NAMA_ADMIN;
 						$r[] = array(
 							'f'	=> $from,
-							'i'	=> $val->ISI_PESAN,
+							'i'	=>  nl2br(html_entity_decode(str_replace('(-_____-)', '', $val->ISI_PESAN)), FALSE),
 							't'	=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd F Y H:i')
 						);
-						if ($val->STATUS_PESAN == '1' && ! in_array($val->ID_PESAN, $unread)) $unread[] = $val->ID_PESAN; 
+						if ($val->STATUS_PESAN == '1' && $from != 'me' && ! in_array($val->ID_PESAN, $unread)) $unread[] = $val->ID_PESAN; 
 					}
 				}
 			}
 			if ($tipe == 'Anggota') {
 				$you = $this->db->query("SELECT ID_ANGGOTA, NAMA_ANGGOTA, FOTO_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$kode'", TRUE);
 				if (empty($you)) return FALSE;
-				$run = $this->db->query("SELECT * FROM pesan WHERE (JENIS_PESAN = '2' AND PENERIMA_PESAN = '{$you->ID_ANGGOTA}' AND PENGIRIM_PESAN = '$id') OR (JENIS_PESAN = '3' AND PENERIMA_PESAN = '$id' AND PENGIRIM_PESAN = '{$you->ID_ANGGOTA}') ORDER BY TANGGAL_PESAN DESC LIMIT 0, 50");
+				//$where[] = "(JENIS_PESAN = '2')";
+				$run = $this->db->query("SELECT * FROM pesan WHERE (JENIS_PESAN = '2' AND PENERIMA_PESAN = '{$you->ID_ANGGOTA}' AND PENGIRIM_PESAN = '$id') OR (JENIS_PESAN = '3' AND PENERIMA_PESAN = '$id' AND PENGIRIM_PESAN = '{$you->ID_ANGGOTA}') OR (JENIS_PESAN = '5' AND PENERIMA_PESAN = '$id' AND PENGIRIM_PESAN = '{$you->ID_ANGGOTA}') ORDER BY TANGGAL_PESAN DESC LIMIT 0, 50");
 				if ( ! empty($run)) {
 					foreach ($run as $val) {
 						if ($val->JENIS_PESAN == '2') $from = 'me'; 
 						else $from = $you->NAMA_ANGGOTA;
 						$r[] = array(
 							'f'	=> $from,
-							'i'	=> html_entity_decode($val->ISI_PESAN),
+							'i'	=> nl2br(html_entity_decode(str_replace('(-_____-)', '', $val->ISI_PESAN)), FALSE),
 							't'	=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd F Y H:i')
 						);
-						if ($val->STATUS_PESAN == '1' && ! in_array($val->ID_PESAN, $unread)) $unread[] = $val->ID_PESAN;
+						if ($val->STATUS_PESAN == '1' && $from != 'me' && ! in_array($val->ID_PESAN, $unread)) $unread[] = $val->ID_PESAN;
 					}
 				}
 			}
 		}
-		
+		if ($user == 'member') {
+			if ($tipe == 'Administrator') {
+				$you = $this->db->query("SELECT ID_ADMIN, NAMA_ADMIN, FOTO_ADMIN FROM admin WHERE ID_ADMIN = '$kode'", TRUE);
+				$where[] = "(JENIS_PESAN = '2' AND PENGIRIM_PESAN = '$kode' AND PENERIMA_PESAN = '$id')";
+				$where[] = "(JENIS_PESAN = '3' AND PENGIRIM_PESAN = '$id' AND PENERIMA_PESAN = '$kode')";
+				$run = $this->db->query("SELECT * FROM pesan WHERE " . implode(" OR ", $where) . " ORDER BY TANGGAL_PESAN DESC LIMIT 0, 50");
+				if ( ! empty($run)) {
+					foreach ($run as $val) {
+						if ($val->PENGIRIM_PESAN == $id) $from = 'me';
+						else $from = $you->NAMA_ADMIN;
+						$r[] = array(
+							'f'	=> $from,
+							'i'	=>  nl2br(html_entity_decode(str_replace('(-_____-)', '', $val->ISI_PESAN)), FALSE),
+							't'	=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd F Y H:i')
+						);
+						if ($val->STATUS_PESAN == '1' && $from != 'me' && ! in_array($val->ID_PESAN, $unread)) $unread[] = $val->ID_PESAN; 
+					}
+				}
+			}
+			if ($tipe == 'Anggota') {
+				$you = $this->db->query("SELECT ID_ANGGOTA, NAMA_ANGGOTA, FOTO_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$kode'", TRUE);
+				$where[] = "(PENERIMA_PESAN = '{$you->ID_ANGGOTA}' AND PENGIRIM_PESAN = '$id')";
+				$where[] = "(PENERIMA_PESAN = '$id' AND PENGIRIM_PESAN = '{$you->ID_ANGGOTA}')";
+				$run = $this->db->query("SELECT * FROM pesan WHERE JENIS_PESAN = '4' AND (" . implode(" OR ", $where) . ") ORDER BY TANGGAL_PESAN DESC LIMIT 0, 50");
+				if ( ! empty($run)) {
+					foreach ($run as $val) {
+						if ($val->PENGIRIM_PESAN == $id) $from = 'me';
+						else $from = $you->NAMA_ANGGOTA;
+						$r[] = array(
+							'f'	=> $from,
+							'i'	=> nl2br(html_entity_decode(str_replace('(-_____-)', '', $val->ISI_PESAN)), FALSE),
+							't'	=> datedb_to_tanggal($val->TANGGAL_PESAN, 'd F Y H:i')
+						);
+						if ($val->STATUS_PESAN == '1' && $from != 'me' && ! in_array($val->ID_PESAN, $unread)) $unread[] = $val->ID_PESAN;
+					}
+				}
+			}
+		}
 		// update status terbaca
 		if ( ! empty($unread)) {
 			$upd = $this->db->query("UPDATE pesan SET STATUS_PESAN = '2' WHERE ID_PESAN IN(" . implode(',', $unread) . ")");
 		}
-		
 		//$return = array();
 		//for ($i = count($r) - 1; $i >= 0; $i--) $return[] = $r[$i];
 		$this->db->query("COMMIT");
@@ -304,7 +401,6 @@ class AdminmainModel extends ModelBase {
 		// pengirim berasal dari token
 		extract($token);
 		extract($this->prepare_post(array('forCode', 'message', 'type', 'status', 'ids')));
-		
 		// pesan baru
 		if (empty($status)) {
 			$forCode 	= $this->db->escape_str($forCode);
@@ -312,13 +408,13 @@ class AdminmainModel extends ModelBase {
 			if ($type == 'administrator') $type = 'admin';
 			$type		= ($type == 'admin' ? 'admin' : 'anggota');
 			$posttype	= 0;
-			if (strlen($message) < 5) return FALSE;
+			if (strlen($message) < 1) return FALSE;
 			switch ($user) {
 				case 'admin':
 					if ($type == 'admin') 	$posttype = 1;
 					if ($type == 'anggota') $posttype = 2;
 					break;
-				case 'anggota':
+				case 'member':
 					if ($type == 'admin') 	$posttype = 3;
 					if ($type == 'anggota') $posttype = 4;
 					break;

@@ -22,7 +22,7 @@
 								<ul class="widget-users row" scrollable data-height="400px">
 									<li class="col-md-12" data-ng-repeat="c in chatList">
 										<div class="img">
-											<a href="" data-ng-click="loadPesan(c.id, c.tipe, c.foto)"><img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt=""></a>
+											<a href="" data-ng-click="loadPesan(c.id, c.tipe, c.foto)"><img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt="" style="width: 50px;"></a>
 										</div>
 										<div class="details">
 											<div class="name"><a href="" data-ng-click="loadPesan(c.id, c.tipe, c.foto)">{{c.nama}}</a></div>
@@ -61,7 +61,7 @@
 													<div class="conversation-body">
 														<div class="name">{{c.f == 'me' ? myDetails.nama : c.f}}</div>
 														<div class="time hidden-xs"> {{c.t}}</div>
-														<div class="text">{{c.i}}</div>
+														<div class="text" data-ng-bind-html="c.i">{{c.i}}</div>
 													</div>
 												</div>
 											</div>

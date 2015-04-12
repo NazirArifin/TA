@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+	<meta charset="UTF-8">
+	<title>MADURA.BZ &mdash; Beranda &mdash; {{member_nama}}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	{% include 'pre-page.html' %}
+	
+</head>
+<body>
+<div class="container">
+	
+	{% include 'header.html' %}
+	
+	{% include 'home-menu.html' %}
+	
+	<hr class="header">
+	
+	<!-- mulai invoice -->
+	<div class="main-box clearfix">
+		<header class="main-box-header clearfix hidden-print">
+			<h5 class="pull-left">Invoice No. {{invoice.id}}</h5>
+			<div class="filter-block pull-right">
+				<a href="" class="btn btn-default btn-sm pull-right tooltips" title="simpan"><i class="fa fa-floppy-o"></i></a>
+				<a href="" class="btn btn-default btn-sm pull-right tooltips" title="cetak" onclick="window.print()"><i class="fa fa-print"></i></a>
+				<a href="/home/order" class="btn btn-primary btn-sm pull-right"><i class="fa fa-arrow-circle-left"></i> KEMBALI</a>
+			</div>
+		</header>
+		<div class="main-box-body clearfix">
+			<div class="row hidden-print" id="invoice-companies">
+				<div class="col-sm-4 col-md-4 invoice-box">
+					<div class="invoice-icon hidden-sm">
+						<i class="fa fa-home"></i> Dari
+					</div>
+					<div class="invoice-company">
+						<h4>{{member_nama}}</h4>
+						<p>{{member_alamat}}<br>{{member_telepon}}</p>
+					</div>
+				</div>
+				<div class="col-sm-4 col-md-4 invoice-box">
+					<div class="invoice-icon hidden-sm">
+						<i class="fa fa-truck"></i> Untuk
+					</div>
+					<div class="invoice-company">
+						<h4>{{invoice.nama}}</h4>
+						<p>{{invoice.alamat}}<br>{{invoice.telepon}}</p>
+					</div>
+				</div>
+				<div class="col-sm-4 col-md-4 invoice-box invoice-box-dates">
+					<div class="invoice-dates">
+						<div class="invoice-number clearfix">
+							<strong>No. Invoice</strong>
+							<span class="pull-right">{{invoice.id}}</span>
+						</div>
+						<div class="invoice-date clearfix">
+							<strong>Tgl Invoice</strong>
+							<span class="pull-right">{{invoice.tanggal}}</span>
+						</div>
+						<div class="invoice-date invoice-due-date clearfix">
+							<strong>Batas Invoice</strong>
+							<span class="pull-right">{{invoice.akhir}}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row visible-print">
+				<div class="table-responsive">
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th><i class="fa fa-home"></i> Dari</th>
+								<th><i class="fa fa-truck"></i> Untuk</th>
+								<th>Detail</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<strong>{{member_nama}}</strong>
+									<p>{{member_alamat}}<br>{{member_telepon}}</p>
+								</td>
+								<td>
+									<strong>{{invoice.nama}}</strong>
+									<p>{{invoice.alamat}}<br>{{invoice.telepon}}</p>
+								</td>
+								<td>
+									<div>
+										<strong>No. Invoice</strong>
+										<span class="pull-right">{{invoice.id}}</span>
+									</div>
+									<div>
+										<strong>Tgl Invoice</strong>
+										<span class="pull-right">{{invoice.tanggal}}</span>
+									</div>
+									<div>
+										<strong>Batas Invoice</strong>
+										<span class="pull-right">{{invoice.akhir}}</span>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<br>
+				</div>
+			</div>
+			<div class="table-responsive">
+				<table class="table table-condensed">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>NAMA</th>
+							<th>JUMLAH</th>
+							<th>HARGA</th>
+							<th>TOTAL</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for c in invoice.produk %}
+						<tr>
+							<td>{{c.id}}</td>
+							<td>{{c.nama}}</td>
+							<td>{{c.jumlah}}</td>
+							<td>Rp. {{c.harga}}</td>
+							<td>Rp. {{c.total}}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			<div class="invoice-box-total clearfix">
+				<div class="row">
+					<div class="col-sm-9 col-md-10 col-xs-6 text-right invoice-box-total-label">Subtotal</div>
+					<div class="col-sm-3 col-md-2 col-xs-6 text-right invoice-box-total-value">Rp. {{invoice.subtotal}}</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-9 col-md-10 col-xs-6 text-right invoice-box-total-label">Biaya Kirim</div>
+					<div class="col-sm-3 col-md-2 col-xs-6 text-right invoice-box-total-value">Rp. {{invoice.ongkir}}</div>
+				</div>
+				<div class="row grand-total">
+					<div class="col-sm-9 col-md-10 col-xs-6 text-right invoice-box-total-label">Total Biaya</div>
+					<div class="col-sm-3 col-md-2 col-xs-6 text-right invoice-box-total-value">Rp. {{invoice.total}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- akhir invoice -->
+	
+	<hr class="main">
+	
+	{% include 'footer.html' %}
+	
+</div>
+
+{% include 'post-page.html' %}
+
+</body>
+</html>

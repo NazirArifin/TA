@@ -60,7 +60,7 @@
 									<tr data-ng-repeat="c in anggotaList">
 										<td>
 											<img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt="">
-											<a href="" class="user-link" show-modal="{{c.kode}}" data-type="anggota" data-target="modal-1">{{c.nama}}</a>
+											<a data-ng-href="{{server|rootserver}}/anggota/{{c.kode}}" class="user-link" target="_blank">{{c.nama}}</a>
 											<span class="user-subhead" data-ng-class="{ 'text-muted': c.tipe == 'Premium' }"><i class="fa fa-check-circle text-info" data-ng-show="c.valid"></i> <i class="fa fa-user-plus" data-ng-show="c.tipe == 'Premium'"></i></span>
 										</td>
 										<td>{{c.daftar}}</td>

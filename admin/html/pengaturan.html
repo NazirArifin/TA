@@ -1,4 +1,4 @@
- <div class="row">
+<div class="row">
 	<div class="col-lg-12">
 		<div class="row">
 			<div class="col-lg-12">
@@ -22,45 +22,18 @@
 								<li class="active">
 									<a href="" data-toggle="tab" data-target="#tab-master"><i class="fa fa-database fa-fw"></i> Data Master</a>
 								</li>
-								<li>
+								<!--<li>
 									<a href="" data-toggle="tab" data-target="#tab-situs"><i class="fa fa-globe fa-fw"></i> Data Situs</a>
-								</li>
+								</li>-->
 								<li>
-									<a href="" data-toggle="tab" data-target="#tab-pembayaran"><i class="fa fa-money fa-fw"></i> Pembayaran</a>
+									<a href="" data-toggle="tab" data-target="#tab-pembayaran" data-ng-click="loadData('rekening,kurir,ongkir')"><i class="fa fa-money fa-fw"></i> Pembayaran</a>
 								</li>
 							</ul>
 							<div class="tab-content">
 								<div class="tab-pane fade active in" id="tab-master">
 									<div class="container">
 										<div class="row">
-											<div class="col-lg-4">
-												<div class="panel panel-info">
-													<div class="panel-heading">
-														<strong>&nbsp; Data Kota</strong>
-														<a href="" class="pull-right tooltips" title="Tambah" show-prompt="" data-scope="kota" data-text="Masukkan nama kota:"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
-													</div>
-													<table class="table table-condensed table-striped">
-														<tbody>
-															<tr data-ng-repeat="c in kota">
-																<td class="text-muted" width="1">{{$index + 1}}.</td>
-																<td>{{c.nama}}</td>
-																<td class="text-center">
-																	<a href="" class="table-link primary" show-prompt="{{$index}}" data-scope="kota" data-text="Ubah nama kota:">
-																		<span class="fa-stack">
-																			<i class="fa fa-square fa-stack-2x"></i>
-																			<i class="fa fa-edit fa-stack-1x fa-inverse"></i>
-																		</span>
-																	</a>
-																	<a href="" delete-button="&id={{c.id}}" data-type="data?t=kota" class="table-link danger">
-																		<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
-																	</a>
-																</td>
-															</tr>
-														</tbody>
-													</table>
-												</div>
-											</div>
-											<div class="col-lg-4">
+											<div class="col-lg-6">
 												<div class="panel panel-info">
 													<div class="panel-heading">
 														<strong>&nbsp; Kategori Direktori</strong>
@@ -87,7 +60,7 @@
 													</table>
 												</div>
 											</div>
-											<div class="col-lg-4">
+											<div class="col-lg-6">
 												<div class="panel panel-info">
 													<div class="panel-heading">
 														<strong>&nbsp; Kategori Produk</strong>
@@ -115,13 +88,144 @@
 												</div>
 											</div>
 										</div>
+										<div class="row">
+											<div class="col-lg-12">
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<strong>&nbsp; Data Kota</strong>
+														<a href="" class="pull-right tooltips" title="Tambah" show-prompt="" data-scope="kota" data-text="Masukkan nama kota:"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
+													</div>
+													<table class="table table-condensed table-striped table-small">
+														<tbody>
+															<tr data-ng-repeat="d in kotaList">
+																<td class="row">
+																	<div class="col-md-4" data-ng-repeat="c in d" style="border-right: 1px solid #e7ebee">
+																		{{c.nama}} 
+																		<span class="btn-group pull-right">
+																			<a href="" class="table-link primary" show-prompt="{{c.index}}" data-scope="kota" data-text="Ubah nama kota:">
+																				<span class="fa-stack">
+																					<i class="fa fa-square fa-stack-2x"></i>
+																					<i class="fa fa-edit fa-stack-1x fa-inverse"></i>
+																				</span>
+																			</a>
+																			<a href="" delete-button="&id={{c.id}}" data-type="data?t=kota" class="table-link danger">
+																				<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+																			</a>
+																		</span>
+																	</div>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
 									</div>
 								</div>
 								<div class="tab-pane fade" id="tab-situs">
 									situs
 								</div>
 								<div class="tab-pane fade" id="tab-pembayaran">
-									pembayaran
+									<div class="container">
+										<div class="row">
+											<div class="col-lg-7">
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<strong>&nbsp; Rekening Bank</strong>
+														<a href="" class="pull-right tooltips" title="Tambah" show-modal data-target="modal-3"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
+													</div>
+													<table class="table table-condensed table-striped">
+														<tbody>
+															<tr data-ng-repeat="c in rekening">
+																<td style="width: 1px">{{$index + 1}}.</td>
+																<td>{{c.an}}</td>
+																<td>{{c.nomor}}</td>
+																<td>{{c.bank}}</td>
+																<td>
+																	<a href="" class="table-link primary" show-modal="{{$index}}" data-target="modal-3">
+																		<span class="fa-stack">
+																			<i class="fa fa-square fa-stack-2x"></i>
+																			<i class="fa fa-edit fa-stack-1x fa-inverse"></i>
+																		</span>
+																	</a>
+																	<a href="" delete-button="&id={{c.id}}" data-type="data?t=rekening" data-load="rekening" class="table-link danger">
+																		<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+																	</a>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+											<div class="col-lg-5">
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<strong>&nbsp; Jasa Kurir</strong>
+														<a href="" class="pull-right tooltips" title="Tambah"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
+													</div>
+													<table class="table table-condensed table-striped">
+														<tbody>
+															<tr data-ng-repeat="c in kurir">
+																<td class="text-muted" width="1">{{$index + 1}}.</td>
+																<td>{{c.nama}}</td>
+																<td class="text-center">
+																	<a href="" class="table-link primary" show-prompt="{{$index}}" data-scope="kurir" data-text="Ubah nama kurir:">
+																		<span class="fa-stack">
+																			<i class="fa fa-square fa-stack-2x"></i>
+																			<i class="fa fa-edit fa-stack-1x fa-inverse"></i>
+																		</span>
+																	</a>
+																	<a href="" delete-button="&id={{c.id}}" data-type="data?t=kurir" class="table-link danger">
+																		<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+																	</a>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-lg-12">
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<strong>&nbsp; Biaya Kurir</strong>
+														<a href="" class="pull-right tooltips" show-modal data-target="modal-4"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
+													</div>
+													<table class="table table-condensed table-striped" data-ng-show="ongkir">
+														<thead>
+															<tr>
+																<th></th>
+																<th>KURIR</th>
+																<th>TUJUAN</th>
+																<th>BIAYA (<em class="text-muted">dalam rupiah</em>)</th>
+																<th>&nbsp;</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr data-ng-repeat="c in ongkir">
+																<td class="text-muted" width="1">&nbsp;</td>
+																<td>{{c.k}}</td>
+																<td>{{c.o}}</td>
+																<td>{{c.b}}</td>
+																<td class="text-center">
+																	<a href="" class="table-link primary" show-modal="{{$index}}" data-target="modal-4">
+																		<span class="fa-stack">
+																			<i class="fa fa-square fa-stack-2x"></i>
+																			<i class="fa fa-edit fa-stack-1x fa-inverse"></i>
+																		</span>
+																	</a>
+																	<a href="" delete-button="&id={{c.i}}" data-type="data?t=ongkir" data-load="ongkir" class="table-link danger">
+																		<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+																	</a>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>

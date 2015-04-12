@@ -10,7 +10,6 @@
 				<h1>Penjualan Produk</h1>
 			</div>
 		</div>
-		
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="main-box clearfix">
@@ -22,8 +21,10 @@
 									<option value="1">Tertunda</option>
 									<option value="2">Lewat</option>
 									<option value="3">Batal</option>
-									<option value="4">Diproses</option>
-									<option value="5">Selesai</option>
+									<option value="4">Dikonfirmasi</option>
+									<option value="5">Diproses</option>
+									<option value="6">Dikirim</option>
+									<option value="7">Selesai</option>
 								</select>
 							</label>
 						</div>
@@ -43,7 +44,7 @@
 										<th data-ng-class="sortingIcon('date')" data-ng-click="sortOrder('date')">Tanggal</th>
 										<th data-ng-class="sortingIcon('member')" data-ng-click="sortOrder('member')">Anggota</th>
 										<th data-ng-class="sortingIcon('status')" data-ng-click="sortOrder('status')" class="text-center">Status</th>
-										<th class="text-right">Total</th>
+										<th>Info</th>
 										<th>&nbsp;</th>
 									</tr>
 								</thead>
@@ -57,15 +58,21 @@
 										<td class="text-center">
 											<span class="label" data-ng-class="getLabelStatus(c.status)">{{c.status}}</span>
 										</td>
-										<td class="text-right">Rp. {{c.total}},-</td>
+										<td>{{c.info}}</td>
 										<td class="text-center">
-											<a href="" class="table-link warning tooltips" title="Set Diproses" data-ng-click="setStatus(c.id, 4)" data-ng-show="c.status == 'Tertunda'">
-												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-history fa-stack-1x fa-inverse"></i></span>
+											<a href="" class="table-link info tooltips" title="Set Dikonfirmasi" data-ng-click="setStatus(c.id, 4)" data-ng-show="c.status == 'Tertunda'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-check-square fa-stack-1x fa-inverse"></i></span>
 											</a>
-											<a href="" class="table-link warning tooltips" title="Set Tertunda" data-ng-click="setStatus(c.id, 1)" data-ng-show="c.status == 'Diproses' || c.status == 'Selesai'">
+											<a href="" class="table-link success tooltips" title="Set Tertunda" data-ng-click="setStatus(c.id, 1)" data-ng-show="c.status == 'Dikonfirmasi' || c.status == 'Diproses'">
 												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-recycle fa-stack-1x fa-inverse"></i></span>
 											</a>
-											<a href="" class="table-link success tooltips" title="Set Selesai" data-ng-click="setStatus(c.id, 5)" data-ng-show="c.status == 'Diproses'">
+											<a href="" class="table-link warning tooltips" title="Set Diproses" data-ng-click="setStatus(c.id, 5)" data-ng-show="c.status == 'Dikonfirmasi'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-fire fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" class="table-link warning tooltips" title="Set Dikirim" data-ng-click="setStatus(c.id, 6)" data-ng-show="c.status == 'Diproses'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-ship fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" class="table-link success tooltips" title="Set Selesai" data-ng-click="setStatus(c.id, 7)" data-ng-show="c.status == 'Dikirim'">
 												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-check fa-stack-1x fa-inverse"></i></span>
 											</a>
 											<a href="" delete-button="{{c.id}}" data-type="transaksi/jual" class="table-link danger" data-ng-show="c.status == 'Lewat' || c.status == 'Batal'">
