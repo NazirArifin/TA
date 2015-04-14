@@ -65,8 +65,8 @@
 										<td><a data-ng-href="{{server|rootserver}}/{{c.link}}" target="_blank">{{c.nama}}</a></td>
 										<td>{{c.kat}}</td>
 										<td>{{c.kota}}</td>
-										<td>{{c.alamat}}</td>
-										<td>{{c.telepon}}</td>
+										<td data-ng-bind-html="c.alamat">{{c.alamat}}</td>
+										<td data-ng-bind-html="c.telepon">{{c.telepon}}</td>
 										<td class="text-center"><span class="label" data-ng-class="{ true: 'label-success', false: 'label-default' }[c.status == 'Aktif']">{{c.status}}</span></td>
 										<td>
 											<a href="" class="table-link" data-ng-click="setEdit(c.id)" data-ng-show="c.status == 'Aktif'">

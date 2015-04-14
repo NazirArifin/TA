@@ -113,10 +113,16 @@
 		<div class="col-md-6">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">
-						<a href="/jual">Jual Barang</a>
-						<a href="/jual" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-link"></i></a>
-					</h3>
+					<div class="panel-title clearfix">
+						<a href="/jual" class="pull-left tooltips" style="margin-top: 5px" title="lihat semua" data-placement="bottom">JUAL BARANG</a>
+						<form role="form" action="/jual" class="form-inline pull-right">
+							<div class="form-group">
+								<label for="jual-query" class="sr-only">Cari</label>
+								<i class="fa fa-search text-muted" style="position: absolute; right: 19px; padding: 10px 12px; pointer-events: none"></i>
+								<input type="text" name="query" id="jual-query" class="form-control" placeholder="Cari Jual" style="padding-right: 30px;">
+							</div>
+						</form>
+					</div>
 				</div>
 				<div class="panel-body" scrollable data-height="400px">
 					{% for c in jual %}
@@ -143,10 +149,16 @@
 		<div class="col-md-6">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">
-						<a href="/beli">Beli Barang</a>
-						<a href="/beli" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-link"></i></a>
-					</h3>
+					<div class="panel-title clearfix">
+						<a href="/beli" class="pull-left tooltips" style="margin-top: 5px" title="lihat semua" data-placement="bottom">BELI BARANG</a>
+						<form role="form" action="/beli" class="form-inline pull-right">
+							<div class="form-group">
+								<label for="beli-query" class="sr-only">Cari</label>
+								<i class="fa fa-search text-muted" style="position: absolute; right: 19px; padding: 10px 12px; pointer-events: none"></i>
+								<input type="text" name="query" id="beli-query" class="form-control" placeholder="Cari Beli" style="padding-right: 30px;">
+							</div>
+						</form>
+					</div>
 				</div>
 				<div class="panel-body" scrollable data-height="400px">
 					{% for c in beli %}
@@ -190,7 +202,7 @@
 							</h4>
 							<p>{{c.info}}</p>
 							<div>
-								<strong class="">Rp. {{c.harga}}</strong>
+								<strong class="label label-success">Rp. {{c.harga}}</strong>
 								{% if c.stok > 0 %}
 								<button class="btn btn-primary btn-xs pull-right" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">TAMBAH KE KERANJANG <i class="fa fa-cart-plus"></i></button>
 								{% endif %}
@@ -201,12 +213,14 @@
 			</div>
 		</div>
 		{% endfor %}
+		{% if produk %}
 		<div class="col-md-12">
 			<p class="text-center">
 				<a href="/fproduk" class="btn btn-default"><i class="fa fa-search"></i> LIHAT SEMUA PRODUK</a> 
-				<button class="btn btn-default"><i class="fa fa-download"></i> UNDUH KATALOG</button>
+				<a href="/katalog/fproduk" class="btn btn-default"><i class="fa fa-download"></i> UNDUH KATALOG</a>
 			</p>
 		</div>
+		{% endif %}
 	</div>
 	<hr class="main">
 	

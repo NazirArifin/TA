@@ -135,7 +135,7 @@
 									<tr data-ng-repeat="c in newsList">
 										<td width="1"></td>
 										<td style="max-width: 250px;">
-											<h4><a href="">{{c.judul}}</a></h4>
+											<h4><a href="{{server|rootserver}}/{{c.link}}" target="_blank">{{c.judul}}</a></h4>
 											<div class="clearfix">
 												<img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt="" class="search-img hidden-xs">
 												<div class="meta-info">

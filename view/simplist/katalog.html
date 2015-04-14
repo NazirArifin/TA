@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Katalog MADURA.BZ</title>
+</head>
+<body>
+	{% if nama %}
+	<h3 style="text-align: center; width: 100%">KATALOG PRODUK<br><small>{{nama}}</small></h3>
+	{% else %}
+	<h3 style="text-align: center; width: 100%">KATALOG PRODUK<br><small>MADURA.BZ</small></h3>
+	{% endif %}
+	<hr>
+	<table border="1" align="center" style="width: 100%; border-collapse: collapse">
+		<thead>
+			<tr>
+				<th colspan="2">PRODUK</th>
+				<th>HARGA</th>
+				<th>KETERANGAN</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for c in produk %}
+			<tr>
+				<td><img src="{{c.foto}}" alt=""></td>
+				<td>{{c.nama}}</td>
+				<td>Rp.{{c.harga}}</td>
+				<td>{{c.info}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</body>
+</html>

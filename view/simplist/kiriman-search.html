@@ -48,20 +48,21 @@
 					<br>
 					{% if data %}
 					<div class="table-responsive">
-						<table class="table table-condensed table-hover">
+						<table class="table table-condensed table-striped table-hover">
 							<tbody>
 								{% for c in data %}
 								<tr>
-									<td><a href="{{c.link}}"><img src="{{c.foto}}" alt="" class="dirsearch-img"></a></td>
-									<td style="padding-top: 15px">
-										<a href="{{c.link}}" style="font-size: 1.4em; line-height: 1.4em;">{{c.judul}}</a><br>
+									<td style="padding-top: 10px;"><a href="{{c.link}}"><img src="{{c.foto}}" alt="" class="dirsearch-img"></a></td>
+									<td style="width: 30%;">
+										<a href="{{c.link}}" style="font-size: 1.1em">{{c.judul}}</a><br>
 										<small class="text-muted" style="font-size: 0.87em">
 											<i class="fa fa-comments"></i> {{c.komentar}} &nbsp; 
 											<i class="fa fa-calendar"></i> {{c.tanggal}}
 										</small> 
 									</td>
-									<td style="padding-top: 10px; width: 60%;">
-										<p>{{c.isi}}<br><small class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</small></p>
+									<td style="padding-top: 10px; width: 50%; line-height: 1em;">
+										<p>{{c.isi}}<br><br>
+										<small class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</small></p>
 									</td>
 									<td style="padding-top: 15px"><a href="{{c.anggota_link}}">{% if c.anggota_valid %}<i class="fa fa-check-circle"></i> {% endif %}{{c.anggota_nama}}</a></td>
 								</tr>

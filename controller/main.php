@@ -88,6 +88,45 @@ $app->get('/daftar', function() use($app, $ctr) {
 
 // ----------------------------------------------------------------
 /**
+ * Method: GET
+ * Verb: katalog/:type
+ */
+$app->options('/katalog/:type', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/katalog/:type', function($type) use($app, $ctr) {
+	$ctr->load('helper', 'string');
+	$ctr->load('model', 'produk');
+	if ($type == 'fproduk') {
+		$r = $ctr->ProdukModel->get_all_post();
+		$produk = $r['produk'];
+	} else {
+		$ctr->load('model', 'direktori');
+		$direktori = $ctr->DirektoriModel->get_name($type);
+		$produk = $ctr->ProdukModel->get_produk($type);
+	}
+	foreach ($produk as $key => $val) {
+		$produk[$key]['foto'] = substr($val['foto'], 1, strlen($val['foto']));
+	}
+	ob_start();
+	$ctr->load('view', 'katalog.html', array(
+		'produk'	=> $produk,
+		'nama'		=> (isset($direktori) ? $direktori : '')
+	));
+	$content = ob_get_contents();
+	ob_end_clean();
+	$ctr->load('file', 'lib/html2pdf/html2pdf.class.php');
+	$ctr->load('file', 'lib/html2pdf/html2pdf.class.php');
+	try {
+		$html2pdf 	= new HTML2PDF('L', 'A4', 'en');
+		$html2pdf->setDefaultFont('Arial');
+		$html2pdf->writeHTML($content);
+		$html2pdf->Output('katalog.pdf', 'D');
+	} catch(HTML2PDF_exception $e) {
+		echo $e; exit;
+	}
+});
+
+// ----------------------------------------------------------------
+/**
  * Method: POST
  * Verb: daftar 
  */
@@ -273,7 +312,7 @@ $app->get('/info/:id/:judul', function($id, $judul) use($app, $ctr) {
 	$ctr->load('helper', 'date');
 	$ctr->load('model', 'front');
 	$news = $ctr->FrontModel->news_detail('info', $id, $judul);
-	if ($news === FALSE) halt404();
+	if ($news === FALSE) halt404($app);
 	$news['other'] = $ctr->FrontModel->news_other('info', $news['id']);
 	// cek token
 	if (cek_token($ctr)) {

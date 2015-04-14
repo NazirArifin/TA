@@ -128,6 +128,12 @@ class DirektoriModel extends ModelBase {
 		return $r;
 	}
 	
+	public function get_name($id) {
+		$run	= $this->db->query("SELECT NAMA_DIREKTORI FROM direktori WHERE ID_DIREKTORI = '$id'", TRUE);
+		if (empty($run)) return FALSE;
+		return $run->NAMA_DIREKTORI;
+	}
+	
 	public function get_detail($id, $nama) {
 		$r 		= array();
 		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
@@ -149,6 +155,7 @@ class DirektoriModel extends ModelBase {
 			$pemilik	= $run->PEMILIK_DIREKTORI;
 		}
 		
+		$r['id']		= $run->ID_DIREKTORI;
 		$r['nama']		= $run->NAMA_DIREKTORI;
 		$r['kategori']	= $run->NAMA_KATDIR;
 		$r['kota']		= $run->NAMA_KOTA;

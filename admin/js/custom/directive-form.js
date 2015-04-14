@@ -15,7 +15,7 @@ app.directive('simpanDirektori', ['notify', '$http', '$localStorage', '$timeout'
 				$scope.resetDirektori();
 				$timeout(function() {
 					$("#kategori").select2('val', '');
-					$scope.loadData();
+					$scope.loadData(); $scope.$apply();
 					if ($scope.state == 'Edit') $scope.cancel();
 				}, 0);
 			};

@@ -33,12 +33,15 @@ class Loader {
 		// twig template
 		require_once 'lib/Twig/Autoloader.php';
 		\Twig_Autoloader::register();
-		/*
+		
+		
 		$this->twig = new \Twig_Environment(new \Twig_Loader_Filesystem('view/' . $this->theme), array(
 			'cache' => 'config/cache'
 		));
-		*/
+		/*
 		$this->twig = new \Twig_Environment(new \Twig_Loader_Filesystem('view/' . $this->theme));
+		*/
+		
 		$twig =& $this->twig;
 		
 		// router dengan Slim

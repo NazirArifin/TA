@@ -44,12 +44,12 @@
 						<tbody>
 							{% for c in data %}
 							<tr>
-								<td><a href="{{c.link}}"><img src="{{c.foto}}" alt="" class="dirsearch-img"></a></td>
+								<td style="padding-top: 10px;"><a href="{{c.link}}"><img src="{{c.foto}}" alt="" class="dirsearch-img"></a></td>
 								<td style="width: 30%">
-									<a href="{{c.link}}" style="font-size: 1.2em;">{{c.judul}}</a><br>
-									<small class="text-muted"><i class="fa fa-calendar"></i> {{c.tanggal}}</small>
+									<a href="{{c.link}}" style="font-size: 1.1em;">{{c.judul}}</a><br>
+									<small class="text-muted" style="font-size: 0.87em"><i class="fa fa-calendar"></i> {{c.tanggal}}</small>
 								</td>
-								<td><p>{{c.isi}}</p></td>
+								<td style="padding-top: 10px; line-height: 1em;"><p>{{c.isi}}</p></td>
 							</tr>
 							{% endfor %}
 						</tbody>

@@ -32,7 +32,7 @@
 						{% if stok %}<sup class="label label-success"><small style="color: #fff">TERSEDIA</small></sup>{% endif %}
 						{% if direktori == 'Semua Produk' and stok == 0 %}<sup class="label label-danger"><small style="color: #fff">TERJUAL</small></sup>{% endif %}
 						<small class="btn-group pull-right">
-							<a href="" class="btn btn-default"><i class="fa fa-download"></i> Katalog</a>
+							<a href="/katalog/{{direktori_id}}" class="btn btn-default"><i class="fa fa-download"></i> Katalog</a>
 							<a href="{{direktori_link}}" class="btn btn-warning"><i class="fa {% if direktori == 'Semua Produk' %}fa-search{% else %}fa-home{% endif %}"></i> {{direktori}}</a>
 						</small>
 					</h5><hr class="main">
@@ -126,9 +126,25 @@
 					</div>
 					{% endif %}
 					<div class="{% if direktori == 'Semua Produk' %}col-md-10 col-md-offset-1{% else %}col-md-4{% endif %}">
-						<ul class="widget-products">
+						<ul class="media-list">
 							{% for c in other %}
-							<li>
+							<li class="media clearfix" style="padding-bottom: 3px; border-bottom: 1px solid #ebebeb">
+								<a href="{{c.link}}" class="pull-left">
+									<img src="{{c.foto}}" alt="" class="media-object">
+								</a>
+								<div class="media-body" style="line-height: 1em;">
+									<span><a href="{{c.link}}">{{c.nama}}</a></span><br>
+									<small class="text-success">
+										<i class="fa fa-money"></i> Rp. {{c.harga}},-
+									</small>
+									{% if c.info %}
+									<br>
+									<small class="warranty text-muted" style="font-size: 0.8em">
+										<i class="fa fa-clock-o"></i> {{c.info}}
+									</small>
+									{% endif %}
+								</div>
+								<!--
 								<a href="{{c.link}}">
 									<span class="img"><img src="{{c.foto}}" alt=""></span>
 									<span class="product clearfix">
@@ -143,6 +159,7 @@
 										{% endif %}
 									</span>
 								</a>
+								-->
 							</li>
 							{% endfor %}
 						</ul>

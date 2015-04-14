@@ -63,13 +63,17 @@ class AdminberitaModel extends ModelBase {
 					if ( ! empty($val->FOTO_BERITA)) {
 						$foto 	= $path . $val->FOTO_BERITA;
 					} else $foto = $path . 'default.png';
-					$isi = unserialize($val->ISI_BERITA);
-					if (strlen($isi['pengantar']) > 0) $data = $isi['pengantar'];
+					$isi = array(
+						'pengantar' => $val->PENGANTAR_BERITA,
+						'isi'		=> $val->ISI_BERITA
+					);//unserialize($val->ISI_BERITA);
+					if (strlen($isi['pengantar']) > 0) $data = strip_tags($isi['pengantar']);
 					else $data = strip_tags($isi['isi']);
 					
 					$r[] 	= array(
 						'id'		=> $val->ID_BERITA,
 						'judul'		=> $val->JUDUL_BERITA,
+						'link'		=> 'berita/' . datedb_to_tanggal($val->TANGGAL_BERITA, 'dmY') . '/' . preg_replace('/[^0-9a-z]/', '-', strtolower($val->JUDUL_BERITA)),
 						'isi'		=> token_truncate($data, 150) . (strlen($data) > 150 ? ' ...' : ''),
 						'status'	=> ($val->STATUS_BERITA == '1' ? 'Aktif' : 'Nonaktif'),
 						'foto'		=> $foto,
@@ -89,6 +93,7 @@ class AdminberitaModel extends ModelBase {
 					$r[] 	= array(
 						'id'		=> $val->ID_INFO,
 						'judul'		=> $val->JUDUL_INFO,
+						'link'		=> 'info/' . datedb_to_tanggal($val->TANGGAL_INFO, 'dmY') . '/' . preg_replace('/[^0-9a-z]/', '-', strtolower($val->JUDUL_INFO)),
 						'isi'		=> token_truncate($data, 150) . (strlen($data) > 150 ? ' ...' : ''),
 						'status'	=> ($val->STATUS_INFO == '1' ? 'Aktif' : 'Nonaktif'),
 						'foto'		=> $foto,
@@ -118,7 +123,10 @@ class AdminberitaModel extends ModelBase {
 		if (empty($run)) return FALSE;
 		$path	= 'upload/news/';
 		if ($type == 'bisnis') {
-			$data	= unserialize($run->ISI_BERITA);
+			$data	= array(
+				'pengantar'	=> $run->PENGANTAR_BERITA,
+				'isi'		=> $run->ISI_BERITA
+			);
 			if ( ! empty($run->FOTO_BERITA)) {
 				$foto 	= $path . $run->FOTO_BERITA;
 			} else $foto = $path . 'default.png';
@@ -172,10 +180,8 @@ class AdminberitaModel extends ModelBase {
 		$judul	= $this->db->escape_str($judul);
 		$pengtr	= strip_tags($this->db->escape_str($pengantar));
 		$keywd	= $this->db->escape_str($keyword);
-		if ($type == 'bisnis') 
-			$isi	= serialize(array('pengantar' => $pengtr, 'isi' => $this->db->escape_str($isi)));
-		if ($type == 'info')
-			$isi	= $this->db->escape_str($isi);
+		$isi	= $this->db->escape_str($isi);
+		if ($type == 'info') $pengtr = '';
 		$query	= '';
 		$akeywd	= explode(',', $keywd);
 		$bkeywd = array();
@@ -189,10 +195,9 @@ class AdminberitaModel extends ModelBase {
 		if (empty($id)) {
 			// tambah data
 			if ($type == 'bisnis')
-				$query	= "INSERT INTO $tabel VALUES(0, '" . $token['id'] . "', '$judul', '$isi', '', NOW(), '$keywd', '1')";
+				$query	= "INSERT INTO $tabel VALUES(0, '" . $token['id'] . "', '$judul', '$pengtr', '$isi', '', NOW(), '$keywd', '1')";
 			if ($type == 'info')
-				$query 	= "INSERT INTO $tabel VALUES(0, '" . $token['id'] . "', '$judul', '$isi', '', NOW(), '1')";
-			
+				$query	= "INSERT INTO $tabel VALUES(0, '" . $token['id'] . "', '$judul', '$isi', '', NOW(), '1')";
 			if ( ! empty($query)) {
 				$ins	= $this->db->query($query);
 				$id 	= $this->db->get_insert_id();
@@ -207,6 +212,7 @@ class AdminberitaModel extends ModelBase {
 			if ($type == 'bisnis') {
 				if ($judul != $data->JUDUL_BERITA) 	$upd[] = "JUDUL_BERITA = '$judul'";
 				if ($isi != $data->ISI_BERITA) 		$upd[] = "ISI_BERITA = '$isi'";
+				if ($pengtr != $data->PENGANTAR_BERITA) $upd = "PENGANTAR_BERITA = '$pengtr'";
 				if ($keywd != $data->TAG_BERITA)	$upd[] = "TAG_BERITA = '$keywd'";
 			}
 			if ($type == 'info') {

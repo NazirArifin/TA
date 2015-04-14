@@ -152,7 +152,7 @@
 				{% if produk %}
 				<div class="row">
 					<div class="col-md-12">
-						<a href="" class="btn btn-default pull-right"><i class="fa fa-download"></i> UNDUH KATALOG</a>
+						<a href="/katalog/{{id}}" class="btn btn-default pull-right"><i class="fa fa-download"></i> UNDUH KATALOG</a>
 					</div>
 				</div>
 				<hr class="main">
@@ -167,7 +167,7 @@
 								<h4 class="media-heading"><a href="{{c.link}}">{{c.nama}}</a></h4>
 								<p>
 									{{c.info}}<br><br>
-									{% if c.harga %}<strong>Rp. {{c.harga}}</strong>{% endif %}
+									{% if c.harga %}<strong class="label label-success">Rp. {{c.harga}}</strong>{% endif %}
 								</p>
 							</div>
 						</div>

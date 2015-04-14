@@ -13,19 +13,26 @@ class FrontModel extends ModelBase {
 		$tabel	= ($type == 'bisnis' ? 'berita' : 'info');
 		$utabel	= strtoupper($tabel);
 		$r 		= array();
-		$run 	= $this->db->query("SELECT JUDUL_$utabel, ISI_$utabel, TANGGAL_$utabel, FOTO_$utabel FROM $tabel ORDER BY TANGGAL_$utabel DESC LIMIT 0, 3", FALSE, FALSE);
+		if ($type == 'bisnis')
+			$run 	= $this->db->query("SELECT JUDUL_$utabel, PENGANTAR_$utabel, ISI_$utabel, TANGGAL_$utabel, FOTO_$utabel FROM $tabel ORDER BY TANGGAL_$utabel DESC LIMIT 0, 3", FALSE, FALSE);
+		if ($type == 'info')
+			$run 	= $this->db->query("SELECT JUDUL_$utabel, ISI_$utabel, TANGGAL_$utabel, FOTO_$utabel FROM $tabel ORDER BY TANGGAL_$utabel DESC LIMIT 0, 3", FALSE, FALSE);
+			
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				if ($tabel == 'berita') {
-					$data 		= unserialize($val['ISI_' . $utabel]);
+					$data 		= array(
+						'pengantar'	=> strip_tags($val['PENGANTAR_' . $utabel]),
+						'isi'		=> strip_tags($val['ISI_' . $utabel])
+					);//unserialize($val['ISI_' . $utabel]);
 					$pengantar 	= $data['pengantar'];
 					$disi 		= $data['isi'];
 					if ( ! empty($pengantar)) {
-						$isi = token_truncate($pengantar, 150);
+						$isi = token_truncate($pengantar, 120);
 						$disi	= $data['pengantar'];
-					} else $isi = token_truncate($disi, 150);
+					} else $isi = token_truncate($disi, 120);
 				} else {
-					$disi		= $val['ISI_' . $utabel];
+					$disi		= strip_tags(str_replace('&nbsp;', ' ', $val['ISI_' . $utabel]));
 					$isi 		= token_truncate($disi, 150);
 				}
 				$judul			= $val['JUDUL_' . $utabel];
@@ -42,7 +49,7 @@ class FrontModel extends ModelBase {
 	}
 	
 	public function get_direktori_list() {
-		$run 		= $this->db->query("SELECT LEFT(NAMA_DIREKTORI, 1) AS D FROM direktori GROUP BY LEFT(NAMA_DIREKTORI, 1)");
+		$run 		= $this->db->query("SELECT LEFT(NAMA_DIREKTORI, 1) AS D FROM direktori WHERE STATUS_DIREKTORI = '1' GROUP BY LEFT(NAMA_DIREKTORI, 1)");
 		$haslink 	= array();
 		if ( ! empty($run)) {
 			foreach ($run as $val) $haslink[] = $val->D;
@@ -144,7 +151,7 @@ class FrontModel extends ModelBase {
 		$run	= $this->db->query("SELECT ID_{$utype}, JUDUL_{$utype} FROM $type WHERE STR_TO_DATE('$id', '%d%m%Y') = DATE(TANGGAL_{$utype})", FALSE, FALSE);
 		if (empty($run)) return FALSE;
 		foreach ($run as $val) {
-			if (preg_replace('/[^a-z0-9]/', '-', strtolower($val['JUDUL_' . $utype]))) {
+			if (preg_replace('/[^a-z0-9]/', '-', strtolower($val['JUDUL_' . $utype])) == $judul) {
 				$id	= $val['ID_' . $utype];
 				break;
 			}
@@ -157,7 +164,10 @@ class FrontModel extends ModelBase {
 		$r['nama_poster']	= $run['NAMA_ADMIN'];
 		$r['foto_poster']	= '/upload/member/' . (empty($run['FOTO_ADMIN']) ? 'default.png' : str_replace('.', '_thumb.', $run['FOTO_ADMIN']));
 		if ($type == 'berita') {
-			$data		= unserialize($run['ISI_' . $utype]);
+			$data		= array(
+				'pengantar'	=> $run['PENGANTAR_' . $utype],
+				'isi'		=> $run['ISI_' . $utype]
+			);//unserialize($run['ISI_' . $utype]);
 			$r['pengantar']	= $data['pengantar'];
 			$r['isi']		= $data['isi'];
 			$r['tag']		= $run['TAG_BERITA'];
@@ -210,7 +220,10 @@ class FrontModel extends ModelBase {
 			foreach ($run as $val) {
 				$datedb = $val['TANGGAL_' . $utype];
 				if ($type == 'berita') {
-					$data	= unserialize($val['ISI_' . $utype]);
+					$data	= array(
+						'pengantar'	=> $val['PENGANTAR_' . $utype],
+						'isi'		=> $val['ISI_' . $utype]
+					);//unserialize($val['ISI_' . $utype]);
 					$isi	= $data['isi'];
 				} else $isi	= $val['ISI_' . $utype];
 				$r['data'][] = array(

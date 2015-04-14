@@ -45,8 +45,8 @@ class PostModel extends ModelBase {
 					'id'		=> $val->ID_POSTANGGOTA,
 					'kategori'	=> $val->NAMA_KATPRODUK,
 					'komentar'	=> $val->KOMENTAR,
-					'judul'		=> $val->JUDUL_POSTANGGOTA,
-					'isi'		=> $ptisi,
+					'judul'		=> str_replace(array('&nbsp;', '&amp;'), array(' ', '&'), $val->JUDUL_POSTANGGOTA),
+					'isi'		=> str_replace(array('&nbsp;', '&amp;'), array(' ', '&'), $ptisi),
 					'tipe'		=> ($val->TIPE_POSTANGGOTA == '1' ? 'jual' : 'beli'),
 					'status'	=> $val->STATUS_POSTANGGOTA,
 					'tanggal'	=> datedb_to_tanggal($val->TANGGAL_POSTANGGOTA, 'd M Y H:i'),
@@ -131,6 +131,7 @@ class PostModel extends ModelBase {
 			else if( $string{$i} == '<' ) $in_tag = true; 
 			else if( $string{$i} == '>' ) $in_tag = false; 
 		}
+		$string = preg_replace('/(&nbsp;){1,1}/', ' ', $string);
 		return $string; 
 	}
 	
@@ -198,8 +199,8 @@ class PostModel extends ModelBase {
 		
 		$kategori= filter_var($kategori, FILTER_SANITIZE_NUMBER_INT);
 		$tipe	= ($tipe == '1' ? 1 : 2);
-		$judul	= $this->db->escape_str(htmlentities($judul));
-		$data	= $this->db->escape_str(htmlentities($isi));
+		$judul	= $this->db->escape_str(strip_tags($judul));
+		$data	= $this->db->escape_str(strip_tags($isi));
 		// validasi
 		if (empty($judul) || empty($data)) return FALSE;
 		// id anggota

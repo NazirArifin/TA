@@ -96,7 +96,7 @@ class ProdukModel extends ModelBase {
 					'id'		=> $val->ID_PRODUKUTAMA,
 					'link'		=> '/fproduk/' . $val->ID_PRODUKUTAMA . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_PRODUKUTAMA)),
 					'kategori'	=> $val->NAMA_KATPRODUK,
-					'nama'		=> $val->NAMA_PRODUKUTAMA,
+					'nama'		=> str_replace(array('&nbsp;', '&amp;'), array(' ', '&'), $val->NAMA_PRODUKUTAMA),
 					'info'		=> token_truncate(strip_tags($val->INFO_PRODUKUTAMA), 100) . '...',
 					'harga'		=> number_format($val->HARGA_PRODUKUTAMA, 0, ',', '.'),
 					'stok'		=> $val->STOK_PRODUKUTAMA,
