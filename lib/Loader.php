@@ -22,6 +22,11 @@ class Loader {
 	private $theme = 'simplist';
 	
 	/**
+	 * Cache view
+	 */
+	private $cache_view = false;
+	
+	/**
 	 * Load controller dan router
 	 */
 	public function controller() {
@@ -34,13 +39,13 @@ class Loader {
 		require_once 'lib/Twig/Autoloader.php';
 		\Twig_Autoloader::register();
 		
-		
-		$this->twig = new \Twig_Environment(new \Twig_Loader_Filesystem('view/' . $this->theme), array(
-			'cache' => 'config/cache'
-		));
-		/*
-		$this->twig = new \Twig_Environment(new \Twig_Loader_Filesystem('view/' . $this->theme));
-		*/
+		if ($this->cache_view) {
+			$this->twig = new \Twig_Environment(new \Twig_Loader_Filesystem('view/' . $this->theme), array(
+				'cache' => 'config/cache'
+			));
+		} else {
+			$this->twig = new \Twig_Environment(new \Twig_Loader_Filesystem('view/' . $this->theme));
+		}
 		
 		$twig =& $this->twig;
 		

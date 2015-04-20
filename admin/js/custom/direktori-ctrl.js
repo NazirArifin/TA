@@ -80,9 +80,9 @@ app.controller('DirektoriCtrl', function($scope, $location, $http, notify) {
 	$scope.kategori = [];
 	$scope.anggota = [];
 	$scope.loadTable = function() {
-		$http.get($scope.server + '/data?t=kota,kategori_direktori,anggota').
+		$http.get($scope.server + '/data?t=kota_direktori,kategori_direktori,anggota').
 		success(function(d) {
-			$scope.kota = d.kota;
+			$scope.kota = d.kota_direktori;
 			$scope.kategori = d.kategori_direktori;
 			$scope.anggota = d.anggota;
 		}).error(function(e, s, h) {

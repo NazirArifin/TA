@@ -20,6 +20,12 @@
 	
 	<div class="row">
 		<div class="col-md-8">
+			{% if tips %}
+			<div class="alert alert-info">
+				<i class="fa fa-info-circle fa-5x pull-left"></i>
+				Tips: {{tips}}
+			</div>
+			{% endif %}
 			<div class="panel panel-default">
 				<div class="panel-body">
 					<div class="media">

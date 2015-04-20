@@ -1,11 +1,35 @@
 <div class="footer hidden-print">
 	<div class="row">
 		<div class="col-lg-4">
-		
+			
+			<hr>
+			<p class="text-center" style="font-size: 1.4em">
+				<a href="" style="color: #9C9C9C;"><span class="fa-stack" muter>
+					<i class="fa fa-circle fa-stack-2x"></i>
+					<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+				</span></a> 
+				<a href="" style="color: #9C9C9C;"><span class="fa-stack" muter>
+					<i class="fa fa-circle fa-stack-2x"></i>
+					<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+				</span></a> 
+				<a href="" style="color: #9C9C9C;"><span class="fa-stack" muter>
+					<i class="fa fa-circle fa-stack-2x"></i>
+					<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+				</span></a> 
+				<a href="" style="color: #9C9C9C;"><span class="fa-stack" muter>
+					<i class="fa fa-circle fa-stack-2x"></i>
+					<i class="fa fa-instagram fa-stack-1x fa-inverse"></i>
+				</span></a> 
+				<a href="" style="color: #9C9C9C;"><span class="fa-stack" muter>
+					<i class="fa fa-circle fa-stack-2x"></i>
+					<i class="fa fa-pinterest fa-stack-1x fa-inverse"></i>
+				</span></a> 
+			</p>
 		</div>
 		<div class="col-lg-4">
-			<h5>Tautan Situs</h5>
+			<h5 style="font-weight: bold; letter-spacing: 5px;">Tautan Situs</h5>
 			<ul class="list-unstyled">
+				{% if not at_home %}<li><a href="/"><i class="fa fa-fw fa-caret-right"></i>Beranda</a></li>{% endif %}
 				<li><a href="/direktori"><i class="fa fa-fw fa-caret-right"></i>Direktori Bisnis</a></li>
 				<li><a href="/jual"><i class="fa fa-fw fa-caret-right"></i>Jual Barang</a></li>
 				<li><a href="/beli"><i class="fa fa-fw fa-caret-right"></i>Beli Barang</a></li>
@@ -15,7 +39,7 @@
 			</ul>
 		</div>
 		<div class="col-lg-4">
-			<h5>Dukungan dan Kontak</h5>
+			<h5 style="font-weight: bold; letter-spacing: 5px;">Dukungan dan Kontak</h5>
 			<ul class="list-unstyled">
 				<li><strong>Email: admin@madura.bz</strong></li>
 			</ul>
@@ -23,7 +47,7 @@
 				&copy; MADURA.BZ<br>Seluruh isi dan hak cipta dilindung oleh Undang-undang.
 			</p>
 			<hr>
-			<p style="font-size: 0.8em;">
+			<p style="font-size: 0.75em;">
 				<a href="/tos">Aturan Kesepakatan dan Layanan</a>
 			</p>
 		</div>

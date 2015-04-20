@@ -62,7 +62,9 @@ textarea{
 	padding:20px 0 26px 0;
 }
 .footer a {
-	color: #fff;
+	color: #C73F3F;
+	font-weight: bold;
+	font-size: 1.2em;
 }
 .img-profil{
 	margin-top: 25px;
@@ -84,7 +86,7 @@ h4.media-heading.produk {
 	margin-bottom: 15px;
 }
 .media-body p {
-	line-height: 1.1em;
+	line-height: 1em;
 	font-size: 0.9em;
 	margin-bottom: 4px;
 	width: 100%;
@@ -402,12 +404,6 @@ h4.media-heading.produk-title {
 	border-radius: 10%;
 }
 
-.dirsearch-img {
-	max-width: 52px;
-	max-height: 52px;
-	border-radius: 10%;
-}
-
 .list-group-item {
 	padding: 10px;
 }
@@ -464,10 +460,31 @@ h4.media-heading.produk-title {
 .footer li > a {
 	color: #1B1B1B;
 	font-weight: bold;
+	font-size: 1em;
 }
 
 .list-group {
 	margin-bottom: 0;
+}
+
+.img {
+	width: 80px;
+	height: 80px;
+	text-align: center;
+	overflow: hidden;
+	background-color: #fefbfd;
+	border: 1px solid #D9D9D9;
+	white-space: nowrap;
+}
+.img .helper {
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
+.img img {
+	max-width: 80px;
+	max-height: 80px;
+	vertical-align: middle;
 }
 
 #gallery-photos-wrapper{position:relative;}.gallery-photos{list-style:none;margin:0;padding:0;position:relative;}.gallery-photos li{float:left;display:block;margin-top:7px;margin-bottom:7px;overflow:hidden;position:relative;}.gallery-photos li .photo-box{background-size:cover;background-repeat:no-repeat;background-position:center;background-color:#eee;width:100%;height:100%;overflow:hidden;min-width:100px;min-height:100px;padding-top:98%;display:block;}.gallery-photos li .photo-box.image-link{padding-top:68%;}.gallery-photos li:hover .photo-box:after{background:rgba(0,0,0,0.4);position:absolute;content:"";top:0;right:8px;bottom:0;left:8px;}.gallery-photos.gallery-photos-hover{cursor:move;}.gallery-photos .remove-photo-link{cursor:pointer;display:none;left:50%;margin-left:-18.5px;position:absolute;text-align:center;top:50%;margin-top:-18.5px;}.gallery-photos .thumb-meta-time{bottom:10px;color:#eee;font-size:0.75em;left:18px;position:absolute;}.gallery-photos li .remove-photo-link .icon-stack{font-size:2em;}.gallery-photos.gallery-photos-hover li:hover .remove-photo-link{display:block;}

@@ -16,13 +16,20 @@ $app->get('/', function() use($app, $ctr) {
 	$jual 		= $ctr->FrontModel->get_post('jual');
 	$beli 		= $ctr->FrontModel->get_post('beli');
 	$produk		= $ctr->FrontModel->get_produk();
+	$tips		= $ctr->FrontModel->get_tips();
+	$pdirektori	= $ctr->FrontModel->get_premium_direktori();
+	$pproduk	= $ctr->FrontModel->get_direktori_produk();
 	$param		= array(
-		'info' 		=> $info,
-		'bisnis'	=> $bisnis,
-		'direktori'	=> $direktori,
-		'jual'		=> $jual,
-		'beli'		=> $beli,
-		'produk'	=> $produk
+		'info' 				=> $info,
+		'bisnis'			=> $bisnis,
+		'direktori'			=> $direktori,
+		'premium_direktori'	=> $pdirektori,
+		'jual'				=> $jual,
+		'beli'				=> $beli,
+		'produk'			=> $produk,
+		'direktori_produk'	=> $pproduk,
+		'tips'				=> $tips,
+		'at_home'			=> true
 	);
 	if (cek_token($ctr)) {
 		$member		= $ctr->MainModel->member_me($_COOKIE['token']);
@@ -180,6 +187,8 @@ $app->get('/home', function() use($app, $ctr) {
 	$member	= $r['data'];
 	$member['authenticate'] = TRUE;
 	$member['path'] = ' ';
+	$ctr->load('model', 'front');
+	$member['tips'] = $ctr->FrontModel->get_tips();
 	$ctr->load('view', 'home.html', $member);
 });
 // ----------------------------------------------------------------
@@ -557,7 +566,7 @@ $app->get('/post/:id', function($id) use($app, $ctr) {
 // ----------------------------------------------------------------
 /**
  * Method: POST
- * Verb: post 
+ * Verb: post/:id
  */
 $app->post('/post/:id', function($id) use($app, $ctr) {
 	if ( ! cek_token($ctr)) halt403($app);
@@ -567,6 +576,19 @@ $app->post('/post/:id', function($id) use($app, $ctr) {
 	$member = $ctr->MainModel->member_me($_COOKIE['token']);
 	$r = $ctr->PostModel->save_post($member['data'], new IOFiles(), $id);
 	if ($r === FALSE) halt404($app);
+	json_output($app, $r);
+})->conditions(array('id' => '\d+'));
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: post/aduan
+ */
+$app->post('/post/aduan', function() use($app, $ctr) {
+	if ( ! cek_token($ctr)) halt403($app);
+	$member = $ctr->MainModel->member_me($_COOKIE['token']);
+	$ctr->load('model', 'post');
+	$r = $ctr->PostModel->save_aduan($member['data']);
 	json_output($app, $r);
 });
 

@@ -247,6 +247,32 @@ $app->delete('/admin/data', function() use($app, $ctr) {
 // ----------------------------------------------------------------
 /**
  * Method: GET
+ * Verb: kota
+ */
+$app->options('/admin/kota', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/kota', function() use($app, $ctr) {
+	$ctr->load('model', 'adminmain');
+	$r = $ctr->AdminmainModel->get_data_table('kota');
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: ongkir
+ */
+$app->options('/admin/ongkir', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/ongkir', function() use($app, $ctr) {
+	$ctr->load('model', 'adminmain');
+	$r = $ctr->AdminmainModel->get_data_table('ongkir');
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
  * Verb: produk
  */
 $app->options('/admin/produk', function() use($app) { $app->status(200); $app->stop(); });
@@ -657,6 +683,88 @@ $app->get('/admin/report/total', function() use($app, $ctr) {
 	
 	$ctr->load('model', 'adminmain');
 	$r = $ctr->AdminmainModel->report('total');
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: admin/tips
+ */
+$app->options('/admin/tips', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/tips', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminberita');
+	$r = $ctr->AdminberitaModel->get_tips();
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: admin/tips
+ */
+$app->post('/admin/tips', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminberita');
+	$r = $ctr->AdminberitaModel->save_tips();
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: admin/tips
+ */
+$app->options('/admin/tips/:id', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/tips/:id', function($id) use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminberita');
+	$r = $ctr->AdminberitaModel->get_tips_detail($id);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: admin/tips
+ */
+$app->post('/admin/tips/:id', function($id) use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminberita');
+	$r = $ctr->AdminberitaModel->save_tips($id);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: DELETE
+ * Verb: admin/tips
+ */
+$app->delete('/admin/tips/:id', function($id) use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminberita');
+	$r = $ctr->AdminberitaModel->delete_tips($id);
 	if ($r === FALSE) return halt401($app);
 	json_output($app, $r);
 });

@@ -45,6 +45,11 @@
 					<div class="col-md-7">
 						{% autoescape false %}
 						<div style="line-height: 1.3em;">
+							<ol class="breadcrumb" style="font-weight: bold">
+								<li><a href="/">Beranda</a></li>
+								<li><a href="{{direktori_link}}">{{direktori}}</a></li>
+								<li class="active">{{nama}}</li>
+							</ol>
 							<strong class="text-muted"><i class="fa fa-tags"></i> {{kategori}}</strong>
 							<br><br>
 							<div class="well well-sm">

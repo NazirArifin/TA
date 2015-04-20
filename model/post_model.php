@@ -29,7 +29,7 @@ class PostModel extends ModelBase {
 		$numpg	= ceil($run->HASIL / $numdt);
 		$start	= $page * $numdt;
 		
-		$run	= $this->db->query("SELECT a.*, c.NAMA_KATPRODUK, COUNT(b.ID_KOMENTAR) AS KOMENTAR FROM katproduk c, postanggota a LEFT JOIN komentar b ON b.ID_POSTANGGOTA = a.ID_POSTANGGOTA WHERE " . implode(" AND ", $where) . " GROUP BY a.ID_POSTANGGOTA ORDER BY a.TANGGAL_POSTANGGOTA DESC LIMIT $start, $numdt");
+		$run	= $this->db->query("SELECT a.*, c.ID_KATPRODUK, c.NAMA_KATPRODUK, COUNT(b.ID_KOMENTAR) AS KOMENTAR FROM katproduk c, postanggota a LEFT JOIN komentar b ON b.ID_POSTANGGOTA = a.ID_POSTANGGOTA WHERE " . implode(" AND ", $where) . " GROUP BY a.ID_POSTANGGOTA ORDER BY a.TANGGAL_POSTANGGOTA DESC LIMIT $start, $numdt");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				if ( ! empty($val->FOTO_POSTANGGOTA)) {
@@ -44,6 +44,7 @@ class PostModel extends ModelBase {
 				$r[] = array(
 					'id'		=> $val->ID_POSTANGGOTA,
 					'kategori'	=> $val->NAMA_KATPRODUK,
+					'id_kategori' => $val->ID_KATPRODUK,
 					'komentar'	=> $val->KOMENTAR,
 					'judul'		=> str_replace(array('&nbsp;', '&amp;'), array(' ', '&'), $val->JUDUL_POSTANGGOTA),
 					'isi'		=> str_replace(array('&nbsp;', '&amp;'), array(' ', '&'), $ptisi),
@@ -137,11 +138,13 @@ class PostModel extends ModelBase {
 	
 	public function get_detail($type, $id, $nama) {
 		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
-		$run	= $this->db->query("SELECT a.*, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, c.NAMA_KATPRODUK FROM postanggota a, anggota b, katproduk c WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND a.STATUS_POSTANGGOTA = '1' AND a.ID_POSTANGGOTA = '$id' AND a.ID_KATPRODUK = c.ID_KATPRODUK", TRUE);
+		$run	= $this->db->query("SELECT a.*, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, c.ID_KATPRODUK, c.NAMA_KATPRODUK FROM postanggota a, anggota b, katproduk c WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND a.STATUS_POSTANGGOTA = '1' AND a.ID_POSTANGGOTA = '$id' AND a.ID_KATPRODUK = c.ID_KATPRODUK", TRUE);
 		if (empty($run)) return FALSE;
 		if ($nama != preg_replace('/[^a-z0-9]/', '-', strtolower($run->JUDUL_POSTANGGOTA))) return FALSE;
+		$r['type']		= ($type == 1 ? 'Jual' : 'Beli');
 		$r['id']		= $run->ID_POSTANGGOTA;
 		$r['kategori']	= $run->NAMA_KATPRODUK;
+		$r['id_kategori'] = $run->ID_KATPRODUK;
 		$r['judul']		= $run->JUDUL_POSTANGGOTA;
 		$r['poster_nama']= $run->NAMA_ANGGOTA;
 		$r['poster_kode']= $run->KODE_ANGGOTA;
@@ -415,5 +418,22 @@ class PostModel extends ModelBase {
 		$id 	= filter_var($id, FILTER_SANITIZE_NUMBER_FLOAT);
 		$run	= $this->db->query("UPDATE komentar SET STATUS_KOMENTAR = '0' WHERE ID_KOMENTAR = '$id'");
 		return array('type' => TRUE);
+	}
+	
+	public function save_aduan($member) {
+		extract($this->prepare_post(array('post', 'reason')));
+		$post		= filter_var($post, FILTER_SANITIZE_NUMBER_FLOAT);
+		$reason		= $this->db->escape_str($reason);
+		$run		= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '" . $member['member_kode'] . "'", true);
+		$idmember	= $run->ID_ANGGOTA;
+		// masukkan ke aduan jika belum ada
+		$run		= $this->db->query("SELECT COUNT(ID_ADUANPOST) AS HASIL FROM aduanpost WHERE ID_ANGGOTA = '$idmember' AND ID_POSTANGGOTA = '$post'", true);
+		$data		= '';
+		if ($run->HASIL == 0) {
+			$ins	= $this->db->query("INSERT INTO aduanpost VALUES(0, '$post', '$idmember', '$reason', NOW(), '1')");
+		} else {
+			$data 	= 'Anda sudah memasukkan aduan pada kiriman ini';
+		}
+		return array('type' => true, 'data' => $data);
 	}
 }

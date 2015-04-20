@@ -249,7 +249,7 @@ class MainModel extends ModelBase {
 		$stabel	= array();
 		foreach ($tabel as $val) {
 			switch ($val) {
-				case 'kota': 
+				case 'kota': case 'kota_direktori':
 					$stabel[]	= array('kota', 'kota'); break;
 				case 'kategori_direktori': 
 					$stabel[] 	= array('katdir', 'kategori_direktori'); break;
@@ -307,6 +307,19 @@ class MainModel extends ModelBase {
 						'b'	=> number_format($val->BIAYA_BIAYAKURIR, 0, ',', '.'),
 						'k'	=> $val->NAMA_KURIR,
 						'ki'=> $val->ID_KURIR
+					);
+				}
+			}
+		}
+		
+		// kota tapi hanya direktori saja
+		if (in_array('kota_direktori', $tabel)) {
+			$run	= $this->db->query("SELECT ID_KOTA, NAMA_KOTA FROM kota WHERE KODE_KOTA = 'DIR'");
+			if ( ! empty($run)) {
+				foreach ($run as $val) {
+					$r['kota_direktori'][] = array(
+						'id'	=> $val->ID_KOTA,
+						'nama'	=> $val->NAMA_KOTA
 					);
 				}
 			}
@@ -395,7 +408,7 @@ class MainModel extends ModelBase {
 				$nama = $this->db->escape_str(ucwords($nama));
 				if (empty($id)) {
 					if ($tabel == 'kota')
-						$ins = $this->db->query("INSERT INTO $tabel VALUES(0, '" . strtoupper(substr($nama, 0, 3)) . "', '$nama', '1')");
+						$ins = $this->db->query("INSERT INTO $tabel VALUES(0, '', '$nama', '1')");
 					else
 						$ins = $this->db->query("INSERT INTO $tabel VALUES(0, '$nama', '1')");
 				} else {

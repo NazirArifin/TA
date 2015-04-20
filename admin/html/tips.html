@@ -1,0 +1,142 @@
+<div class="row">
+	<div class="col-lg-12">
+		
+		<div class="row" data-ng-show="editing">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li><a href="" data-ng-click="cancel()">Berita</a></li>
+					<li class="active"><span>{{mode}} Tips Anggota</span></li>
+				</ol>
+				<h1>{{mode}} Tips Anggota</h1>
+			</div>
+		</div>
+		
+		<div class="row" data-ng-hide="editing">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li><a href="">Berita</a></li>
+					<li class="active"><span>Tips Anggota</span></li>
+				</ol>
+				<h1>Tips Anggota</h1>
+			</div>
+		</div>
+		
+		<div class="row" data-ng-show="editing">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<p class="alert alert-info alert-block">
+							<a href="" class="btn btn-default pull-right" cancel-form>
+								<i class="fa fa-arrow-circle-o-left fa-lg"></i> Batalkan Input
+							</a>
+							<i class="fa fa-fw fa-exclamation-circle fa-3x pull-left"></i> <small>Pastikan isian berikut ini terisi dengan lengkap dan benar.<br><strong>Bagian bertanda * harus terisi</strong>.</small>
+						</p>
+					</header>
+					<div class="main-box-body clearfix">
+						<form role="form" novalidate>
+							<fieldset class="form-horizontal">
+								<div class="form-group">
+									<label for="isi" class="col-lg-2 control-label"><strong>Isi Tips</strong></label>
+									<div class="col-lg-8">
+										<div id="isi" summernote height="300" focus ng-model="tips.isi" config="summernoteOptions"></div>
+									</div>
+									<div class="col-lg-1"><small class="help-block"><strong>*</strong></small></div>
+								</div>
+							</fieldset>
+							<hr>
+							<fieldset class="form-horizontal">
+								<div class="form-group">
+									<div class="col-lg-offset-2 col-lg-5">
+										<button class="btn btn-primary" simpan-tips><i class="fa fa-lg fa-check-square-o"></i> SIMPAN TIPS</button> 
+										<button class="btn btn-default" cancel-form>BATALKAN</button>
+									</div>
+								</div>
+							</fieldset>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row" data-ng-hide="editing">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<div class="col-xs-4 form-inline pagenum">
+							<label for="show-status">
+								<select name="show-status" id="show-status" id="show-status" class="form-control" data-ng-model="page.status" data-ng-change="loadData()">
+									<option value="">Semua Status</option>
+									<option value="1">Aktif</option>
+									<option value="2">Nonaktif</option>
+								</select>
+							</label>
+						</div>
+						<div class="filter-block pull-right">
+							<div class="form-group pull-left">
+								<input type="text" data-ng-model="page.query" name="cari" id="cari" class="form-control" placeholder="Pencarian" data-ng-keyup="loadData()">
+								<i class="fa fa-search search-icon"></i>
+							</div>
+							<a href="" class="btn btn-primary pull-right" data-ng-click="add()"><i class="fa fa-lg fa-plus-circle"></i> Tambah Tips</a>
+						</div>
+					</header>
+					<div class="main-box-body clearfix">
+						<div class="table-responsive">
+							<table class="table user-list table-condensed dataTable">
+								<thead>
+									<tr>
+										<th colspan="2">Tips</th>
+										<th>Status</th>
+										<th>&nbsp;</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="c in tipsList">
+										<td width="1"></td>
+										<td>{{c.isi}}</td>
+										<td><span class="label" data-ng-class="{ true: 'label-success', false: 'label-default' }[c.status == 'Aktif']">{{c.status}}</span></td>
+										<td>
+											<a href="" class="table-link primary" data-ng-click="setEdit(c.id)" data-ng-show="c.status == 'Aktif'">
+												<span class="fa-stack">
+													<i class="fa fa-square fa-stack-2x"></i>
+													<i class="fa fa-edit fa-stack-1x fa-inverse"></i>
+												</span>
+											</a>
+											<a href="" class="table-link warning" data-ng-click="setStatus(c.id, 2)" data-ng-show="c.status == 'Aktif'">
+												<span class="fa-stack">
+													<i class="fa fa-square fa-stack-2x"></i>
+													<i class="fa fa-ban fa-stack-1x fa-inverse"></i>
+												</span>
+											</a>
+											<a href="" class="table-link success" data-ng-click="setStatus(c.id, 1)" data-ng-show="c.status == 'Nonaktif'">
+												<span class="fa-stack">
+													<i class="fa fa-square fa-stack-2x"></i>
+													<i class="fa fa-recycle fa-stack-1x fa-inverse"></i>
+												</span>
+											</a>
+											<a href="" delete-button="{{c.id}}" data-type="tips" class="table-link danger" data-ng-show="c.status == 'Nonaktif'">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+											</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<ul class="pagination pagination-sm pull-right">
+								<li data-ng-class="{ disabled: page.cpage == 0 }">
+									<a href="" data-ng-click="prevPage()"><i class="fa fa-chevron-left"></i></a>
+								</li>
+								<li data-ng-repeat="n in range(page.numpage)" data-ng-class="{ active: n == page.cpage }">
+									<a href="" data-ng-click="setPage()" data-ng-bind="n + 1">1</a>
+								</li>
+								<li data-ng-class="{ disabled: page.cpage == page.numpage - 1 }">
+									<a href="" data-ng-click="nextPage()"><i class="fa fa-chevron-right"></i></a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

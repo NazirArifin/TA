@@ -46,6 +46,19 @@ app.directive('select2', function() {
 });
 
 /**
+ * muter2 :D
+ */
+app.directive('muter', function() {
+	return function($scope, elm, attrs) {
+		elm.hover(function() {
+			$(this).transition({ rotate: '360deg' }, 'slow');
+		}, function() {
+			$(this).transition({ rotate: '0deg' }, 'slow');
+		});
+	};
+});
+
+/**
  * date picker
  */
 app.directive('datePicker', function() {
@@ -277,6 +290,13 @@ app.directive('showModal', ['$http', 'notify', function($http, notify) {
 				for (var i in order.produk) t += '<li>' + order.produk[i] + '</li>';
 				$('#order-produk').html(t);
 				$('#order-bayar').val(order.total);
+				showModal();
+			});
+		}
+		
+		// laporkan post ke admin
+		if (attrs.target == 'modal-5') {
+			$(el).on('click', function(e) {
 				showModal();
 			});
 		}

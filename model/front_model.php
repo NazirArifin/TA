@@ -9,14 +9,18 @@ class FrontModel extends ModelBase {
 		parent::__construct();
 	}
 	
+	/**
+	 * Dapatkan berita
+	 */
 	public function get_berita($type) {
 		$tabel	= ($type == 'bisnis' ? 'berita' : 'info');
 		$utabel	= strtoupper($tabel);
 		$r 		= array();
+		$limit	= 2;
 		if ($type == 'bisnis')
-			$run 	= $this->db->query("SELECT JUDUL_$utabel, PENGANTAR_$utabel, ISI_$utabel, TANGGAL_$utabel, FOTO_$utabel FROM $tabel ORDER BY TANGGAL_$utabel DESC LIMIT 0, 3", FALSE, FALSE);
+			$run 	= $this->db->query("SELECT JUDUL_$utabel, PENGANTAR_$utabel, ISI_$utabel, TANGGAL_$utabel, FOTO_$utabel FROM $tabel ORDER BY TANGGAL_$utabel DESC LIMIT 0, $limit", FALSE, FALSE);
 		if ($type == 'info')
-			$run 	= $this->db->query("SELECT JUDUL_$utabel, ISI_$utabel, TANGGAL_$utabel, FOTO_$utabel FROM $tabel ORDER BY TANGGAL_$utabel DESC LIMIT 0, 3", FALSE, FALSE);
+			$run 	= $this->db->query("SELECT JUDUL_$utabel, ISI_$utabel, TANGGAL_$utabel, FOTO_$utabel FROM $tabel ORDER BY TANGGAL_$utabel DESC LIMIT 0, $limit", FALSE, FALSE);
 			
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
@@ -33,14 +37,14 @@ class FrontModel extends ModelBase {
 					} else $isi = token_truncate($disi, 120);
 				} else {
 					$disi		= strip_tags(str_replace('&nbsp;', ' ', $val['ISI_' . $utabel]));
-					$isi 		= token_truncate($disi, 150);
+					$isi 		= token_truncate($disi, 120);
 				}
 				$judul			= $val['JUDUL_' . $utabel];
 				$r[] = array(
 					'judul' 	=> $judul,
 					'tanggal'	=> datedb_to_tanggal($val['TANGGAL_' . $utabel], 'l, d M Y'),
 					'foto'		=> '/upload/news/' . (empty($val['FOTO_' . $utabel]) ? 'default.png' : $val['FOTO_' . $utabel]),
-					'isi'		=> $isi . (strlen($disi) > 150 ? '...' : ''),
+					'isi'		=> $isi . (strlen($disi) > 120 ? '...' : ''),
 					'link'		=> $tabel . '/' . datedb_to_tanggal($val['TANGGAL_' . $utabel], 'dmY') . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($judul))
 				);
 			}
@@ -48,6 +52,9 @@ class FrontModel extends ModelBase {
 		return $r;
 	}
 	
+	/**
+	 * Dapatkan daftar direktori abjad
+	 */
 	public function get_direktori_list() {
 		$run 		= $this->db->query("SELECT LEFT(NAMA_DIREKTORI, 1) AS D FROM direktori WHERE STATUS_DIREKTORI = '1' GROUP BY LEFT(NAMA_DIREKTORI, 1)");
 		$haslink 	= array();
@@ -64,10 +71,30 @@ class FrontModel extends ModelBase {
 		return $alpha;
 	}
 	
+	/**
+	 * Mendapatkan rekanan direktori terbaru
+	 */
+	public function get_premium_direktori() {
+		$r 		= array();
+		$run 	= $this->db->query("SELECT a.ID_DIREKTORI, a.NAMA_DIREKTORI FROM direktori a, anggota b WHERE a.PEMILIK_DIREKTORI = b.ID_ANGGOTA AND b.STATUS_ANGGOTA = '1' ORDER BY RAND() LIMIT 0, 15");
+		if ( ! empty($run)) {
+			foreach ($run as $val) {
+				$r[] = array(
+					'nama'	=> $val->NAMA_DIREKTORI,
+					'link'	=> '/direktori/' . $val->ID_DIREKTORI . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_DIREKTORI))
+				);
+			}
+		}
+		return $r;
+	}
+	
+	/**
+	 * Dapatkan kiriman anggota
+	 */
 	public function get_post($type) {
 		$tipe	= ($type == 'jual' ? 1 : 2);
 		$r 		= array();
-		$run 	= $this->db->query("SELECT a.KODE_ANGGOTA, a.NAMA_ANGGOTA, b.*, c.NAMA_KATPRODUK FROM anggota a, postanggota b, katproduk c WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND b.STATUS_POSTANGGOTA = '1' AND TIPE_POSTANGGOTA = '$tipe' AND b.ID_KATPRODUK = c.ID_KATPRODUK ORDER BY TANGGAL_POSTANGGOTA DESC LIMIT 0, 5");
+		$run 	= $this->db->query("SELECT a.KODE_ANGGOTA, a.NAMA_ANGGOTA, b.*, c.NAMA_KATPRODUK FROM anggota a, postanggota b, katproduk c WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND b.STATUS_POSTANGGOTA = '1' AND TIPE_POSTANGGOTA = '$tipe' AND b.ID_KATPRODUK = c.ID_KATPRODUK ORDER BY TANGGAL_POSTANGGOTA DESC LIMIT 0, 10");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				$isi 		= strip_tags($val->ISI_POSTANGGOTA);
@@ -95,10 +122,45 @@ class FrontModel extends ModelBase {
 		return $r;
 	}
 	
+	/**
+	 * Mendapatkan produk direktori secara acak
+	 */
+	public function get_direktori_produk() {
+		$r 		= array();
+		$run	= $this->db->query("SELECT a.ID_PRODUK, a.NAMA_PRODUK, a.FOTO_PRODUK, a.HARGA_PRODUK, a.INFO_PRODUK, b.NAMA_KATPRODUK, c.ID_DIREKTORI, c.NAMA_DIREKTORI FROM produk a, katproduk b, direktori c WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.ID_DIREKTORI = c.ID_DIREKTORI AND c.STATUS_DIREKTORI = '1' AND a.STATUS_PRODUK = '1' ORDER BY RAND() LIMIT 0, 4");
+		if ( ! empty($run)) {
+			foreach ($run as $val) {
+				$isi 		= strip_tags($val->INFO_PRODUK);
+				$ptisi		= token_truncate($isi, 150);
+				if (strlen($isi) > 150) $ptisi .= '...';
+				if (empty($val->FOTO_PRODUK))
+					$foto 	= '/upload/produk/default.png';
+				else {
+					$f 		= unserialize($val->FOTO_PRODUK);
+					$foto	= '/upload/produk/' . str_replace('.', '_thumb.', $f[0]);
+				}
+				$r[] = array(
+					'nama'		=> $val->NAMA_PRODUK,
+					'link'		=> '/produk/' . $val->ID_PRODUK . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_PRODUK)),
+					'harga'		=> number_format($val->HARGA_PRODUK, 0, ',', '.') . ',-',
+					'info'		=> $ptisi,
+					'kategori'	=> $val->NAMA_KATPRODUK,
+					'direktori'	=> $val->NAMA_DIREKTORI,
+					'link_direktori' => '/direktori/' . $val->ID_DIREKTORI . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_DIREKTORI)),
+					'foto'		=> $foto
+				);
+			}
+		}
+		return $r;
+	}
+	
+	/**
+	 * Dapatkan produk utama
+	 */
 	public function get_produk() {
 		// secara acak
 		$r 		= array();
-		$run 	= $this->db->query("SELECT * FROM produkutama WHERE STATUS_PRODUKUTAMA = '1' ORDER BY RAND() LIMIT 10");
+		$run 	= $this->db->query("SELECT a.*, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.STATUS_PRODUKUTAMA = '1' ORDER BY RAND() LIMIT 10");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				$isi 		= strip_tags($val->INFO_PRODUKUTAMA);
@@ -117,13 +179,33 @@ class FrontModel extends ModelBase {
 					'stok'	=> $val->STOK_PRODUKUTAMA,
 					'harga'	=> number_format($val->HARGA_PRODUKUTAMA, 0, ',', '.') . ',-',
 					'info'	=> $ptisi,
-					'foto'	=> $foto
+					'foto'	=> $foto,
+					'kategori'	=> $val->NAMA_KATPRODUK
 				);
 			}
 		}
 		return $r;
 	}
 	
+	/**
+	 * Mendapatkan tips dan trik 
+	 */
+	public function get_tips() {
+		$run = $this->db->query("SELECT ISI_TIPSTRIK FROM tipstrik ORDER BY RAND() LIMIT 0, 1", TRUE);
+		if ( ! empty($run)) 
+		if (empty($run->FOTO_TIPSTRIK)) {
+			return $run->ISI_TIPSTRIK;
+		} else {
+			return array(
+				'foto' 	=> $run->FOTO_TIPSTRIK,
+				'isi'	=> $run->ISI_TIPSTRIK
+			);
+		}
+	}
+	
+	/**
+	 * Menyimpan pesan. Entah kenapa kok masuk sini :(
+	 */
 	public function save_pesan() {
 		extract($this->prepare_post(array('forCode', 'fromCode', 'type', 'message')));
 		$message	= $this->db->escape_str($message);
@@ -144,6 +226,9 @@ class FrontModel extends ModelBase {
 		return array('type' => TRUE);
 	}
 	
+	/**
+	 * Detail berita. Ini juga ngapain disini? :(
+	 */
 	public function news_detail($type, $id, $judul) {
 		$r 		= array();
 		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
@@ -176,6 +261,9 @@ class FrontModel extends ModelBase {
 		return $r;
 	}
 	
+	/**
+	 * Mendapatkan berita lain
+	 */
 	public function news_other($type, $id) {
 		$r 		= array();
 		$utype	= strtoupper($type);
@@ -193,6 +281,9 @@ class FrontModel extends ModelBase {
 		return $r;
 	}
 	
+	/**
+	 * Mendapatkan daftar berita 
+	 */
 	public function news_list($type) {
 		extract($this->prepare_get(array('cpage', 'query')));
 		$cpage	= filter_var($cpage, FILTER_SANITIZE_NUMBER_INT);
@@ -243,6 +334,9 @@ class FrontModel extends ModelBase {
 		return $r;
 	}
 	
+	/**
+	 * Mendapatkan biaya ongkir kiriman
+	 */
 	public function get_ongkir() {
 		extract($this->prepare_get(array('kota')));
 		$kota 	= filter_var($kota, FILTER_SANITIZE_NUMBER_INT);

@@ -40,11 +40,18 @@
 					<div class="col-md-7">
 						{% autoescape false %}
 						<div style="line-height: 1.3em;">
-							<small class="text-muted"><i class="fa fa-tags"></i> {{kategori}}</small>
-							<small class="text-muted pull-right"><i class="fa fa-calendar"></i> {{tanggal}}</small>
-							<br><br>
-							<div class="well well-sm" style="overflow: auto;">
-							{{isi}}
+							<ol class="breadcrumb" style="font-weight: bold">
+								<li><a href="/{{type|lower}}">{{type}} Barang</a></li>
+								<li><a href="/{{type|lower}}?kategori={{id_kategori}}">{{kategori}}</a></li>
+								<li class="active">{{judul}}</li>
+							</ol>
+							<div class="well well-sm" style="overflow: auto; padding-bottom: 25px;">
+								<small class="text-muted"><i class="fa fa-calendar"></i> {{tanggal}}</small>
+								{% if authenticate and member_kode != poster_kode %}
+								<button class="btn btn-info btn-xs pull-right tooltips" title="laporkan ke admin" show-modal data-target="modal-5"><i class="fa fa-thumbs-down fa-lg"></i></button>
+								{% endif %}
+								<br><hr>
+								{{isi}}
 							</div>
 						</div>
 						{% endautoescape %}

@@ -16,13 +16,28 @@
 	{% include 'header.html' %}
 	
 	<hr class="header">
+	
+	<div class="row">
+		<div class="col-md-12">
+			<div class="alert alert-info">
+				{% if tips.foto %}
+				
+				{% else %}
+				<i class="fa fa-fw fa-info-circle fa-5x pull-right" style="margin-top: 15px;"></i>
+				{% endif %}
+				<blockquote>
+				<p>{{tips}}</p>
+				</blockquote>
+			</div>
+		</div>
+	</div>
 	<div class="row">
 		<div class="col-md-6">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">
 						<a href="/berita">Berita Bisnis</a>
-						<a href="/berita" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-link"></i></a>
+						<a href="/berita" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-rss text-warning"></i></a>
 					</h3>
 				</div>
 				<div class="panel-body info-list">
@@ -39,14 +54,18 @@
 					</a>
 					{% endfor %}
 				</div>
+				<div class="panel-footer">
+					<a href="/berita" class="pull-right"><i class="fa fa-angle-right"></i> Lihat Semua</a>
+					<br>
+				</div>
 			</div>
 		</div>
 		<div class="col-md-6">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						<a href="/info">Sekilas Madura</a>
-						<a href="/info" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-link"></i></a>
+						<a href="/info">Let's Get Business</a>
+						<a href="/info" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-rss text-warning"></i></a>
 					</h3>
 				</div>
 				<div class="panel-body info-list">
@@ -63,12 +82,16 @@
 					</a>
 					{% endfor %}
 				</div>
+				<div class="panel-footer">
+					<a href="/info" class="pull-right"><i class="fa fa-angle-right"></i> Lihat Semua</a>
+					<br>
+				</div>
 			</div>
 		</div>
 	</div>
-	<hr class="main">
+	<!--<hr class="main">-->
 	<div class="row">
-		<h2 class="text-center">DIREKTORI BISNIS</h2>
+		<h2 class="alert alert-warning text-center">DIREKTORI BISNIS</h2>
 		<div class="col-md-8 col-md-offset-2">
 			<form action="/direktori">
 				<div class="input-group has-warning">
@@ -108,34 +131,81 @@
 		</div>
 		{% endverbatim %}
 	</div>
+	<div class="row">
+		{% if direktori_produk %}
+		<div class="col-md-9">
+			<h5>Produk Rekanan</h5>
+			<div class="panel panel default">
+				<div class="panel-body">
+					<div class="row">
+						{% for c in direktori_produk %}
+						<div class="col-md-6">
+							<div class="media">
+								<a class="media-left" href="{{c.link}}">
+									<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
+									<strong class="label label-success">Rp. {{c.harga}}</strong>
+								</a>
+								<div class="media-body">
+									<h4 class="media-heading produk">
+										<a href="{{c.link}}">{{c.nama}}</a>
+									</h4>
+									<p>{{c.info}}</p>
+									<div>
+										<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
+										<a href="{{c.link_direktori}}" class="pull-right">{{c.direktori}}</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+		{% if premium_direktori %}
+		<div class="col-md-3">
+			<h5>Direktori Rekanan</h5>
+			<ul class="list-unstyled">
+				{% for c in premium_direktori %}
+				<li><a href="{{c.link}}"><i class="fa fa-fw fa-lg fa-chevron-circle-right"></i> {{c.nama}}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+		{% endif %}
+	</div>
 	<hr class="main">
 	<div class="row">
 		<div class="col-md-6">
-			<div class="panel panel-default">
+			<div class="panel panel-success">
 				<div class="panel-heading">
 					<div class="panel-title clearfix">
-						<a href="/jual" class="pull-left tooltips" style="margin-top: 5px" title="lihat semua" data-placement="bottom">JUAL BARANG</a>
+						<a href="/jual" class="pull-left tooltips" style="margin-top: 5px; font-size: 1.2em;" title="lihat semua" data-placement="bottom">JUAL BARANG</a>
 						<form role="form" action="/jual" class="form-inline pull-right">
 							<div class="form-group">
 								<label for="jual-query" class="sr-only">Cari</label>
-								<i class="fa fa-search text-muted" style="position: absolute; right: 19px; padding: 10px 12px; pointer-events: none"></i>
+								<i class="fa fa-search text-muted" style="position: absolute; right: 19px; padding: 10px 12px; pointer-events: none; color: #fff;"></i>
 								<input type="text" name="query" id="jual-query" class="form-control" placeholder="Cari Jual" style="padding-right: 30px;">
 							</div>
 						</form>
 					</div>
 				</div>
-				<div class="panel-body" scrollable data-height="400px">
+				<div class="panel-body" scrollable data-height="500px">
 					{% for c in jual %}
-					<div class="media">
+					<div class="media" style="border-bottom: 1px solid #D9D9D9; padding-bottom: 5px;">
 						<a class="media-left" href="{{c.link}}">
-							<img src="{{c.foto}}" class="img-rounded" alt="" style="width: 54px;">
+							<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
 						</a>
 						<div class="media-body">
-							<h4 class="media-heading"><a href="{{c.link}}">{{c.judul}}</a></h4>
+							<h4 class="media-heading">
+								<a href="{{c.link}}">{{c.judul}}</a> 
+								<span class="label label-success" style="font-size: 0.5em">JUAL</span>
+							</h4>
 							<p class="text-justify">{{c.isi}}</p>
 							<p class="text-muted sender">
 								<i class="fa fa-tag"></i> {{c.kategori}} &nbsp;  
-								<i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a> &mdash; {{c.tanggal}}
+								<i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a>
+								<span class="pull-right">{{c.tanggal}}</span>
 							</p>
 						</div>
 					</div>
@@ -147,31 +217,35 @@
 			</div>
 		</div>
 		<div class="col-md-6">
-			<div class="panel panel-default">
+			<div class="panel panel-info">
 				<div class="panel-heading">
 					<div class="panel-title clearfix">
-						<a href="/beli" class="pull-left tooltips" style="margin-top: 5px" title="lihat semua" data-placement="bottom">BELI BARANG</a>
+						<a href="/beli" class="pull-left tooltips" style="margin-top: 5px; font-size: 1.2em;" title="lihat semua" data-placement="bottom">BELI BARANG</a>
 						<form role="form" action="/beli" class="form-inline pull-right">
 							<div class="form-group">
 								<label for="beli-query" class="sr-only">Cari</label>
-								<i class="fa fa-search text-muted" style="position: absolute; right: 19px; padding: 10px 12px; pointer-events: none"></i>
+								<i class="fa fa-search text-muted" style="position: absolute; right: 19px; padding: 10px 12px; pointer-events: none; color: #fff;"></i>
 								<input type="text" name="query" id="beli-query" class="form-control" placeholder="Cari Beli" style="padding-right: 30px;">
 							</div>
 						</form>
 					</div>
 				</div>
-				<div class="panel-body" scrollable data-height="400px">
+				<div class="panel-body" scrollable data-height="500px">
 					{% for c in beli %}
-					<div class="media">
+					<div class="media" style="border-bottom: 1px solid #D9D9D9; padding-bottom: 5px;">
 						<a class="media-left" href="{{c.link}}">
-							<img src="{{c.foto}}" class="img-rounded" alt="" style="width: 54px;">
+							<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
 						</a>
 						<div class="media-body">
-							<h4 class="media-heading"><a href="{{c.link}}">{{c.judul}}</a></h4>
+							<h4 class="media-heading">
+								<a href="{{c.link}}">{{c.judul}}</a> 
+								<span class="label label-info" style="font-size: 0.5em">BELI</span>
+							</h4>
 							<p class="text-justify">{{c.isi}}</p>
 							<p class="text-muted sender">
 								<i class="fa fa-tag"></i> {{c.kategori}} &nbsp;  
-								<i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a> &mdash; {{c.tanggal}}
+								<i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a>
+								<span class="pull-right">{{c.tanggal}}</span>
 							</p>
 						</div>
 					</div>
@@ -184,27 +258,26 @@
 		</div>
 	</div>
 	<hr class="main">
-	<h2 class="text-center">ETALASE</h2>
+	<h3 class="text-center alert alert-info">ETALASE</h3>
 	<div class="row">
 		{% for c in produk %}
-		<div class="col-md-6">
+		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel-body">
 					<div class="media">
 						<a class="media-left" href="{{c.link}}">
-							<img src="{{c.foto}}" class="img-rounded" alt="" style="width: 64px;">
+							<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
+							<strong class="label label-success">Rp. {{c.harga}}</strong>
 						</a>
 						<div class="media-body">
 							<h4 class="media-heading produk">
 								<a href="{{c.link}}">{{c.nama}}</a>
-								{% if c.stok > 0 %}<small class="label label-warning pull-right">TERSEDIA</small>{% endif %}
-								{% if c.stok == 0 %}<small class="label label-danger pull-right">TERJUAL</small>{% endif %}
 							</h4>
 							<p>{{c.info}}</p>
 							<div>
-								<strong class="label label-success">Rp. {{c.harga}}</strong>
+								<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
 								{% if c.stok > 0 %}
-								<button class="btn btn-primary btn-xs pull-right" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">TAMBAH KE KERANJANG <i class="fa fa-cart-plus"></i></button>
+								<button class="btn btn-primary btn-xs pull-right" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">KERANJANG <i class="fa fa-cart-plus"></i></button>
 								{% endif %}
 							</div>
 						</div>

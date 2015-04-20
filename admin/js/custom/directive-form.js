@@ -457,3 +457,29 @@ app.directive('simpanOngkirModal', ['$http', function($http) {
 		}
 	};
 }]);
+
+/** simpan tips dan trik */
+app.directive('simpanTips', ['$http', 'notify', function($http, notify) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(e) {
+				if ($scope.tips.isi.length < 5) {
+					notify.bounce.error('Input tidak lengkap atau invalid. Periksa bagian bertanda kesalahan');
+					return false;
+				}
+				elm.html('<i class="fa fa-refresh fa-spin"></i> HARAP TUNGGU...').prop('disabled', true).removeClass('btn-primary').addClass('btn-danger');
+				$http.post($scope.server + '/tips' + ($scope.tips.id != '' ? '/' + $scope.tips.id : ''), $scope.tips).
+				success(function(d) {
+					notify.slideTop.info('Data tips berhasil ditambahkan dan tersimpan!');
+					elm.html('<i class="fa fa-lg fa-check-square-o"></i> SIMPAN TIPS').prop('disabled', false).removeClass('btn-danger').addClass('btn-primary');
+					$scope.resetTips();
+					$scope.loadData();
+					if ($scope.state == 'Edit') $scope.cancel();
+				}).error(function(e, s, h) {
+					alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
+				});
+			});
+		}
+	};
+}]);

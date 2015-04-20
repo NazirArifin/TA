@@ -27,30 +27,36 @@ class AdminemarketModel extends ModelBase {
 		$numdt	= intval($numdt);
 		$query	= $this->db->escape_str($query);
 		$sort	= ($sort == 'asc' ? 'ASC' : 'DESC');
-		$order	= ($order == 'date' ? 'TANGGAL_POSTANGGOTA' : 'ID_ANGGOTA');
+		switch ($order) {
+			case 'date': $order = 'a.TANGGAL_POSTANGGOTA'; break;
+			case 'sender': $order = 'b.NAMA_ANGGOTA'; break;
+			case 'report': $order = 'COUNT(d.ID_ADUANPOST)';
+		}
 		$type 	= ($type == 'jual' ? 1 : 2);
 		
 		$where	= array();
-		$where[]= "TIPE_POSTANGGOTA = '$type'";
-		$where[]= "STATUS_POSTANGGOTA = '1'";
+		$where[]= "a.ID_ANGGOTA = b.ID_ANGGOTA";
+		$where[]= "a.TIPE_POSTANGGOTA = '$type'";
+		$where[]= "a.STATUS_POSTANGGOTA = '1'";
 		if ( ! empty($date)) 
-			$where[]	= "DATE(TANGGAL_POSTANGGOTA) = '" . tanggal_to_datedb($date) . "'";
+			$where[]	= "DATE(a.TANGGAL_POSTANGGOTA) = '" . tanggal_to_datedb($date) . "'";
 		if ( ! empty($query)) {
-			$where[]	= "(ISI_POSTANGGOTA LIKE '%{$query}%' OR JUDUL_POSTANGGOTA LIKE '%{$query}%')";
+			$where[]	= "(a.ISI_POSTANGGOTA LIKE '%{$query}%' OR a.JUDUL_POSTANGGOTA LIKE '%{$query}%')";
 		}
 		
-		$run	= $this->db->query("SELECT COUNT(ID_POSTANGGOTA) AS HASIL FROM postanggota WHERE " . implode(" AND ", $where), TRUE);
+		$run	= $this->db->query("SELECT COUNT(a.ID_POSTANGGOTA) AS HASIL FROM postanggota a, anggota b WHERE " . implode(" AND ", $where), TRUE);
 		$total	= $run->HASIL;
 		$numpg	= ceil($total / $numdt);
 		$start	= $cpage * $numdt;
 		$path	= 'upload/post/';
-		
 		$r 		= array();
-		$run	= $this->db->query("SELECT a.*, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA, c.NAMA_KATPRODUK FROM postanggota a, anggota b, katproduk c WHERE a.ID_KATPRODUK = c.ID_KATPRODUK AND a.ID_ANGGOTA = b.ID_ANGGOTA AND " . implode(" AND ", $where) . " ORDER BY $order $sort LIMIT $start, $numdt");
+		$run 	= $this->db->query("SELECT a.*, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA, c.NAMA_KATPRODUK, COUNT(d.ID_ADUANPOST) AS ADUAN FROM katproduk c, anggota b, postanggota a LEFT JOIN aduanpost d ON d.ID_POSTANGGOTA = a.ID_POSTANGGOTA WHERE " . implode(" AND ", $where) . " GROUP BY a.ID_POSTANGGOTA ORDER BY $order $sort LIMIT $start, $numdt");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				// hitung komentar
-				$komentar = $this->db->query("SELECT COUNT(ID_KOMENTAR) AS HASIL FROM komentar WHERE ID_POSTANGGOTA = '{$val->ID_POSTANGGOTA}'", TRUE);
+				$komentar 	= $this->db->query("SELECT COUNT(ID_KOMENTAR) AS HASIL FROM komentar WHERE ID_POSTANGGOTA = '{$val->ID_POSTANGGOTA}'", TRUE);
+				// hitung aduan
+				$aduan 		= $this->db->query("SELECT COUNT(ID_ADUANPOST) AS HASIL FROM aduanpost WHERE ID_POSTANGGOTA = '{$val->ID_POSTANGGOTA}'", TRUE);
 				
 				if ( ! empty($val->FOTO_POSTANGGOTA)) {
 					$fotos 	= unserialize($val->FOTO_POSTANGGOTA);
@@ -68,6 +74,7 @@ class AdminemarketModel extends ModelBase {
 					'kategori'		=> $val->NAMA_KATPRODUK,
 					'judul'			=> $val->JUDUL_POSTANGGOTA,
 					'komentar'		=> $komentar->HASIL,
+					'aduan'			=> $aduan->HASIL,
 					'link'			=> ($type == 1 ? 'jual' : 'beli') . '/' . $val->ID_POSTANGGOTA . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->JUDUL_POSTANGGOTA))
 				);
 			}

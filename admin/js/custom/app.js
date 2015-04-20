@@ -100,6 +100,8 @@ run(['$rootScope', '$location', function($rootScope, $location) {
 				return d + '/transaksi-jual.html'; break;
 			case '/berita/bisnis': case '/berita/info': 
 				return d + '/berita.html'; break;
+			case '/berita/tips':
+				return d + '/tips.html'; break;
 			case '/pengguna/anggota':
 				return d + '/anggota.html'; break;
 			case '/pengguna/admin':

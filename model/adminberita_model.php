@@ -253,4 +253,88 @@ class AdminberitaModel extends ModelBase {
 		$run 	= $this->db->query("DELETE FROM $tabel WHERE $idtbl = '$id'");
 		return array( 'type'	=> TRUE );
 	}
+	
+	public function get_tips() {
+		extract($this->prepare_get(array('cpage', 'query', 'numdt', 'status')));
+		$cpage	= intval($cpage);
+		$query	= $this->db->escape_str($query);
+		$numdt	= intval($numdt);
+		$status	= intval($status);
+		
+		$where[]= "STATUS_TIPSTRIK != '0'";
+		if ( ! empty($query)) 	$where[]= "ISI_TIPSTRIK LIKE '%{$query}%'";
+		
+		$run	= $this->db->query("SELECT COUNT(ID_TIPSTRIK) AS HASIL FROM tipstrik" . ( ! empty($where) ? " WHERE " . implode(" AND ", $where) : ''), TRUE);
+		$numpg	= ceil($run->HASIL / $numdt);
+		$start	= $cpage * $numdt;
+		$r 		= array();
+		$run	= $this->db->query("SELECT * FROM tipstrik" . ( ! empty($where) ? " WHERE " . implode(" AND ", $where) : '') . " LIMIT $start, $numdt");
+		if ( ! empty($run)) {
+			foreach ($run as $val) {
+				$r[] = array(
+					'id'	=> $val->ID_TIPSTRIK,
+					'isi'	=> $val->ISI_TIPSTRIK,
+					'status'=> ($val->STATUS_TIPSTRIK == '1' ? 'Aktif' : 'Nonaktif')
+				);
+			}
+		}
+		return array(
+			'type'		=> TRUE,
+			'tips'		=> $r,
+			'numpage'	=> $numpg
+		);
+	}
+	
+	public function get_tips_detail($id) {
+		$id 	= intval($id);
+		$run 	= $this->db->query("SELECT * FROM tipstrik WHERE ID_TIPSTRIK = '$id'", TRUE);
+		if (empty($run)) return FALSE;
+		return array(
+			'type' 	=> TRUE,
+			'tips'	=> array(
+				'id'	=> $run->ID_TIPSTRIK,
+				'isi'	=> $run->ISI_TIPSTRIK,
+				'status'=> $run->STATUS_TIPSTRIK
+			)
+		);
+	}
+	
+	public function save_tips($idtips = '') {
+		extract($this->prepare_post(array('id', 'isi', 'status')));
+		$isi	= $this->db->escape_str($isi);
+		if ( ! empty($idtips)) {
+			$id = intval($idtips);
+			$run	= $this->db->query("SELECT * FROM tipstrik WHERE ID_TIPSTRIK = '$id'", TRUE);
+			if ($run->ISI_TIPSTRIK != $isi && strlen($isi) > 0) $upd[] = "ISI_TIPSTRIK = '$isi'";
+			if ($run->STATUS_TIPSTRIK != $status)	$upd[] = "STATUS_TIPSTRIK = '$status'";
+			if ( ! empty($upd)) {
+				$run = $this->db->query("UPDATE tipstrik SET " . implode(", ", $upd) . " WHERE ID_TIPSTRIK = '$id'");
+			}
+		} else {
+			$ins	= $this->db->query("INSERT INTO tipstrik VALUES(0, '$isi', '', '1')");
+			$id		= $this->db->get_insert_id();
+		}
+		
+		// proses file jika ada
+		if (isset($_FILES['file']) && ! empty($id)) {
+			$run = $this->db->query("SELECT FOTO_TIPSTRIK FROM tipstrik WHERE ID_TIPSTRIK = '$id'", true);
+			if ( ! empty($run)) @unlink('upload/news/' . $run->FOTO_TIPSTRIK);
+			$config['upload_path']		= 'upload/news/';
+			$config['allowed_types']	= 'jpeg|jpg|png';
+			$config['encrypt_name']		= TRUE;
+			$config['overwrite']		= TRUE;
+			$iofiles->upload_config($config);
+			$iofiles->upload('file');
+			$filename 					= $iofiles->upload_get_param('file_name');
+			// update tabel
+			$upd = $this->db->query("UPDATE tipstrik SET FOTO_TIPSTRIK = '$filename' WHERE ID_TIPSTRIK = '$id'");
+		}
+		
+		return array('type' => TRUE);
+	}
+	
+	public function delete_tips($id) {
+		$run	= $this->db->query("UPDATE tipstrik SET STATUS_TIPSTRIK = '0' WHERE ID_TIPSTRIK = '$id'");
+		return array('type' => TRUE);
+	}
 }

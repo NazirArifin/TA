@@ -171,3 +171,24 @@ html, body {
 .table-small td div {
 	font-size: 0.875em;
 }
+
+.img {
+	width: 80px;
+	height: 80px;
+	text-align: center;
+	overflow: hidden;
+	background-color: #fefbfd;
+	border: 1px solid #D9D9D9;
+	white-space: nowrap;
+	margin-right: 10px;
+}
+.img .helper {
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
+.img img {
+	max-width: 80px;
+	max-height: 80px;
+	vertical-align: middle;
+}

@@ -1,3 +1,5 @@
+{% if not authenticate %}
+
 <!-- Modal -->
 <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
@@ -21,12 +23,17 @@
 				</div>
 			</div>
 			<div class="modal-footer">
+				<a href="/fpass" class="btn btn-link">Lupa Password?</a>
 				<button type="submit" class="btn btn-default"><strong><i class="fa fa-key"></i> MASUK</strong></button>
 			</div>
 			</form>
 		</div>
 	</div>
 </div>
+
+{% endif %}
+
+{% if authenticate %}
 
 <!-- modal untuk mengirim pesan -->
 <div class="md-modal md-effect-5" id="modal-2">
@@ -193,6 +200,40 @@
 	</div>
 </div>
 
+<!-- modal untuk laporkan kiriman ke admin -->
+<div class="md-modal md-effect-9" id="modal-5">
+	<div class="md-content">
+		<div class="modal-header">
+			<button class="md-close close">&times;</button>
+			<h4 class="modal-title">Laporkan Kiriman</h4>
+		</div>
+		<div class="modal-body">
+			<p>Anda menyatakan bahwa Anda tidak menyukai kiriman: &quot;<strong>{{judul}}</strong>&quot; ini karena:</p>
+			<form class="form-horizontal">
+				<div class="form-group">
+					<label for="report-alasan" class="col-lg-3 control-label"><strong>Alasan</strong></label>
+					<div class="col-lg-8">
+						<select name="alasan" id="report-alasan" class="form-control">
+							<option value="unmatch">isi tidak relevan atau tidak sesuai dengan judul</option>
+							<option value="spam">isi berupa spam tanpa tujuan dan manfaat</option>
+							<option value="porno">isi berisi pornografi atau tidak pantas</option>
+							<option value="sara">isi menyinggung isu agama, ras dan suku tertentu</option>
+							<option value="offense">isi menyerang, menghina atau merendahkan pihak tertentu</option>
+						</select>
+					</div>
+				</div>
+			</form>
+			<p class="text-muted"><small><em>Dengan ini saya menyatakan bahwa informasi yang saya berikan benar adanya dan tanpa didasari kepentingan pribadi</em></small></p>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-default"><i class="fa fa-close"></i> BATAL</button>
+			<button class="btn btn-primary" save-aduan="{{id}}"><i class="fa fa-send"></i> KIRIM</button>
+		</div>
+	</div>
+</div>
+
+{% endif %}
+
 <div class="md-overlay"></div><!-- the overlay element -->
 
 <script src="/js/bootstrap.min.js"></script>
@@ -201,6 +242,6 @@
 <script src="/js/tools.min.js"></script>
 
 <script src="/js/custom/app.min.js"></script>
-<script src="/js/custom/directive.min.js"></script>
+<script src="/js/custom/directive.js"></script>
 <script src="/js/custom/directive-form.js"></script>
 <script src="/js/custom/main-ctrl.js"></script>

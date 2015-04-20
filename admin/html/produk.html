@@ -60,7 +60,7 @@
 								<tbody>
 									<tr data-ng-repeat="c in produkList">
 										<td>
-											<img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt="">
+											<div class="img hidden-xs pull-left"><span class="helper"></span><img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt=""></div>
 											<a href="" class="user-link" show-modal="{{c.kode}}" data-type="produk" data-target="modal-1">{{c.nama}}</a>
 											<span class="user-subhead" class="text-muted">{{c.info}}</span>
 										</td>

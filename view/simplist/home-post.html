@@ -36,25 +36,29 @@
 					<table class="table table-condensed table-striped table-hover">
 						<tbody>
 							<tr data-ng-repeat="c in dataList">
-								<td><a data-ng-href="{{c.link}}"><img data-ng-src="{{c.foto}}" alt="" class="dirsearch-img"></a></td>
-								<td style="padding-top: 15px">
-									<a data-ng-href="{{c.link}}" style="font-size: 1.2em; line-height: 1.4em;">{{c.judul}}</a><br>
+								<td><a data-ng-href="{{c.link}}">
+									<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
+								</a></td>
+								<td style="padding-top: 15px; width: 50%">
+									<a data-ng-href="{{c.link}}" style="font-size: 1.2em; line-height: 1.4em;">{{c.judul}}</a>
+									<p>{{c.isi}}</p>
+								</td>
+								<td style="padding-top: 10px">
+									<strong class="label" data-ng-class="c.tipe == 'jual' ? 'label-success' : 'label-info'">{{c.tipe|uppercase}}</strong><br>
+									<span class="text-muted"><i class="fa fa-tag"></i> <a data-ng-href="/{{c.tipe}}?kategori={{c.id_kategori}}">{{c.kategori}}</a></span>
+								</td>
+								<td style="padding-top: 10px">
 									<small class="text-muted" style="font-size: 0.87em">
 										<i class="fa fa-comments"></i> {{c.komentar}} &nbsp; 
 										<i class="fa fa-calendar"></i> {{c.tanggal}}
-									</small> 
+									</small>
 								</td>
-								<td style="padding-top: 10px;">
-									<strong class="label" data-ng-class="c.tipe == 'jual' ? 'label-success' : 'label-info'">{{c.tipe|uppercase}}</strong><br>
-									<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
-								</td>
-								<td style="padding-top: 10px; width: 50%;"><p>{{c.isi}}</p></td>
-								<td style="padding-top: 18px;">
-									<span class="btn-group">
-										<a href="" class="btn btn-default btn-sm" data-ng-click="setEdit(c.id)" data-ng-show="c.status == '1'"><i class="fa fa-pencil-square"></i></a>
-										<a href="" class="btn btn-warning btn-sm" data-ng-click="setStatus(c.id, 2)" data-ng-show="c.status == '1'"><i class="fa fa-ban"></i></a>
-										<a href="" class="btn btn-success btn-sm" data-ng-click="setStatus(c.id, 1)" data-ng-show="c.status == '2'"><i class="fa fa-recycle"></i></a>
-										<a href="" class="btn btn-danger btn-sm" delete-data="{{c.id}}" data-type="post" data-ng-show="c.status == '2'"><i class="fa fa-trash-o"></i></a>
+								<td style="padding-top: 10px">
+									<span class="btn-group pull-right">
+										<a href="" class="btn btn-default btn-xs" data-ng-click="setEdit(c.id)" data-ng-show="c.status == '1'"><i class="fa fa-pencil-square"></i></a>
+										<a href="" class="btn btn-warning btn-xs" data-ng-click="setStatus(c.id, 2)" data-ng-show="c.status == '1'"><i class="fa fa-ban"></i></a>
+										<a href="" class="btn btn-success btn-xs" data-ng-click="setStatus(c.id, 1)" data-ng-show="c.status == '2'"><i class="fa fa-recycle"></i></a>
+										<a href="" class="btn btn-danger btn-xs" delete-data="{{c.id}}" data-type="post" data-ng-show="c.status == '2'"><i class="fa fa-trash-o"></i></a>
 									</span>
 								</td>
 							</tr>
@@ -92,19 +96,21 @@
 					<form class="form-horizontal" role="form">
 						<div class="form-group">
 							<label for="tipe" class="col-lg-3 control-label">JENIS KIRIMAN</label>
-							<div class="col-lg-4">
+							<div class="col-lg-6">
 								<div class="radio">
-									<label><input type="radio" name="tipe" id="tipe-jual" value="1" data-ng-model="post.tipe"> JUAL</label> &nbsp; 
-									<label><input type="radio" name="tipe" id="tipe-jual" value="2" data-ng-model="post.tipe"> BELI</label>
+									<label><input type="radio" name="tipe" id="tipe-jual" value="1" data-ng-model="post.tipe"> JUAL BARANG</label> &nbsp; 
+									<label><input type="radio" name="tipe" id="tipe-jual" value="2" data-ng-model="post.tipe"> BELI BARANG</label>
 								</div>
+								<span class="help-block"><em><small class="text-muted">tentukan apakah Anda ingin menjual atau membeli barang</small></em></span>
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="kategori" class="col-lg-3 control-label"><strong>KATEGORI *</strong></label>
-							<div class="col-lg-4">
+							<div class="col-lg-5">
 								<select name="kategori" id="kategori" class="form-control" data-ng-options="c.id as c.nama for c in kategori" data-ng-model="post.kategori">
 									<option value="">-- pilih kategori --</option>
 								</select>
+								<span class="help-block"><em><small class="text-muted">kategori harus tepat dan sesuai</small></em></span>
 							</div>
 						</div>
 						<div class="form-group">

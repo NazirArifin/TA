@@ -88,7 +88,8 @@
 				<div class="media">
 					<div class="col-md-8">
 						<a class="media-left" href="">
-							<img src="{{foto}}" alt="" class="img-responsive img-rounded direktori-image">
+							<div class="img" style="width: 150px; height: 150px;"><span class="helper"></span><img src="{{foto}}" alt="" style="max-width: 150px; max-height: 150px;"></div>
+							<!--<img src="{{foto}}" alt="" class="img-responsive img-rounded direktori-image">-->
 						</a>
 						<div class="media-body">
 							<h3 class="media-heading">{{nama|upper}}</h3>
@@ -99,7 +100,7 @@
 								<span class="text-muted">{{kota}}</span>
 							</h6>
 							{% else %}
-							<h6><span>{{pemilik}}</span> &mdash; <span class="text-muted">{{kota}}</span></h6>
+							<h6><span class="text-muted">{{kota}}</span></h6>
 							{% endif %}
 							<address style="margin-bottom: 15px;">
 								<span><i class="fa fa-map-marker fa-fw"></i><strong> {{alamat[0]}}</strong></span><br>
@@ -147,7 +148,6 @@
 						</div>
 					</div>
 				</div>		
-				<hr class="main">
 				
 				{% if produk %}
 				<div class="row">
@@ -161,7 +161,8 @@
 					<div class="col-md-4">
 						<div class="media">
 							<a class="media-left" href="{{c.link}}">
-								<img src="{{c.foto}}" alt="" class="img-rounded" width="65px">
+								<!--<img src="{{c.foto}}" alt="" class="img-rounded" width="65px">-->
+								<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
 							</a>
 							<div class="media-body">
 								<h4 class="media-heading"><a href="{{c.link}}">{{c.nama}}</a></h4>

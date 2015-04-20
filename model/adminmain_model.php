@@ -439,4 +439,58 @@ class AdminmainModel extends ModelBase {
 		}
 		return array( 'type' => TRUE );
 	}
+	
+	public function get_data_table($table) {
+		extract($this->prepare_get(array('cpage')));
+		$cpage	= intval($cpage);
+		$r 		= array();
+		$where	= array();
+		switch($table) {
+			case 'kota':
+				$numdt = 75;
+				$tabel = 'kota';
+				$where[] = "STATUS_KOTA = '1'";
+				break;
+			case 'ongkir':
+				$numdt = 25;
+				$tabel = 'biayakurir';
+				break;
+		}
+		$utabel	= strtoupper($tabel);
+		$run	= $this->db->query("SELECT COUNT(ID_{$utabel}) AS HASIL FROM $tabel" . ( ! empty($where) ? " WHERE " . implode(" AND ", $where) : ''), TRUE);
+		$numpg	= ceil($run->HASIL / $numdt);
+		$start	= $cpage * $numdt;
+		
+		switch ($table) {
+			case 'kota':
+				$run = $this->db->query("SELECT * FROM kota WHERE STATUS_KOTA = '1' ORDER BY NAMA_KOTA LIMIT $start, $numdt");
+				if ( ! empty($run)) {
+					foreach ($run as $val) {
+						$r[] = array(
+							'id'	=> $val->ID_KOTA,
+							'nama'	=> $val->NAMA_KOTA
+						);
+					}
+				}
+				break;
+			case 'ongkir':
+				$run 	= $this->db->query("SELECT a.ID_BIAYAKURIR, a.BIAYA_BIAYAKURIR, b.ID_KOTA, b.NAMA_KOTA, c.ID_KURIR, c.NAMA_KURIR FROM biayakurir a, kota b, kurir c WHERE a.ID_KOTA = b.ID_KOTA AND a.ID_KURIR = c.ID_KURIR ORDER BY c.NAMA_KURIR, b.NAMA_KOTA");
+				if ( ! empty($run)) {
+					foreach ($run as $val) {
+						$r[] = array(
+							'i'	=> $val->ID_BIAYAKURIR,
+							'o'	=> $val->NAMA_KOTA,
+							'oi'=> $val->ID_KOTA,
+							'b'	=> number_format($val->BIAYA_BIAYAKURIR, 0, ',', '.'),
+							'k'	=> $val->NAMA_KURIR,
+							'ki'=> $val->ID_KURIR
+						);
+					}
+				}
+				break;
+		}
+		return array(
+			$table 	=> $r, 'numpage' => $numpg, 'type' => TRUE
+		);
+	}
 }

@@ -35,16 +35,17 @@
 										<th colspan="2" class="text-center">Kiriman</th>
 										<th data-ng-class="sortingIcon('date')" data-ng-click="sortOrder('date')">Tanggal</th>
 										<th data-ng-class="sortingIcon('sender')" data-ng-click="sortOrder('sender')">Pengirim</th>
+										<th data-ng-class="sortingIcon('report')" data-ng-click="sortOrder('report')">Aduan</th>
 										<th>&nbsp;</th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr data-ng-repeat="c in postList">
+									<tr data-ng-repeat="c in postList" data-ng-class="c.aduan > 0 ? 'danger' : ''">
 										<td width="1"></td>
 										<td style="max-width: 250px;">
 											<h4><a data-ng-href="{{server|rootserver}}/{{c.link}}" target="_blank">{{c.judul}}</a></h4>
 											<div class="clearfix">
-												<img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt="" class="search-img hidden-xs">
+												<div class="img hidden-xs pull-left"><span class="helper"></span><img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt=""></div>
 												<div class="meta-info">
 													<div class="desc">{{c.isi}}</div>
 													<div class="info text-info">
@@ -60,6 +61,7 @@
 												<a href="" class="user-link" show-modal="{{c.kode}}" data-type="anggota" data-target="modal-1"><span data-ng-show="c.valid_pengirim"><i class="fa fa-check-circle"></i> </span>{{c.nama_pengirim}}</a>
 											</h4>
 										</td>
+										<td>{{c.aduan}}</td>
 										<td>
 											<a href="" delete-button="{{c.id}}" data-type="emarket/{{type|lowercase}}" class="table-link danger">
 												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>

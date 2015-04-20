@@ -540,3 +540,21 @@ app.directive('savePesan', ['$http', function($http) {
 		}
 	};
 }]);
+
+/** simpan aduan */
+app.directive('saveAduan', ['$http', 'notify', function($http, notify) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(e) {
+				$http.post('/post/aduan', { post: attrs.saveAduan, reason: $('#report-alasan').val() }).
+				success(function(d) {
+					$('#modal-5').removeClass('md-show');
+					if (d.data == '') 
+						notify.slideTop.warning('Aduan berhasil tersimpan. Administrator akan segera diberitahu tentang aduan Anda. Terima kasih telah membantu situs ini menjadi lebih baik');
+					else notify.slideTop.error(d.data);
+				});
+			});
+		}
+	};
+}]);
