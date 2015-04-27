@@ -1,5 +1,5 @@
 upload/
-config/cache
+config/cache/
 lib/PHPMailer/
 lib/Slim/
 lib/Twig/
