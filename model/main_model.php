@@ -268,13 +268,14 @@ class MainModel extends ModelBase {
 		
 		// fproduk
 		if (in_array('fproduk', $tabel)) {
-			$run 	= $this->db->query("SELECT ID_PRODUKUTAMA, NAMA_PRODUKUTAMA, HARGA_PRODUKUTAMA FROM produkutama WHERE STATUS_PRODUKUTAMA = '1' ORDER BY NAMA_PRODUKUTAMA");
+			$run 	= $this->db->query("SELECT ID_PRODUKUTAMA, NAMA_PRODUKUTAMA, HARGA_PRODUKUTAMA, BERAT_PRODUKUTAMA FROM produkutama WHERE STATUS_PRODUKUTAMA = '1' ORDER BY NAMA_PRODUKUTAMA");
 			if ( ! empty($run)) {
 				foreach ($run as $val) {
 					$r['fproduk'][] = array(
 						'id'	=> $val->ID_PRODUKUTAMA,
 						'nama'	=> $val->NAMA_PRODUKUTAMA,
-						'harga'	=> $val->HARGA_PRODUKUTAMA
+						'harga'	=> $val->HARGA_PRODUKUTAMA,
+						'berat'	=> floatval($val->BERAT_PRODUKUTAMA)
 					);
 				}
 			}
@@ -385,19 +386,21 @@ class MainModel extends ModelBase {
 				}
 				break;
 			case 'ongkir':
-				extract($this->prepare_post(array('i', 'oi', 'ki', 'b')));
+				extract($this->prepare_post(array('i', 'oi', 'ki', 'b', 'l')));
 				$kota	= filter_var($oi, FILTER_SANITIZE_NUMBER_INT);
 				$kurir	= filter_var($ki, FILTER_SANITIZE_NUMBER_INT);
 				$biaya	= preg_replace('/[^0-9]/', '', $b);
+				$lanjut	= preg_replace('/[^0-9]/', '', $l);
 				if (empty($id)) {
-					$ins = $this->db->query("INSERT INTO biayakurir VALUES(0, '$kurir', '$kota', '$biaya')");
+					$ins = $this->db->query("INSERT INTO biayakurir VALUES(0, '$kurir', '$kota', '$biaya', '$lanjut')");
 				} else {
 					$run = $this->db->query("SELECT * FROM biayakurir WHERE ID_BIAYAKURIR = '$id'", TRUE);
 					if (empty($run)) return FALSE;
 					$upd = array();
 					if ($run->ID_KURIR != $kurir)		$upd[] = "ID_KURIR = '$kurir'";
 					if ($run->ID_KOTA != $kota)			$upd[] = "ID_KOTA = '$kota'";
-					if ($run->BIAYA_BIAYAKURIR != $biaya)$upd[] = "BIAYA_BIAYAKURIR = '$biaya'";
+					if ($run->BIAYA_BIAYAKURIR != $biaya)		$upd[] = "BIAYA_BIAYAKURIR = '$biaya'";
+					if ($run->LANJUTAN_BIAYAKURIR != $lanjut)	$upd[] = "LANJUTAN_BIAYAKURIR_BIAYAKURIR = '$lanjut'";
 					if ( ! empty($upd)) {
 						$run = $this->db->query("UPDATE biayakurir SET " . implode(", ", $upd) . " WHERE ID_BIAYAKURIR = '$id'");
 					}

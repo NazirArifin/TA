@@ -20,7 +20,8 @@
 	
 	<div class="row" data-ng-controller="HomeDirektoriCtrl" data-ng-cloak>
 		<div class="col-md-3">
-			<h5>DIREKTORI ANDA</h5><hr class="main">
+			<h5>DIREKTORI ANDA</h5>
+			<hr class="main" style="margin: 1.4em 0">
 			{% for c in direktori %}
 			<div class="list-group">
 				<a href="" class="list-group-item" data-ng-click="setActiveDirektori({{c.id}}, '{{c.nama}}')"><i class="fa fa-location-arrow"></i> {{c.nama}}</a>
@@ -248,7 +249,7 @@
 		{% endverbatim %}
 	</div>
 	
-	<hr class="main">
+	<hr class="main" style="margin: 1.4em 0">
 	
 	{% include 'footer.html' %}
 	

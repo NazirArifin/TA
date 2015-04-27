@@ -79,7 +79,7 @@
 		</div>
 		{% endif %}
 	</div>
-	<hr class="main">
+	<hr class="main" style="margin: 1.4em 0">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="panel panel-default">
@@ -87,20 +87,23 @@
 					<br>
 					{% if data %}
 					<div class="table-responsive">
-						<table class="table table-condensed table-hover">
+						<table class="table table-condensed table-hover table-striped">
 							<tbody>
 								{% for c in data %}
 								<tr>
-									<td><a href="{{c.link}}"><img src="{{c.foto}}" alt="" class="dirsearch-img"></a></td>
+									<td>
+										<a href="{{c.link}}"><div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div></a>
+										<!--<a href="{{c.link}}"><img src="{{c.foto}}" alt="" class="dirsearch-img"></a>-->
+									</td>
 									<td>
 										<a href="{{c.link}}" style="font-size: 1.4em;">{{c.nama}}</a><br>
-										<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
+										<small class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</small>
 									</td>
 									{% autoescape false %}
+									<td>{{c.alamat}}<br><span class="text-muted">{{c.kota}}</span></td>
 									<td>{{c.telepon}}</td>
-									<td>{{c.alamat}} &mdash; <span class="text-muted">{{c.kota}}</span></td>
 									{% endautoescape %}
-									<td>{{c.info}}</td>
+									<td><small>{{c.info}}</small></td>
 								</tr>
 								{% endfor %}
 							</tbody>

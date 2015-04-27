@@ -215,11 +215,15 @@
 														<table class="table table-condensed table-striped" data-ng-show="ongkir">
 															<thead>
 																<tr>
-																	<th></th>
-																	<th>KURIR</th>
-																	<th>TUJUAN</th>
-																	<th>BIAYA (<em class="text-muted">dalam rupiah</em>)</th>
-																	<th>&nbsp;</th>
+																	<th rowspan="2"></th>
+																	<th rowspan="2">KURIR</th>
+																	<th rowspan="2">TUJUAN</th>
+																	<th colspan="2" class="text-center">BIAYA (dalam rupiah)</th>
+																	<th rowspan="2">&nbsp;</th>
+																</tr>
+																<tr>
+																	<th>AWAL</th>
+																	<th>LANJUTAN</th>
 																</tr>
 															</thead>
 															<tbody>
@@ -228,6 +232,7 @@
 																	<td>{{c.k}}</td>
 																	<td>{{c.o}}</td>
 																	<td>{{c.b}}</td>
+																	<td>{{c.l}}</td>
 																	<td class="text-center">
 																		<a href="" class="table-link primary" show-modal="{{$index}}" data-target="modal-4">
 																			<span class="fa-stack">

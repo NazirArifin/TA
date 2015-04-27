@@ -18,17 +18,17 @@
 	<hr class="header">
 	
 	<div class="row">
-		<div class="col-md-12">
-			<div class="alert alert-info">
-				{% if tips.foto %}
-				
-				{% else %}
-				<i class="fa fa-fw fa-info-circle fa-5x pull-right" style="margin-top: 15px;"></i>
-				{% endif %}
-				<blockquote>
-				<p>{{tips}}</p>
-				</blockquote>
-			</div>
+		<div class="col-md-4">
+			
+			<p class="well well-sm text-muted" style="font-size: 0.8em">{{tips.daerah.isi}}</p>
+		</div>
+		<div class="col-md-8">
+			<blockquote>
+			<p class="" style="font-size: 0.9em;">
+				<i class="fa fa-fw fa-info-circle fa-3x pull-left"></i>
+				{{tips.bisnis.isi}}
+			</p>
+			</blockquote>
 		</div>
 	</div>
 	<div class="row">
@@ -36,7 +36,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						<a href="/berita">Berita Bisnis</a>
+						<a href="/berita">Berita Ekonomi</a>
 						<a href="/berita" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-rss text-warning"></i></a>
 					</h3>
 				</div>
@@ -45,7 +45,8 @@
 					<a href="{{c.link}}" class="list-group-item">
 						<h3 class="title">{{c.judul}}</h3>
 						<div class="clearfix">
-							<img src="{{c.foto}}" alt="">
+							<!--<img src="{{c.foto}}" alt="">-->
+							<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt="" style="float: none; margin-top: 0"></div>
 							<div class="meta-info">
 								<div class="date text-muted"><i class="fa fa-calendar"></i> {{c.tanggal}}</div>
 								<div class="desc">{{c.isi}}</div>
@@ -64,7 +65,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						<a href="/info">Let's Get Business</a>
+						<a href="/info">G2B &amp; Info</a>
 						<a href="/info" class="pull-right tooltips" title="lihat semua" data-placement="bottom"><i class="fa fa-rss text-warning"></i></a>
 					</h3>
 				</div>
@@ -73,7 +74,8 @@
 					<a href="{{c.link}}" class="list-group-item">
 						<h3 class="title">{{c.judul}}</h3>
 						<div class="clearfix">
-							<img src="{{c.foto}}" alt="">
+							<!--<img src="{{c.foto}}" alt="">-->
+							<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt="" style="float: none; margin-top: 0"></div>
 							<div class="meta-info">
 								<div class="date text-muted"><i class="fa fa-calendar"></i> {{c.tanggal}}</div>
 								<div class="desc">{{c.isi}}</div>
@@ -91,7 +93,7 @@
 	</div>
 	<!--<hr class="main">-->
 	<div class="row">
-		<h2 class="alert alert-warning text-center">DIREKTORI BISNIS</h2>
+		<h4 class="alert alert-warning text-center">DIREKTORI BISNIS</h4>
 		<div class="col-md-8 col-md-offset-2">
 			<form action="/direktori">
 				<div class="input-group has-warning">
@@ -101,14 +103,17 @@
 					</span>
 				</div>
 			</form>
+			<br>
 		</div>
+	</div>
+	<div class="row well well-sm">
 		<div class="text-center col-md-12">
-			<ul class="pagination pagination-sm hidden-xs">
+			<ul class="pagination pagination hidden-xs">
 				{% for c in direktori %}
 				<li{% if not c.h %} class="disabled"{% endif %}><a href="" class="tooltips" title="Lihat direktori {{c.a}}"{% if c.h %} data-ng-click="loadDirektoriList('{{c.a}}')"{% endif %}>{{c.a}}</a></li>
 				{% endfor %}
 			</ul>
-			<ul class="pagination pagination-sm visible-xs">
+			<ul class="pagination pagination visible-xs">
 				{% for c in direktori %}
 				{% if c.h %}<li><a href="/direktori/{{c.a}}" class="tooltips" title="Lihat direktori {{c.a}}">{{c.a}}</a></li>{% endif %}
 				{% endfor %}
@@ -131,10 +136,34 @@
 		</div>
 		{% endverbatim %}
 	</div>
+	
+	<hr class="main">
 	<div class="row">
+		<div class="col-md-12">
+			<h4 class="text-center">
+				<span class="fa-stack text-muted">
+					<i class="fa fa-circle fa-stack-2x"></i>
+					<i class="fa fa-user-plus fa-stack-1x fa-inverse"></i> 
+				</span>
+				DIREKTORI REKANAN
+			</h4>
+		</div>
+	</div>
+	
+	<div class="row">
+		{% if premium_direktori %}
+		<div class="col-md-3">
+			<!--<h6 style="font-weight: 600" class="text-muted">Direktori Rekanan</h6><hr>-->
+			<ul class="list-unstyled" style="font-size: .9em">
+				{% for c in premium_direktori %}
+				<li><a href="{{c.link}}"><i class="fa fa-fw fa-lg fa-angle-double-right"></i> {{c.nama}}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+		{% endif %}
 		{% if direktori_produk %}
 		<div class="col-md-9">
-			<h5>Produk Rekanan</h5>
+			<!--<h6 style="font-weight: 600" class="text-muted">Produk Rekanan</h6><hr>-->
 			<div class="panel panel default">
 				<div class="panel-body">
 					<div class="row">
@@ -150,7 +179,7 @@
 										<a href="{{c.link}}">{{c.nama}}</a>
 									</h4>
 									<p>{{c.info}}</p>
-									<div>
+									<div style="font-size: 0.9em;">
 										<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
 										<a href="{{c.link_direktori}}" class="pull-right">{{c.direktori}}</a>
 									</div>
@@ -163,34 +192,35 @@
 			</div>
 		</div>
 		{% endif %}
-		{% if premium_direktori %}
-		<div class="col-md-3">
-			<h5>Direktori Rekanan</h5>
-			<ul class="list-unstyled">
-				{% for c in premium_direktori %}
-				<li><a href="{{c.link}}"><i class="fa fa-fw fa-lg fa-chevron-circle-right"></i> {{c.nama}}</a></li>
-				{% endfor %}
-			</ul>
-		</div>
-		{% endif %}
 	</div>
 	<hr class="main">
 	<div class="row">
+		<div class="col-md-12">
+			<h4 class="text-center">
+				<span class="fa-stack text-info">
+					<i class="fa fa-circle fa-stack-2x"></i>
+					<i class="fa fa-money fa-stack-1x fa-inverse"></i> 
+				</span>
+				JUAL BELI BARANG
+			</h4>
+		</div>
+	</div>
+	
+	<div class="row">	
 		<div class="col-md-6">
-			<div class="panel panel-success">
-				<div class="panel-heading">
-					<div class="panel-title clearfix">
-						<a href="/jual" class="pull-left tooltips" style="margin-top: 5px; font-size: 1.2em;" title="lihat semua" data-placement="bottom">JUAL BARANG</a>
-						<form role="form" action="/jual" class="form-inline pull-right">
-							<div class="form-group">
+					<form role="form" action="/jual" class="form">
+						<div class="form-group">
+							<i class="fa fa-search text-muted" style="position: absolute; left: 15px; padding: 12px 12px; pointer-events: none; z-index: 99"></i>
+							<div class="input-group">
 								<label for="jual-query" class="sr-only">Cari</label>
-								<i class="fa fa-search text-muted" style="position: absolute; right: 19px; padding: 10px 12px; pointer-events: none; color: #fff;"></i>
-								<input type="text" name="query" id="jual-query" class="form-control" placeholder="Cari Jual" style="padding-right: 30px;">
+								<input type="text" name="query" id="jual-query" class="form-control" placeholder="Cari Jual" style="padding-left: 30px;">
+								<span class="input-group-addon tooltips" title="lihat semua" data-placement="left"><a href="/jual"><i class="fa fa-list"></i></a></span>
 							</div>
-						</form>
-					</div>
-				</div>
-				<div class="panel-body" scrollable data-height="500px">
+						</div>
+					</form>
+					<div class="clearfix"></div>
+			<div class="panel panel-default">
+				<div class="panel-body" scrollable data-height="550px">
 					{% for c in jual %}
 					<div class="media" style="border-bottom: 1px solid #D9D9D9; padding-bottom: 5px;">
 						<a class="media-left" href="{{c.link}}">
@@ -211,26 +241,25 @@
 					</div>
 					{% endfor %}
 				</div>
-				<div class="panel-footer">
+				<!--<div class="panel-footer">
 					<a href="/jual"><i class="fa fa-angle-right"></i> Tampilkan Semua</a>
-				</div>
+				</div>-->
 			</div>
 		</div>
 		<div class="col-md-6">
-			<div class="panel panel-info">
-				<div class="panel-heading">
-					<div class="panel-title clearfix">
-						<a href="/beli" class="pull-left tooltips" style="margin-top: 5px; font-size: 1.2em;" title="lihat semua" data-placement="bottom">BELI BARANG</a>
-						<form role="form" action="/beli" class="form-inline pull-right">
-							<div class="form-group">
+					<form role="form" action="/beli" class="form">
+						<div class="form-group">
+							<i class="fa fa-search text-muted" style="position: absolute; left: 15px; padding: 12px 12px; pointer-events: none; z-index: 99"></i>
+							<div class="input-group">
 								<label for="beli-query" class="sr-only">Cari</label>
-								<i class="fa fa-search text-muted" style="position: absolute; right: 19px; padding: 10px 12px; pointer-events: none; color: #fff;"></i>
-								<input type="text" name="query" id="beli-query" class="form-control" placeholder="Cari Beli" style="padding-right: 30px;">
+								<input type="text" name="query" id="beli-query" class="form-control" placeholder="Cari Beli" style="padding-left: 30px;">
+								<span class="input-group-addon tooltips" title="lihat semua" data-placement="left"><a href="/beli"><i class="fa fa-list"></i></a></span>
 							</div>
-						</form>
-					</div>
-				</div>
-				<div class="panel-body" scrollable data-height="500px">
+						</div>
+					</form>
+					<div class="clearfix"></div>
+			<div class="panel panel-info">
+				<div class="panel-body" scrollable data-height="550px">
 					{% for c in beli %}
 					<div class="media" style="border-bottom: 1px solid #D9D9D9; padding-bottom: 5px;">
 						<a class="media-left" href="{{c.link}}">
@@ -251,41 +280,57 @@
 					</div>
 					{% endfor %}
 				</div>
-				<div class="panel-footer">
+				<!--<div class="panel-footer">
 					<a href="/beli"><i class="fa fa-angle-right"></i> Tampilkan Semua</a>
-				</div>
+				</div>-->
 			</div>
 		</div>
 	</div>
 	<hr class="main">
-	<h3 class="text-center alert alert-info">ETALASE</h3>
 	<div class="row">
+		<div class="col-md-12">
+			<h4 class="text-center">
+				<span class="fa-stack text-muted">
+					<i class="fa fa-circle fa-stack-2x"></i>
+					<i class="fa fa-gift fa-stack-1x fa-inverse"></i> 
+				</span>
+				ETALASE PRODUK
+			</h4>
+		</div>
+	</div>
+	
+	<div class="row well well-sm">
 		{% for c in produk %}
-		<div class="col-md-4">
-			<div class="panel panel-default">
-				<div class="panel-body">
-					<div class="media">
-						<a class="media-left" href="{{c.link}}">
-							<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
-							<strong class="label label-success">Rp. {{c.harga}}</strong>
+		<div class="col-md-2">
+			<div class="thumbnail">
+				<img src="{{c.foto}}" alt="" style="width: 100%">
+				<div class="caption" style="padding: 0;">
+					<h5>
+						<a href="{{c.link}}">{{c.nama}}</a>
+						{% if c.stok > 0 %}
+						<a href="" class="pull-right tooltips" title="keranjang" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">
+							<span class="fa-stack">
+								<i class="fa fa-circle fa-stack-2x"></i>
+								<i class="fa fa-cart-plus fa-stack-1x fa-inverse"></i> 
+							</span>
 						</a>
-						<div class="media-body">
-							<h4 class="media-heading produk">
-								<a href="{{c.link}}">{{c.nama}}</a>
-							</h4>
-							<p>{{c.info}}</p>
-							<div>
-								<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
-								{% if c.stok > 0 %}
-								<button class="btn btn-primary btn-xs pull-right" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">KERANJANG <i class="fa fa-cart-plus"></i></button>
-								{% endif %}
-							</div>
-						</div>
-					</div>
+						{% endif %}
+					</h5>
+					<p>
+						<strong class="label label-success">Rp. {{c.harga}}</strong>
+					</p>
+					<div class="well well-sm" style="margin-bottom: 0;"><small style="font-size: 75%;" class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</small></div>
 				</div>
 			</div>
 		</div>
+		
+		{% if (loop.index % 6 == 0) %}
+		<div class="clearfix"></div>
+		{% endif %}
+		
 		{% endfor %}
+	</div>
+	<div class="row">
 		{% if produk %}
 		<div class="col-md-12">
 			<p class="text-center">

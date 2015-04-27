@@ -13,7 +13,7 @@ class ProdukModel extends ModelBase {
 		$r 		= array();
 		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 		if ( ! $for_edit) {
-			$run	= $this->db->query("SELECT b.NAMA_KATPRODUK, a.* FROM produk a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.ID_DIREKTORI = '$id' AND a.STATUS_PRODUK != '0' ORDER BY NAMA_PRODUK");
+			$run	= $this->db->query("SELECT b.ID_KATPRODUK, b.NAMA_KATPRODUK, a.* FROM produk a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.ID_DIREKTORI = '$id' AND a.STATUS_PRODUK != '0' ORDER BY NAMA_PRODUK");
 			if ( ! empty($run)) {
 				foreach ($run as $val) {
 					$infoe	= strip_tags($val->INFO_PRODUK);
@@ -27,6 +27,7 @@ class ProdukModel extends ModelBase {
 					$r[]	= array(
 						'id'		=> $val->ID_PRODUK,
 						'kategori'	=> $val->NAMA_KATPRODUK,
+						'id_kategori'=> $val->ID_KATPRODUK,
 						'nama'		=> $val->NAMA_PRODUK,
 						'harga'		=> ( ! empty($val->HARGA_PRODUK) ? number_format($val->HARGA_PRODUK, 0, ',', '.') : ''),
 						'info'		=> $info,
@@ -60,14 +61,17 @@ class ProdukModel extends ModelBase {
 	public function get_all_post() {
 		extract($this->prepare_get(array('cpage', 'kategori', 'query')));
 		$cpage 	= filter_var($cpage, FILTER_SANITIZE_NUMBER_INT);
+		
 		if (empty($cpage)) $cpage = 0;
 		$where	= array();
 		$r 		= array();
+		
 		if ( ! empty($query)) {
 			$query		= $this->db->escape_str(strip_tags($query));
 			$where[]	= "(a.NAMA_PRODUKUTAMA LIKE '%{$query}%' OR a.INFO_PRODUKUTAMA LIKE '%{$query}%')";
 			$r['param']['query'] = stripslashes($query);
 		} else $r['param']['query'] = '';
+		
 		if ( ! empty($kategori)) {
 			$kategori	= filter_var($kategori, FILTER_SANITIZE_NUMBER_INT);
 			$where[]	= "a.ID_KATPRODUK = '$kategori'";
@@ -116,11 +120,12 @@ class ProdukModel extends ModelBase {
 		$table	= ($feat ? 'produkutama' : 'produk');
 		$utable	= strtoupper($table);
 		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
-		$run	= $this->db->query("SELECT a.*, b.NAMA_KATPRODUK FROM $table a, katproduk b WHERE a.STATUS_{$utable} = '1' AND a.ID_KATPRODUK = b.ID_KATPRODUK AND a.ID_{$utable} = '$id'", TRUE, FALSE);
+		$run	= $this->db->query("SELECT a.*, b.ID_KATPRODUK, b.NAMA_KATPRODUK FROM $table a, katproduk b WHERE a.STATUS_{$utable} = '1' AND a.ID_KATPRODUK = b.ID_KATPRODUK AND a.ID_{$utable} = '$id'", TRUE, FALSE);
 		if (empty($run)) return FALSE;
 		if ($nama != preg_replace('/[^a-z0-9]/', '-', strtolower($run['NAMA_'.$utable]))) return FALSE;
 		$r['id']		= $id;
 		$r['kategori']	= $run['NAMA_KATPRODUK'];
+		$r['id_kategori'] = $run['ID_KATPRODUK'];
 		$r['nama']		= $run['NAMA_' . $utable];
 		$r['harga']		= number_format($run['HARGA_' . $utable], 0, ',', '.');
 		$r['info']		= $run['INFO_' . $utable];
@@ -356,7 +361,7 @@ class ProdukModel extends ModelBase {
 			);
 		}
 		$r['subtotal']	= number_format($r['subtotal'], 0, ',', '.');
-		$r['total']		= str_replace('.', '', $r['subtotal']) + str_replace('.', '', $r['ongkir']);
+		$r['total']		= number_format(str_replace('.', '', $r['subtotal']) + str_replace('.', '', $r['ongkir']), 0, ',', '.');
 		return $r;
 	}
 	
@@ -478,5 +483,19 @@ class ProdukModel extends ModelBase {
 		$run 	= $this->db->query("INSERT INTO pesan VALUES" . implode(', ', $values));
 		*/
 		return array('type' => TRUE);
+	}
+	
+	public function get_kategori_fproduk() {
+		$r 		= array();
+		$run	= $this->db->query("SELECT b.ID_KATPRODUK, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK GROUP BY a.ID_KATPRODUK");
+		if ( ! empty($run)) {
+			foreach ($run as $val) {
+				$r[] = array(
+					'nama'	=> $val->NAMA_KATPRODUK,
+					'id'	=> $val->ID_KATPRODUK
+				);
+			}
+		}
+		return $r;
 	}
 }

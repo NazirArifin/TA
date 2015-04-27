@@ -155,24 +155,28 @@
 						<a href="/katalog/{{id}}" class="btn btn-default pull-right"><i class="fa fa-download"></i> UNDUH KATALOG</a>
 					</div>
 				</div>
-				<hr class="main">
+				<hr class="main" style="margin: 1.4em 0">
 				<div class="row" style="margin-bottom: 40px;">
 					{% for c in produk %}
-					<div class="col-md-4">
-						<div class="media">
-							<a class="media-left" href="{{c.link}}">
-								<!--<img src="{{c.foto}}" alt="" class="img-rounded" width="65px">-->
-								<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
-							</a>
-							<div class="media-body">
-								<h4 class="media-heading"><a href="{{c.link}}">{{c.nama}}</a></h4>
+					<div class="col-md-3">
+						<div class="thumbnail">
+							<img src="{{c.foto}}" alt="" style="width: 100%">
+							<div class="caption" style="padding: 0;">
+								<h5>
+									<a href="{{c.link}}">{{c.nama}}</a>
+								</h5>
 								<p>
-									{{c.info}}<br><br>
-									{% if c.harga %}<strong class="label label-success">Rp. {{c.harga}}</strong>{% endif %}
+									<strong class="label label-success">Rp. {{c.harga}}</strong>
 								</p>
+								<div class="well well-sm" style="margin-bottom: 0;"><small><i class="fa fa-info-circle"></i> {{c.info}}</small></div>
 							</div>
 						</div>
 					</div>
+					
+					{% if loop.index % 4 == 0 %}
+					<div class="clearfix"></div>
+					{% endif %}
+					
 					{% endfor %}
 				</div>
 				{% endif %}

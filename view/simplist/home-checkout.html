@@ -41,7 +41,7 @@
 							<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-male fa-stack-1x fa-inverse"></i></span>
 							Informasi Pemesan
 						</h6>
-						<p class="text-muted"><small><strong>&mdash; Anda dapat mengganti nama dan alamat dengan identitas lain untuk tujuan pengiriman yang berbeda. Hanya melayani pengiriman dalam negeri.</strong></small></p>
+						<p class="text-danger"><small><strong>&mdash; Anda dapat mengganti nama dan alamat dengan identitas lain untuk tujuan pengiriman yang berbeda. Hanya melayani pengiriman dalam negeri.</strong></small></p>
 						<br>
 						<form role="form">
 							<div class="form-group">
@@ -53,9 +53,15 @@
 								<input type="text" name="alamat" id="c-alamat" class="form-control" value="{{member_alamat}}">
 							</div>
 							<div class="form-group">
-								<label for="c-tujuan">Kota</label>
+								<label for="c-tujuan">Kota *</label>
 								<select name="tujuan" id="c-tujuan" data-ng-model="tujuan" data-ng-options="c.id as c.nama for c in kota" style="width: 100%" data-value="{{tujuan}}" data-ng-change="loadOngkir()" select2 required>
 									<option value="">-- pilih tujuan --</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="c-kurir">Kurir *</label>
+								<select name="kurir" id="c-kurir" data-ng-model="kurir" data-ng-options="c.id as c.nama for c in kurirList" class="form-control" data-ng-change="loadOngkir()" required>
+									<option value="">-- pilih kurir --</option>
 								</select>
 							</div>
 							<div class="form-group">
@@ -69,7 +75,7 @@
 							Biaya Pengiriman
 						</h6>
 						{% verbatim %}
-						<p><strong>Ongkos Kirim</strong><br>Rp. {{shipRate|number:0}},-</p>
+						<p><strong>Ongkos Kirim</strong><br><br>Rp. {{shipRate|number:0}},-</p>
 						{% endverbatim %}
 					</div>
 					<div class="col-md-7">
@@ -116,6 +122,10 @@
 									<td class="text-right">{{c.total|number:0}},-</td>
 								</tr>
 								<tr>
+									<td colspan="4"><strong class="text-muted">Berat Total</strong></td>
+									<td class="text-right text-muted">{{berat|number:2}} kg</td>
+								</tr>
+								<tr>
 									<td colspan="4"><strong class="text-muted">Subtotal</strong></td>
 									<td class="text-right text-muted">{{subTotal|number:0}}</td>
 								</tr>
@@ -131,8 +141,9 @@
 						</table>
 						{% endverbatim %}
 						<a href="" class="btn btn-default btn-sm pull-right" onclick="window.history.back()">BATALKAN</a>
+						<a href="/fproduk" class="btn btn-success btn-sm pull-right">Cari Produk Lain</a>
 						<br>
-						<hr class="main">
+						<hr class="main" style="margin: 1.4em 0">
 						<button class="btn btn-primary pull-right" save-order><i class="fa fa-check"></i> SIMPAN PESANAN</button>
 					</div>
 				</div>

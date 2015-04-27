@@ -36,13 +36,19 @@
 						<option value="{{c.id}}"{% if param.kategori == c.id %} selected{% endif %}>{{c.nama}}</option>
 						{% endfor %}
 					</select>
-					
 					<button class="btn btn-default"><i class="fa fa-search"></i> CARI</button>
 				</div>
 			</form>
 		</div>
 	</div>
-	<hr class="main">
+	<ul class="nav nav-pills" style="margin-top: 15px; font-size: 0.87em; font-weight: bold">
+		<li{% if not param.kategori %} class="active"{% endif %}><a href="/fproduk">Semua</a></li>
+		{% for c in kategori %}
+		<li{% if param.kategori == c.id %} class="active"{% endif %}><a href="/fproduk?kategori={{c.id}}"><i class="fa fa-fw fa-square-o"></i> {{c.nama}}</a></li>
+		{% endfor %}
+	</ul>
+	<hr class="main" style="margin: 1.4em 0">
+	
 	<div class="col-md-12">
 		<div class="panel panel-default">
 			<div class="panel-body">
@@ -53,30 +59,37 @@
 				</div>
 				<div class="row" style="margin-bottom: 40px; margin-top: 10px;">
 					{% for c in produk %}
-					<div class="col-md-4">
-						<div class="media">
-							<a class="media-left" href="{{c.link}}">
-								<img src="{{c.foto}}" alt="" class="img-rounded" width="65px">
-							</a>
-							<div class="media-body">
-								<h4 class="media-heading">
+					<div class="col-md-3">
+						<div class="thumbnail">
+							<img src="{{c.foto}}" alt="" style="width: 100%">
+							<div class="caption">
+								<h4>
 									<a href="{{c.link}}">{{c.nama}}</a>
-									{% if c.stok > 0 %}<small class="label label-warning pull-right" style="font-size: 0.67em">TERSEDIA</small>{% endif %}
-									{% if c.stok == 0 %}<small class="label label-danger pull-right" style="font-size: 0.67em">TERJUAL</small>{% endif %}
+									{% if c.stok > 0 %}<small class="label label-warning pull-right" style="font-size: 0.5em">TERSEDIA</small>{% endif %}
+									{% if c.stok == 0 %}<small class="label label-danger pull-right" style="font-size: 0.5em">TERJUAL</small>{% endif %}
 								</h4>
+								<p style="font-size: 0.875em;"><span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span></p>
+								<hr>
+								<p style="font-size: 0.875em;">{{c.info}}</p>
 								<p>
-									{{c.info}}<br><br>
-									<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
-									<strong class="label label-success pull-right" style="font-size: 1em;">Rp. {{c.harga}}</strong>
-								</p>
-								<div>
+									<strong class="label label-success" style="font-size: 1em;">Rp. {{c.harga}}</strong>
 									{% if c.stok > 0 %}
-									<button class="btn btn-primary btn-xs pull-right" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">TAMBAH KE KERANJANG <i class="fa fa-cart-plus"></i></button>
+									<a href="" class="pull-right tooltips" title="keranjang" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">
+										<span class="fa-stack">
+											<i class="fa fa-circle fa-stack-2x"></i>
+											<i class="fa fa-cart-plus fa-stack-1x fa-inverse"></i> 
+										</span>
+									</a>
 									{% endif %}
-								</div>
+								</p>
 							</div>
 						</div>
 					</div>
+					
+					{% if (loop.index % 4 == 0) %}
+					<div class="clearfix"></div>
+					{% endif %}
+					
 					{% endfor %}
 				</div>
 			</div>

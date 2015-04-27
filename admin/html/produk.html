@@ -49,11 +49,11 @@
 							<table class="table user-list table-condensed dataTable no-footer">
 								<thead>
 									<tr>
-										<th data-ng-class="sortingIcon('nama')" data-ng-click="sortOrder('nama')" style="width: 50%">Produk</th>
+										<th data-ng-class="sortingIcon('nama')" data-ng-click="sortOrder('nama')" style="width: 40%">Produk</th>
 										<th data-ng-class="sortingIcon('kategori')" data-ng-click="sortOrder('kategori')">KATEGORI</th>
 										<th data-ng-class="sortingIcon('harga')" data-ng-click="sortOrder('harga')">Harga</th>
-										<th>Stok</th>
-										<th>Status</th>
+										<th data-ng-class="sortingIcon('stok')" data-ng-click="sortOrder('stok')">Stok</th>
+										<th>Berat (kg)</th>
 										<th style="width: 15%;" class="text-center"></th>
 									</tr>
 								</thead>
@@ -61,13 +61,15 @@
 									<tr data-ng-repeat="c in produkList">
 										<td>
 											<div class="img hidden-xs pull-left"><span class="helper"></span><img data-ng-src="{{server|rootserver}}/{{c.foto}}" alt=""></div>
-											<a href="" class="user-link" show-modal="{{c.kode}}" data-type="produk" data-target="modal-1">{{c.nama}}</a>
-											<span class="user-subhead" class="text-muted">{{c.info}}</span>
+											<a data-ng-href="{{server|rootserver}}/{{c.link}}" class="user-link" target="_blank">{{c.nama}}</a>
+											<span class="user-subhead" class="text-muted">
+												<small class="label" data-ng-class="{ true: 'label-success', false: 'label-default' }[c.status == 'Aktif']">{{c.status}}</small> &mdash; {{c.info}}
+											</span>
 										</td>
 										<td>{{c.kat}}</td>
 										<td>Rp. {{c.harga}}</td>
 										<td>{{c.stok}}</td>
-										<td><span class="label" data-ng-class="{ true: 'label-success', false: 'label-default' }[c.status == 'Aktif']">{{c.status}}</span></td>
+										<td>{{c.berat}}</td>
 										<td>
 											<a href="" class="table-link" data-ng-click="setEdit(c.id)" data-ng-show="c.status == 'Aktif'">
 												<span class="fa-stack">
@@ -143,6 +145,13 @@
 										<input type="text" name="nama" id="nama" class="form-control" placeholder="Nama Produk" maxlength="120" data-ng-model="produk.nama" required>
 									</div>
 									<div class="col-lg-2"><small class="help-block"><strong>*</strong></small></div>
+								</div>
+								<div class="form-group">
+									<label for="berat" class="col-lg-2 control-label"><strong>Berat Produk</strong></label>
+									<div class="col-lg-1">
+										<input type="text" name="berat" id="stok" class="form-control" placeholder="" maxlength="6" data-ng-model="produk.berat" masked-input="f?fff" data-placeholder="0" required>
+									</div>
+									<div class="col-lg-2"><small class="help-block"><strong>*</strong> <em>&mdash; dalam kg</em></small></div>
 								</div>
 								<div class="form-group">
 									<label for="stok" class="col-lg-2 control-label"><strong>Stok Produk</strong></label>

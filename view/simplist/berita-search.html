@@ -33,7 +33,7 @@
 			</form>
 		</div>
 	</div>
-	<hr class="main">
+	<hr class="main" style="margin: 1.4em 0">
 	<div class="col-md-12">
 		<div class="panel panel-default">
 			<div class="panel-body">
@@ -44,7 +44,9 @@
 						<tbody>
 							{% for c in data %}
 							<tr>
-								<td style="padding-top: 10px;"><a href="{{c.link}}"><img src="{{c.foto}}" alt="" class="dirsearch-img"></a></td>
+								<td style="padding-top: 10px;">
+									<a href="{{c.link}}"><div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div></a>
+								</td>
 								<td style="width: 30%">
 									<a href="{{c.link}}" style="font-size: 1.1em;">{{c.judul}}</a><br>
 									<small class="text-muted" style="font-size: 0.87em"><i class="fa fa-calendar"></i> {{c.tanggal}}</small>

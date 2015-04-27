@@ -160,12 +160,9 @@ class FrontModel extends ModelBase {
 	public function get_produk() {
 		// secara acak
 		$r 		= array();
-		$run 	= $this->db->query("SELECT a.*, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.STATUS_PRODUKUTAMA = '1' ORDER BY RAND() LIMIT 10");
+		$run 	= $this->db->query("SELECT a.*, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.STATUS_PRODUKUTAMA = '1' ORDER BY RAND() LIMIT 18");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
-				$isi 		= strip_tags($val->INFO_PRODUKUTAMA);
-				$ptisi		= token_truncate($isi, 150);
-				if (strlen($isi) > 150) $ptisi .= '...';
 				if (empty($val->FOTO_PRODUKUTAMA))
 					$foto 	= '/upload/produk/default.png';
 				else {
@@ -178,7 +175,6 @@ class FrontModel extends ModelBase {
 					'link'	=> '/fproduk/' . $val->ID_PRODUKUTAMA . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_PRODUKUTAMA)),
 					'stok'	=> $val->STOK_PRODUKUTAMA,
 					'harga'	=> number_format($val->HARGA_PRODUKUTAMA, 0, ',', '.') . ',-',
-					'info'	=> $ptisi,
 					'foto'	=> $foto,
 					'kategori'	=> $val->NAMA_KATPRODUK
 				);
@@ -191,16 +187,20 @@ class FrontModel extends ModelBase {
 	 * Mendapatkan tips dan trik 
 	 */
 	public function get_tips() {
-		$run = $this->db->query("SELECT ISI_TIPSTRIK FROM tipstrik ORDER BY RAND() LIMIT 0, 1", TRUE);
-		if ( ! empty($run)) 
-		if (empty($run->FOTO_TIPSTRIK)) {
-			return $run->ISI_TIPSTRIK;
-		} else {
-			return array(
-				'foto' 	=> $run->FOTO_TIPSTRIK,
-				'isi'	=> $run->ISI_TIPSTRIK
-			);
+		$r = array(
+			'daerah' => '', 'bisnis' => ''
+		);
+		$type = array(1, 2);
+		foreach ($type as $val) {
+			$run = $this->db->query("SELECT ISI_TIPSTRIK FROM tipstrik WHERE JENIS_TIPSTRIK = '$val' ORDER BY RAND() LIMIT 0, 1", TRUE);
+			if ( ! empty($run)) { 
+				$r[($val == 1 ? 'daerah' : 'bisnis')] = array(
+					/*'foto' 	=> $run->FOTO_TIPSTRIK,*/
+					'isi'	=> $run->ISI_TIPSTRIK
+				);
+			}
 		}
+		return $r;
 	}
 	
 	/**
@@ -338,12 +338,20 @@ class FrontModel extends ModelBase {
 	 * Mendapatkan biaya ongkir kiriman
 	 */
 	public function get_ongkir() {
-		extract($this->prepare_get(array('kota')));
+		extract($this->prepare_get(array('kota', 'kurir', 'berat')));
 		$kota 	= filter_var($kota, FILTER_SANITIZE_NUMBER_INT);
+		$kurir	= intval($kurir);
+		$berat	= str_replace(',', '.', $berat);
 		if (empty($kota)) return FALSE;
-		$run	= $this->db->query("SELECT BIAYA_BIAYAKURIR FROM biayakurir WHERE ID_KOTA = '$kota'", TRUE);
-		if ( ! empty($run)) $biaya = $run->BIAYA_BIAYAKURIR;
-		else $biaya = 0;
+		$run	= $this->db->query("SELECT BIAYA_BIAYAKURIR, LANJUTAN_BIAYAKURIR FROM biayakurir WHERE ID_KOTA = '$kota' AND ID_KURIR = '$kurir'", TRUE);
+		if ( ! empty($run)) {
+			// hitung biaya berdasarkan berat
+			$berat 	= ceil(floatval($berat));
+			$lanjut = ($berat > 1 ? $berat - 1 : 0);
+			$biaya 	= $run->BIAYA_BIAYAKURIR + ($lanjut * $run->LANJUTAN_BIAYAKURIR);
+		} else {
+			$biaya = 0;
+		}
 		return array('type' => TRUE, 'biaya' => $biaya);
 	}
 }

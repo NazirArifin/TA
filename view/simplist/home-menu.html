@@ -1,4 +1,4 @@
-	<div class="navbar navbar-default hidden-print" style="margin-top: 10px;">
+	<div class="navbar navbar-inverse hidden-print">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
 				<span class="icon-bar"></span>
@@ -9,15 +9,15 @@
 		<div class="navbar-collapse collapse navbar-responsive-collapse">
 			<ul class="nav navbar-nav">
 				<li><img src="{{member_foto}}" alt=""></li>
-				<li{% if path == ' ' %} class="active"{% endif %}><a href="/home">BERANDA</a></li>
-				<li{% if path == 'post' %} class="active"{% endif %}><a href="/home/post">KIRIMAN</a></li>				
+				<li{% if path == ' ' %} class="active"{% endif %}><a href="/home"><i class="fa fa-fw fa-2x fa-home"></i> BERANDA</a></li>
+				<li{% if path == 'post' %} class="active"{% endif %}><a href="/home/post"><i class="fa fa-fw fa-2x fa-send"></i> KIRIMAN</a></li>				
 				{% if member_direktori %}
-				<li{% if path == 'direktori' %} class="active"{% endif %}><a href="/home/direktori">DIREKTORI</a></li>				
-				<li{% if path == 'produk' %} class="active"{% endif %}><a href="/home/produk">PRODUK</a></li>
+				<li{% if path == 'direktori' %} class="active"{% endif %}><a href="/home/direktori"><i class="fa fa-fw fa-2x fa-map-marker"></i> DIREKTORI</a></li>				
+				<li{% if path == 'produk' %} class="active"{% endif %}><a href="/home/produk"><i class="fa fa-fw fa-2x fa-gift"></i> PRODUK</a></li>
 				{% endif %}
 				
 				{% if path == 'order' %}<li class="active"><a href="/home/order"><span class="text-muted">ORDER</span></a></li>{% endif %}	
-				{% if path == 'pesan' %}<li class="active"><a href="/home/pesan"><span class="text-muted">PESAN</span></a></li>{% endif %}	
+				{% if path == 'pesan' %}<li class="active"><a href="/home/pesan"><span class="text-muted"><i class="fa fa-fw fa-envelope-o"></i> PESAN</span></a></li>{% endif %}	
 				{% if path == 'checkout' %}<li class="active"><a href="/home/checkout"><span class="text-muted">CHECKOUT</span></a></li>{% endif %}	
 			</ul>
 		</div>

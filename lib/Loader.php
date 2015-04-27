@@ -24,7 +24,7 @@ class Loader {
 	/**
 	 * Cache view
 	 */
-	private $cache_view = false;
+	private $cache_view = true;
 	
 	/**
 	 * Load controller dan router

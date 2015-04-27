@@ -42,7 +42,7 @@ window.me = '{{member_kode}}';
 					<span class="label label-primary">Anggota {{jenis}}</span>
 				</div>
 				<div class="profile-since"><i class="fa fa-user-plus"></i> {{daftar}}</div>
-				{% if telepon %}<div class="profile-since"><small class="text-muted"><i class="fa fa-phone-square"></i> {{telepon}}</small></div>{% endif %}
+				{% if telepon and authenticate %}<div class="profile-since"><small class="text-muted"><i class="fa fa-phone-square"></i> {{telepon}}</small></div>{% endif %}
 				<div class="profile-details">
 					<table class="table table-condensed">
 						<tbody>

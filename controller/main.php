@@ -22,6 +22,7 @@ $app->get('/', function() use($app, $ctr) {
 	$param		= array(
 		'info' 				=> $info,
 		'bisnis'			=> $bisnis,
+		'berita'			=> true,
 		'direktori'			=> $direktori,
 		'premium_direktori'	=> $pdirektori,
 		'jual'				=> $jual,
@@ -31,6 +32,7 @@ $app->get('/', function() use($app, $ctr) {
 		'tips'				=> $tips,
 		'at_home'			=> true
 	);
+	
 	if (cek_token($ctr)) {
 		$member		= $ctr->MainModel->member_me($_COOKIE['token']);
 		foreach ($member['data'] as $key => $val)
@@ -250,12 +252,13 @@ $app->get('/email/:state', function($state) use($app, $ctr) {
  * Method: GET
  * Verb: berita
  */
-$app->options('/berita', function() use($app) { $app->status(200); $app->stop(); });
-$app->get('/berita', function() use($app, $ctr) {
+$app->options('/:type', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/:type', function($type) use($app, $ctr) {
 	$ctr->load('helper', 'date');
 	$ctr->load('helper', 'string');
 	$ctr->load('model', 'front');
-	$news = $ctr->FrontModel->news_list('berita');
+	$news = $ctr->FrontModel->news_list($type);
+	$news[$type] = true;
 	if ($news === FALSE) halt404();
 	// cek token
 	if (cek_token($ctr)) {
@@ -265,7 +268,7 @@ $app->get('/berita', function() use($app, $ctr) {
 			$news[$key] = $val;
 	}
 	$ctr->load('view', 'berita-search.html', $news);
-});
+})->conditions(array('type' => '(berita|info)'));
 
 // ----------------------------------------------------------------
 /**
@@ -287,28 +290,6 @@ $app->get('/berita/:id/:judul', function($id, $judul) use($app, $ctr) {
 			$news[$key] = $val;
 	}
 	$ctr->load('view', 'berita.html', $news);
-});
-
-// ----------------------------------------------------------------
-/**
- * Method: GET
- * Verb: info
- */
-$app->options('/info', function() use($app) { $app->status(200); $app->stop(); });
-$app->get('/info', function() use($app, $ctr) {
-	$ctr->load('helper', 'date');
-	$ctr->load('helper', 'string');
-	$ctr->load('model', 'front');
-	$news = $ctr->FrontModel->news_list('info');
-	if ($news === FALSE) halt404();
-	// cek token
-	if (cek_token($ctr)) {
-		$member	= $ctr->MainModel->member_me($_COOKIE['token']);
-		$news['authenticate'] = TRUE;
-		foreach ($member['data'] as $key => $val)
-			$news[$key] = $val;
-	}
-	$ctr->load('view', 'berita-search.html', $news);
 });
 
 // ----------------------------------------------------------------
@@ -612,12 +593,13 @@ $app->delete('/post/:id', function($id) use($app, $ctr) {
  * Method: GET
  * Verb: jual 
  */
-$app->options('/jual', function() use($app) { $app->status(200); $app->stop(); });
-$app->get('/jual', function() use($app, $ctr) {
+$app->options('/:type', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/:type', function($type) use($app, $ctr) {
 	$ctr->load('helper', 'string');
 	$ctr->load('helper', 'date');
 	$ctr->load('model', 'post');
-	$post = $ctr->PostModel->get_all_post(1);
+	$post = $ctr->PostModel->get_all_post(($type == 'jual' ? 1 : 2));
+	$post[$type] = true;
 	// cek token
 	if (cek_token($ctr)) {
 		$member	= $ctr->MainModel->member_me($_COOKIE['token']);
@@ -629,31 +611,7 @@ $app->get('/jual', function() use($app, $ctr) {
 	$r = $ctr->MainModel->get_data_table('kategori_produk');
 	if ($r) $post['kategori'] = $r['kategori_produk'];
 	$ctr->load('view', 'kiriman-search.html', $post);
-});
-
-// ----------------------------------------------------------------
-/**
- * Method: GET
- * Verb: beli 
- */
-$app->options('/beli', function() use($app) { $app->status(200); $app->stop(); });
-$app->get('/beli', function() use($app, $ctr) {
-	$ctr->load('helper', 'string');
-	$ctr->load('helper', 'date');
-	$ctr->load('model', 'post');
-	$post = $ctr->PostModel->get_all_post(2);
-	// cek token
-	if (cek_token($ctr)) {
-		$member	= $ctr->MainModel->member_me($_COOKIE['token']);
-		$post['authenticate'] = TRUE;
-		foreach ($member['data'] as $key => $val)
-			$post[$key] = $val;
-	}
-	$ctr->load('model', 'main');
-	$r = $ctr->MainModel->get_data_table('kategori_produk');
-	if ($r) $post['kategori'] = $r['kategori_produk'];
-	$ctr->load('view', 'kiriman-search.html', $post);
-});
+})->conditions(array('type' => '(jual|beli)'));
 
 // ----------------------------------------------------------------
 /**
@@ -725,8 +683,7 @@ $app->get('/fproduk', function() use($app, $ctr) {
 			$produk[$key] = $val;
 	}
 	$ctr->load('model', 'main');
-	$kategori_produk = $ctr->MainModel->get_data_table('kategori_produk');
-	if ($kategori_produk) $produk['kategori'] = $kategori_produk['kategori_produk'];
+	$produk['kategori'] = $ctr->ProdukModel->get_kategori_fproduk();
 	$ctr->load('view', 'produk-search.html', $produk);
 });
 

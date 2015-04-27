@@ -4,17 +4,17 @@
 <div class="row hidden-print">
 	<div class="col-md-8">
 		<a href="/" class="pull-left hidden-xs"><img src="/img/logo-long.png" alt=""></a>
-		<h4 class="page-title text-center" style="margin-top: 0; line-height: 0.5em;">
-			<!--<small class="text-muted" style="font-size: 0.55em;"><i class="fa fa-heartbeat"></i> anda login sebagai:</small>--><br>
+		<h3 class="page-title text-center" style="margin-top: 0; line-height: 0.5em;">
+			<br>
 			{% if member_valid %}<i class="fa fa-check-circle text-primary"></i> {% endif %}{{member_nama|upper}}
 			<br><br>
 			{% if not path %}
-			<a href="/home" class="tooltips" title="beranda" data-placement="bottom"><span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-home fa-stack-1x fa-inverse"></i></span></a> 
+			<a href="/home" class="tooltips" title="beranda" data-placement="bottom"><span class="fa-stack text-muted"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-home fa-stack-1x fa-inverse"></i></span></a> 
 			{% endif %}
-			<a href="/anggota/{{member_kode}}" class="tooltips" title="lihat profil" data-placement="bottom"><span class="fa-stack text-success"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-male fa-stack-1x fa-inverse"></i></span></a> 
+			<a href="/anggota/{{member_kode}}" class="tooltips" title="lihat profil" data-placement="bottom"><span class="fa-stack text-muted"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-male fa-stack-1x fa-inverse"></i></span></a> 
 			
 			<a href="/home/pesan" class="tooltips" title="pesan" data-placement="bottom"><span class="fa-stack{% if member_pesan %} text-danger{% else %} text-muted{% endif %}"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-envelope-o fa-stack-1x fa-inverse"></i></span></a>
-		</h4>
+		</h3>
 		<!--<p class="text-muted pull-left">
 			Profil Anda tidak lengkap.
 		</p>-->
@@ -47,7 +47,11 @@
 		<a href="/" class="pull-left hidden-xs" style="margin-right: 10px;"><img src="/img/logo-long.png" alt=""></a>
 		<h3 class="page-title pull-left">
 			MADURA.BZ &mdash; JUAL BELI &amp; DIREKTORI BISNIS MADURA<br>
-			<small class="text-muted"><em><i class="fa fa-quote-left"></i> Pengembangan ekonomi Madura secara global melalui industri dan <br>perdagangan untuk menyongsong Perdagangan Bebas Asia Tenggara</em></small>
+			<p class="text-center">
+			<small class="text-muted" style="font-size: 0.6em;">
+				<em><i class="fa fa-quote-left"></i> Pengembangan ekonomi Madura secara global melalui industri dan <br>perdagangan untuk menyongsong Perdagangan Bebas Asia Tenggara</em>
+			</small>
+			</p>
 		</h3>
 	</div>
 	<div class="col-md-3">
@@ -71,3 +75,38 @@
 </div>
 
 {% endif %}
+
+<div class="row visible-print">
+	<table class="table">
+		<tr>
+			<td><img src="/img/logo-long.png" alt="" class="" style="pull-left"></td>
+			<td><h3 class="page-title pull-left">
+			MADURA.BZ &mdash; JUAL BELI &amp; DIREKTORI BISNIS MADURA<br>
+			<small class="text-muted"><em><i class="fa fa-quote-left"></i> Pengembangan ekonomi Madura secara global melalui industri dan <br>perdagangan untuk menyongsong Perdagangan Bebas Asia Tenggara</em></small>
+		</h3></td>
+		</tr>
+	</table>
+	<hr>
+</div>
+
+<nav class="navbar navbar-default hidden-print" role="navigation" style="margin-bottom: 0; margin-top: 10px;">
+	<div class="navbar-header">
+		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+		<a href="/" class="navbar-brand text-danger">MADURA.BZ</a>
+	</div>
+	<div class="collapse navbar-collapse navbar-ex1-collapse">
+		<ul class="nav navbar-nav">
+			<li{% if direktori %} class="active"{% endif %}><a href="/direktori">Direktori</a></li>
+			<li{% if jual %} class="active"{% endif %}><a href="/jual">Jual Barang</a></li>
+			<li{% if beli %} class="active"{% endif %}><a href="/beli">Beli Barang</a></li>
+			<li{% if berita %} class="active"{% endif %}><a href="/berita">Berita Ekonomi</a></li>
+			<li{% if info %} class="active"{% endif %}><a href="/info">G2B &amp; Info</a></li>
+			<li{% if produk %} class="active"{% endif %}><a href="/fproduk">Produk</a></li>
+		</ul>
+	</div>
+</nav>

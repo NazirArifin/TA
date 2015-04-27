@@ -16,7 +16,7 @@ app.controller('BeritaCtrl', function($scope, $location, $http, notify) {
 	if ($location.path().split('/')[2] == 'tips') {
 		$scope.tips = {};
 		$scope.resetTips = function() {
-			$scope.tips = { id: '', isi: '' };
+			$scope.tips = { id: '', isi: '', jenis: '' };
 		}; $scope.resetTips();
 		$scope.cancel = function() {
 			$scope.editing = false;
@@ -24,7 +24,7 @@ app.controller('BeritaCtrl', function($scope, $location, $http, notify) {
 			$scope.mode = '';
 		};
 		$scope.page = {
-			cpage: 0, numpage: 0, query: '', numdt: 25, status: ''
+			cpage: 0, numpage: 0, query: '', numdt: 25, status: '', jenis: ''
 		};
 		
 		$scope.setStatus = function(i, s) {

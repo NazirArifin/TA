@@ -108,6 +108,7 @@ app.controller('ProdukCtrl', function($scope, $location, $http, notify) {
 			harga: '0',
 			stok: '0',
 			info: '',
+			berat: '',
 			foto: []
 		};
 		$scope.file = null;

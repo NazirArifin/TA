@@ -24,6 +24,7 @@ class AdminprodukModel extends ModelBase {
 			case 'nama': 		$kolom = 'a.NAMA_PRODUKUTAMA'; break;
 			case 'kategori': 	$kolom = 'b.NAMA_KATPRODUK'; break;
 			case 'harga': 		$kolom = 'a.HARGA_PRODUKUTAMA'; break;
+			case 'stok': 		$kolom = 'a.STOK_PRODUKUTAMA'; break;
 		}
 		
 		// total halaman
@@ -40,12 +41,14 @@ class AdminprodukModel extends ModelBase {
 				$status	= ($val->STATUS_PRODUKUTAMA == 1 ? 'Aktif' : 'Nonaktif');
 				$info = strip_tags($val->INFO_PRODUKUTAMA);
 				$r[]	= array(
+					'link'	=> 'fproduk/' . $val->ID_PRODUKUTAMA . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_PRODUKUTAMA)),
 					'id'	=> $val->ID_PRODUKUTAMA,
 					'nama'	=> $val->NAMA_PRODUKUTAMA,
 					'kat'	=> $val->NAMA_KATPRODUK,
 					'status'=> $status,
 					'stok'	=> $val->STOK_PRODUKUTAMA,
-					'info'	=> token_truncate($info, 150) . (strlen($info) > 150 ? ' ...' : ''),
+					'berat'	=> number_format($val->BERAT_PRODUKUTAMA, 2, ',', '.'),
+					'info'	=> token_truncate($info, 80) . (strlen($info) > 80 ? ' ...' : ''),
 					'harga'	=> number_format($val->HARGA_PRODUKUTAMA, 0, ',', '.') . ',-',
 					'foto'	=> (empty($fotos) ? $path . 'default.png' : $path . str_replace('.', '_thumb.', $fotos[0])),
 				);
@@ -69,6 +72,7 @@ class AdminprodukModel extends ModelBase {
 		$r['nama']	= $run->NAMA_PRODUKUTAMA;
 		$r['harga']	= number_format($run->HARGA_PRODUKUTAMA, 0, ',', '.');
 		$r['stok']	= number_format($run->STOK_PRODUKUTAMA, 0, ',', '.');
+		$r['berat']	= number_format($run->BERAT_PRODUKUTAMA, 2, ',', '.');
 		$r['info']	= $run->INFO_PRODUKUTAMA;
 		$fotos		= ( ! empty($run->FOTO_PRODUKUTAMA) ? unserialize($run->FOTO_PRODUKUTAMA) : array());
 		foreach ($fotos as $key => $val) $fotos[$key] = 'upload/produk/' . $val;
@@ -79,7 +83,7 @@ class AdminprodukModel extends ModelBase {
 	}
 	
 	public function add($id, $iofiles) {
-		extract($this->prepare_post(array('nama', 'kategori', 'info', 'harga', 'stok', 'foto', 'status')));
+		extract($this->prepare_post(array('nama', 'kategori', 'info', 'harga', 'berat', 'stok', 'foto', 'status')));
 		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 		
 		if ( ! empty($status)) {
@@ -96,6 +100,7 @@ class AdminprodukModel extends ModelBase {
 		$info	= $this->db->escape_str($info);
 		$harga	= preg_replace('/[^0-9]/', '', $harga);
 		$stok	= preg_replace('/[^0-9]/', '', $stok);
+		$berat	= str_replace(',', '.', preg_replace('/[^0-9,]/', '', $berat));
 		
 		// validasi
 		$valid	= TRUE;
@@ -106,7 +111,7 @@ class AdminprodukModel extends ModelBase {
 		if ( ! $valid) return array('type' => FALSE);
 		
 		if (empty($id)) {
-			$ins	= $this->db->query("INSERT INTO produkutama VALUES(0, '$kat', '$nama', '$harga', '$stok', '$info', '', '1')");
+			$ins	= $this->db->query("INSERT INTO produkutama VALUES(0, '$kat', '$nama', '$harga', '$stok', '$info', '$berat', '', '1')");
 			$id 	= $this->db->get_insert_id();
 		} else {
 			$upd 	= array();
@@ -116,6 +121,7 @@ class AdminprodukModel extends ModelBase {
 			if ($info != $data->INFO_PRODUKUTAMA)	$upd[] = "INFO_PRODUKUTAMA = '$info'";
 			if ($harga != $data->HARGA_PRODUKUTAMA)	$upd[] = "HARGA_PRODUKUTAMA = '$harga'";
 			if ($stok != $data->STOK_PRODUKUTAMA)	$upd[] = "STOK_PRODUKUTAMA = '$stok'";
+			if ($berat != $data->BERAT_PRODUKUTAMA)	$upd[] = "BERAT_PRODUKUTAMA = '$berat'";
 			
 			// analisa perubahan foto
 			$ofoto	= (empty($data->FOTO_PRODUKUTAMA) ? array() : unserialize($data->FOTO_PRODUKUTAMA));
@@ -147,8 +153,8 @@ class AdminprodukModel extends ModelBase {
 					$config['source_image']		= 'upload/produk/' . $foto[0];
 					$config['new_image']		= 'upload/produk/' . str_replace('.', '_thumb.', $foto[0]);
 					$config['maintain_ratio']	= TRUE;
-					$config['width']			= 120;
-					$config['height']			= 120;
+					$config['width']			= 200;
+					$config['height']			= 200;
 					$iofiles->image_config($config);
 					$iofiles->image_resize();
 				}

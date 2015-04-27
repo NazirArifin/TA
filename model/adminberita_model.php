@@ -255,14 +255,16 @@ class AdminberitaModel extends ModelBase {
 	}
 	
 	public function get_tips() {
-		extract($this->prepare_get(array('cpage', 'query', 'numdt', 'status')));
+		extract($this->prepare_get(array('cpage', 'query', 'numdt', 'status', 'jenis')));
 		$cpage	= intval($cpage);
 		$query	= $this->db->escape_str($query);
 		$numdt	= intval($numdt);
 		$status	= intval($status);
+		$jenis	= intval($jenis);
 		
 		$where[]= "STATUS_TIPSTRIK != '0'";
-		if ( ! empty($query)) 	$where[]= "ISI_TIPSTRIK LIKE '%{$query}%'";
+		if ( ! empty($query)) 	$where[] = "ISI_TIPSTRIK LIKE '%{$query}%'";
+		if ( ! empty($jenis))	$where[] = "JENIS_TIPSTRIK = '$jenis'";
 		
 		$run	= $this->db->query("SELECT COUNT(ID_TIPSTRIK) AS HASIL FROM tipstrik" . ( ! empty($where) ? " WHERE " . implode(" AND ", $where) : ''), TRUE);
 		$numpg	= ceil($run->HASIL / $numdt);
@@ -274,6 +276,7 @@ class AdminberitaModel extends ModelBase {
 				$r[] = array(
 					'id'	=> $val->ID_TIPSTRIK,
 					'isi'	=> $val->ISI_TIPSTRIK,
+					'jenis'	=> ($val->JENIS_TIPSTRIK == '1' ? 'DAERAH' : 'MANAJEMEN'),
 					'status'=> ($val->STATUS_TIPSTRIK == '1' ? 'Aktif' : 'Nonaktif')
 				);
 			}
@@ -294,24 +297,29 @@ class AdminberitaModel extends ModelBase {
 			'tips'	=> array(
 				'id'	=> $run->ID_TIPSTRIK,
 				'isi'	=> $run->ISI_TIPSTRIK,
+				'jenis'	=> $run->JENIS_TIPSTRIK,
 				'status'=> $run->STATUS_TIPSTRIK
 			)
 		);
 	}
 	
 	public function save_tips($idtips = '') {
-		extract($this->prepare_post(array('id', 'isi', 'status')));
+		extract($this->prepare_post(array('id', 'isi', 'status', 'jenis')));
 		$isi	= $this->db->escape_str($isi);
+		$jenis	= intval($jenis);
 		if ( ! empty($idtips)) {
 			$id = intval($idtips);
 			$run	= $this->db->query("SELECT * FROM tipstrik WHERE ID_TIPSTRIK = '$id'", TRUE);
+			
 			if ($run->ISI_TIPSTRIK != $isi && strlen($isi) > 0) $upd[] = "ISI_TIPSTRIK = '$isi'";
-			if ($run->STATUS_TIPSTRIK != $status)	$upd[] = "STATUS_TIPSTRIK = '$status'";
+			if ($run->STATUS_TIPSTRIK != $status)				$upd[] = "STATUS_TIPSTRIK = '$status'";
+			if ($run->JENIS_TIPSTRIK != $jenis)					$upd[] = "JENIS_TIPSTRIK = '$jenis'";
+			
 			if ( ! empty($upd)) {
 				$run = $this->db->query("UPDATE tipstrik SET " . implode(", ", $upd) . " WHERE ID_TIPSTRIK = '$id'");
 			}
 		} else {
-			$ins	= $this->db->query("INSERT INTO tipstrik VALUES(0, '$isi', '', '1')");
+			$ins	= $this->db->query("INSERT INTO tipstrik VALUES(0, '$isi', '', '$jenis', '1')");
 			$id		= $this->db->get_insert_id();
 		}
 		

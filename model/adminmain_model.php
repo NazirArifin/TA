@@ -474,7 +474,7 @@ class AdminmainModel extends ModelBase {
 				}
 				break;
 			case 'ongkir':
-				$run 	= $this->db->query("SELECT a.ID_BIAYAKURIR, a.BIAYA_BIAYAKURIR, b.ID_KOTA, b.NAMA_KOTA, c.ID_KURIR, c.NAMA_KURIR FROM biayakurir a, kota b, kurir c WHERE a.ID_KOTA = b.ID_KOTA AND a.ID_KURIR = c.ID_KURIR ORDER BY c.NAMA_KURIR, b.NAMA_KOTA");
+				$run 	= $this->db->query("SELECT a.ID_BIAYAKURIR, a.BIAYA_BIAYAKURIR, a.LANJUTAN_BIAYAKURIR, b.ID_KOTA, b.NAMA_KOTA, c.ID_KURIR, c.NAMA_KURIR FROM biayakurir a, kota b, kurir c WHERE a.ID_KOTA = b.ID_KOTA AND a.ID_KURIR = c.ID_KURIR ORDER BY c.NAMA_KURIR, b.NAMA_KOTA");
 				if ( ! empty($run)) {
 					foreach ($run as $val) {
 						$r[] = array(
@@ -482,6 +482,7 @@ class AdminmainModel extends ModelBase {
 							'o'	=> $val->NAMA_KOTA,
 							'oi'=> $val->ID_KOTA,
 							'b'	=> number_format($val->BIAYA_BIAYAKURIR, 0, ',', '.'),
+							'l'	=> number_format($val->LANJUTAN_BIAYAKURIR, 0, ',', '.'),
 							'k'	=> $val->NAMA_KURIR,
 							'ki'=> $val->ID_KURIR
 						);

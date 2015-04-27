@@ -313,8 +313,11 @@ app.controller('HomeCheckoutCtrl', function($scope, $http, notify) {
 	$scope.rekeningList = [];
 	$scope.kota = [];
 	$scope.tujuan = '';
+	$scope.kurirList = [];
+	$scope.kurir = '';
+	$scope.berat = 0;
 	$scope.loadData = function() {
-		$http.get('/data?t=fproduk,rekening,kota').
+		$http.get('/data?t=fproduk,rekening,kota,kurir').
 		success(function(d) {
 			angular.forEach(d.fproduk, function(value, key) {
 				var id = parseInt(value.id);
@@ -324,31 +327,40 @@ app.controller('HomeCheckoutCtrl', function($scope, $http, notify) {
 						nama: value.nama,
 						harga: parseInt(value.harga),
 						jumlah: 1,
+						berat: parseFloat(value.berat),
 						total: parseInt(value.harga)
 					};
 					$scope.itemList.push(list);
 					$scope.subTotal += parseInt(value.harga);
+					$scope.berat += parseFloat(value.berat);
 				}
 			});
 			$scope.grandTotal = $scope.subTotal + $scope.shipRate;
 			$scope.rekeningList = d.rekening;
 			$scope.kota = d.kota;
+			$scope.kurirList = d.kurir;
 		});
 	}; $scope.loadData();
 	$scope.loadOngkir = function() {
-		$http.get('/ongkir?kota=' + $scope.tujuan).
-		success(function(d) { $scope.shipRate = d.biaya });
+		$http.get('/ongkir?' + jQuery.param({ kota: $scope.tujuan, kurir: $scope.kurir, berat: $scope.berat })).
+		success(function(d) { 
+			$scope.shipRate = d.biaya;
+			$scope.grandTotal = $scope.subTotal + $scope.shipRate;			
+		});
 	};
 	$scope.reCalculate = function(i) {
 		$scope.subTotal = 0;
+		$scope.berat = 0;
 		angular.forEach($scope.itemList, function(value, key) {
 			if (value.jumlah == '') return;
 			var jumlah = parseInt(value.jumlah),
-				total = value.harga * jumlah;
+				total = value.harga * jumlah,
+				berat = value.berat * jumlah;
 			value.total = total;
 			$scope.subTotal += total;
+			$scope.berat += berat;
 		});
-		$scope.grandTotal = $scope.subTotal + $scope.shipRate;
+		$scope.loadOngkir();
 	};
 });
 

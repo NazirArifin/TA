@@ -35,7 +35,8 @@
 							<a href="/katalog/{{direktori_id}}" class="btn btn-default"><i class="fa fa-download"></i> Katalog</a>
 							<a href="{{direktori_link}}" class="btn btn-warning"><i class="fa {% if direktori == 'Semua Produk' %}fa-search{% else %}fa-home{% endif %}"></i> {{direktori}}</a>
 						</small>
-					</h5><hr class="main">
+					</h5>
+					<hr class="main" style="margin: 1.4em 0px">
 					<div class="pull-left col-md-3">
 						<img src="{{foto[0]}}" alt="" class="img-responsive zoomable-gallery" data-zoom-image="{{foto[0]}}">
 						<div style="margin-top: 10px;" class="well well-sm text-center">
@@ -50,14 +51,20 @@
 								<li><a href="{{direktori_link}}">{{direktori}}</a></li>
 								<li class="active">{{nama}}</li>
 							</ol>
+							
+							{% if (direktori == 'Semua Produk') %}
+							<strong class="text-muted"><a href="/fproduk?kategori={{id_kategori}}"><i class="fa fa-tags"></i> {{kategori}}</a></strong>
+							{% else %}
 							<strong class="text-muted"><i class="fa fa-tags"></i> {{kategori}}</strong>
+							{% endif %}
+							
 							<br><br>
 							<div class="well well-sm">
 							{{info}}
 							</div>
 							{% if stok %}
 						
-							<button class="btn btn-primary pull-right" data-ng-click="addItem({{id}})" data-ng-hide="itemTaken({{id}})">TAMBAH KE KERANJANG <i class="fa fa-cart-plus"></i></button>
+							<button class="btn btn-primary btn-sm pull-right" data-ng-click="addItem({{id}})" data-ng-hide="itemTaken({{id}})">TAMBAH KE KERANJANG <i class="fa fa-cart-plus"></i></button>
 							
 							{% endif %}
 						</div>
@@ -130,8 +137,46 @@
 						
 					</div>
 					{% endif %}
-					<div class="{% if direktori == 'Semua Produk' %}col-md-10 col-md-offset-1{% else %}col-md-4{% endif %}">
-						<ul class="media-list">
+					<div class="{% if direktori == 'Semua Produk' %}col-md-12{% else %}col-md-4{% endif %}">
+						<div class="row">
+							<div class="col-md-12">
+								<h4 class="text-center well well-sm text-muted" style="margin-top: 0;"><i class="fa fa-fw fa-gift"></i> Produk Lain</h4>
+							</div>
+						</div>
+						<div class="row">
+							{% for c in other %}
+							<div class="col-md-{% if direktori != 'Semua Produk' %}1{% endif %}2">
+								<div class="thumbnail">
+									<img src="{{c.foto}}" alt="" style="width: 100%">
+									<div class="caption" style="padding: 0;">
+										<h5>
+											<a href="{{c.link}}">{{c.nama}}</a>
+											{% if c.stok > 0 %}
+											<a href="{{c.link}}" class="pull-right">
+												<span class="fa-stack">
+													<i class="fa fa-circle fa-stack-2x"></i>
+													<i class="fa fa-cart-plus fa-stack-1x fa-inverse"></i> 
+												</span>
+											</a>
+											{% endif %}
+										</h5>
+										<p>
+											<strong class="label label-success">Rp. {{c.harga}}</strong>
+										</p>
+										<div class="well well-sm" style="margin-bottom: 0;"><small style="font-size: 75%;" class="text-muted"><i class="fa fa-info-circle"></i> {{c.info}}</small></div>
+									</div>
+								</div>
+							</div>
+							
+							{% if (loop.index % 6 == 0 and direktori == 'Semua Produk') %}
+							<div class="clearfix"></div>
+							{% endif %}
+							
+							{% endfor %}
+						</div>
+						
+						<!--
+							<ul class="media-list">
 							{% for c in other %}
 							<li class="media clearfix" style="padding-bottom: 3px; border-bottom: 1px solid #ebebeb">
 								<a href="{{c.link}}" class="pull-left">
@@ -145,7 +190,7 @@
 									{% if c.info %}
 									<br>
 									<small class="warranty text-muted" style="font-size: 0.8em">
-										<i class="fa fa-clock-o"></i> {{c.info}}
+										<i class="fa fa-info-circle"></i> {{c.info}}
 									</small>
 									{% endif %}
 								</div>
@@ -164,10 +209,11 @@
 										{% endif %}
 									</span>
 								</a>
-								-->
 							</li>
 							{% endfor %}
-						</ul>
+						</ul>-->
+						
+						
 					</div>
 				</div>
 			</div>

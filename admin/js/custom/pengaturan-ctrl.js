@@ -25,7 +25,7 @@ app.controller('PengaturanCtrl', function($scope, $location, $http, notify) {
 	};
 	$scope.ongkirSelected = {};
 	$scope.ongkirReset = function() {
-		$scope.ongkirSelected = { id: '', ki: '', oi: '', b: '' };
+		$scope.ongkirSelected = { id: '', ki: '', oi: '', b: '', l: '' };
 	}; $scope.ongkirReset();
 	$scope.setOngkir = function(d) {
 		$scope.ongkirSelected = d;
