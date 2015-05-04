@@ -14,7 +14,9 @@
 	
 	{% include 'header.html' %}
 	
+	{% if authenticate %}
 	{% include 'home-menu.html' %}
+	{% endif %}
 	
 	<hr class="header">
 	
@@ -25,7 +27,9 @@
 			<div class="filter-block pull-right">
 				<!--<a href="" class="btn btn-default btn-sm pull-right tooltips" title="simpan"><i class="fa fa-floppy-o"></i></a>-->
 				<a href="" class="btn btn-default btn-sm pull-right tooltips" title="cetak" onclick="window.print()"><i class="fa fa-print"></i></a>
+				{% if authenticate %}
 				<a href="/home/order" class="btn btn-primary btn-sm pull-right"><i class="fa fa-arrow-circle-left"></i> KEMBALI</a>
+				{% endif %}
 			</div>
 		</header>
 		<div class="main-box-body clearfix">

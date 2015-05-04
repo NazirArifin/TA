@@ -457,6 +457,12 @@ app.directive('saveOrder', ['$http', 'notify', '$localStorage', function($http, 
 		restrict: 'CA',
 		link: function($scope, elm, attrs) {
 			elm.on('click', function(e) {
+				if ($(this).data('clicked')) {
+					e.preventDefault();
+					e.stopPropagation();
+					return;
+				}
+				
 				if ($scope.grandTotal == $scope.shipRate) return notify.slideTop.error('Tidak ada produk yang dipesan');
 				var $nama = $('#c-nama'),
 					$alamat = $('#c-alamat'),
@@ -477,6 +483,7 @@ app.directive('saveOrder', ['$http', 'notify', '$localStorage', function($http, 
 				var data = {
 					nama: $nama.val(), alamat: $alamat.val(), telepon: $telepon.val(), produk: item, ongkir: $scope.shipRate
 				};
+				$(this).data('clicked', true);
 				$http.post('/order', data).
 				success(function(d) {
 					delete $localStorage.item;

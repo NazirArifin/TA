@@ -255,8 +255,8 @@ class ProdukModel extends ModelBase {
 					$config['source_image']		= 'upload/produk/' . $foto[0];
 					$config['new_image']		= 'upload/produk/' . str_replace('.', '_thumb.', $foto[0]);
 					$config['maintain_ratio']	= TRUE;
-					$config['width']			= 120;
-					$config['height']			= 120;
+					$config['width']			= 200;
+					$config['height']			= 200;
 					$iofiles->image_config($config);
 					$iofiles->image_resize();
 				}
@@ -300,8 +300,8 @@ class ProdukModel extends ModelBase {
 					$config['source_image']		= $filepath;
 					$config['new_image']		= $filethumb;
 					$config['maintain_ratio']	= TRUE;
-					$config['width']			= 120;
-					$config['height']			= 120;
+					$config['width']			= 200;
+					$config['height']			= 200;
 					$iofiles->image_config($config);
 					$iofiles->image_resize();
 				}
@@ -363,6 +363,48 @@ class ProdukModel extends ModelBase {
 		$r['subtotal']	= number_format($r['subtotal'], 0, ',', '.');
 		$r['total']		= number_format(str_replace('.', '', $r['subtotal']) + str_replace('.', '', $r['ongkir']), 0, ',', '.');
 		return $r;
+	}
+	
+	public function get_order_by_id($id) {
+		$id = filter_var($id, FILTER_SANITIZE_NUMBER_FLOAT);
+		$run	= $this->db->query("SELECT a.*, b.NAMA_ANGGOTA, b.ALAMAT_ANGGOTA, b.TELEPON_ANGGOTA FROM penjualan a, anggota b WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND a.ID_PENJUALAN = '$id'", TRUE);
+		if (empty($run)) return FALSE;
+		$r['id']		= $run->ID_PENJUALAN;
+		$r['nama']		= $run->NAMA_PENJUALAN;
+		$r['alamat']	= $run->ALAMAT_PENJUALAN;
+		$r['telepon']	= $run->TELEPON_PENJUALAN;
+		$r['ongkir']	= number_format($run->ONGKIR_PENJUALAN, 0, ',', '.');
+		$r['tanggal']	= datedb_to_tanggal($run->TANGGAL_PENJUALAN, 'd/m/Y');
+		$r['akhir']		= datedb_to_tanggal($run->AKHIR_PENJUALAN, 'd/m/Y');
+		
+		// data member
+		$member_nama	= $run->NAMA_ANGGOTA;
+		$member_alamat	= $run->ALAMAT_ANGGOTA;
+		$member_telepon	= $run->TELEPON_ANGGOTA;
+		
+		// cari rincian
+		$r['subtotal']	= 0;
+		$r['produk']	= array();
+		$run	= $this->db->query("SELECT a.JUMLAH_RINCIPENJUALAN, a.BIAYA_RINCIPENJUALAN, b.ID_PRODUKUTAMA, b.NAMA_PRODUKUTAMA FROM rincipenjualan a, produkutama b WHERE a.ID_PENJUALAN = '$id' AND a.ID_PRODUKUTAMA = b.ID_PRODUKUTAMA");
+		foreach ($run as $val) {
+			$r['subtotal'] += $val->BIAYA_RINCIPENJUALAN;
+			$r['produk'][] = array(
+				'id'	=> $val->ID_PRODUKUTAMA,
+				'nama'	=> $val->NAMA_PRODUKUTAMA,
+				'jumlah'=> $val->JUMLAH_RINCIPENJUALAN,
+				'harga'	=> number_format(($val->BIAYA_RINCIPENJUALAN / $val->JUMLAH_RINCIPENJUALAN), 0, ',', '.'),
+				'total'	=> number_format($val->BIAYA_RINCIPENJUALAN, 0, ',', '.')
+			);
+		}
+		$r['subtotal']	= number_format($r['subtotal'], 0, ',', '.');
+		$r['total']		= number_format(str_replace('.', '', $r['subtotal']) + str_replace('.', '', $r['ongkir']), 0, ',', '.');
+		
+		return array(
+			'invoice'		=> $r,
+			'member_nama'	=> $member_nama,
+			'member_alamat'	=> $member_alamat,
+			'member_telepon'=> $member_telepon
+		);
 	}
 	
 	public function get_order_list($kode) {

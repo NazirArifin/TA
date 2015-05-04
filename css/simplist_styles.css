@@ -1,5 +1,11 @@
 body {
 	font-family: Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
+	background: url('/img/tile1.png') repeat center 0 fixed;
+}
+
+body > .container {
+	background-color: rgba(255, 255, 255, 0.9); 
+	box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
 }
 
 .navbar li a {
@@ -473,12 +479,13 @@ h4.media-heading.produk-title {
 }
 
 .img {
-	width: 80px;
-	height: 80px;
+	width: 55px;
+	height: 55px;
 	text-align: center;
 	overflow: hidden;
 	background-color: #fefbfd;
 	border: 1px solid #D9D9D9;
+	border-radius: 50%;
 	white-space: nowrap;
 }
 .img .helper {
@@ -487,8 +494,8 @@ h4.media-heading.produk-title {
 	vertical-align: middle;
 }
 .img img {
-	max-width: 80px;
-	max-height: 80px;
+	max-width: 55px;
+	max-height: 55px;
 	vertical-align: middle;
 }
 

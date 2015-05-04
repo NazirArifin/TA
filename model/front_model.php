@@ -94,12 +94,12 @@ class FrontModel extends ModelBase {
 	public function get_post($type) {
 		$tipe	= ($type == 'jual' ? 1 : 2);
 		$r 		= array();
-		$run 	= $this->db->query("SELECT a.KODE_ANGGOTA, a.NAMA_ANGGOTA, b.*, c.NAMA_KATPRODUK FROM anggota a, postanggota b, katproduk c WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND b.STATUS_POSTANGGOTA = '1' AND TIPE_POSTANGGOTA = '$tipe' AND b.ID_KATPRODUK = c.ID_KATPRODUK ORDER BY TANGGAL_POSTANGGOTA DESC LIMIT 0, 10");
+		$run 	= $this->db->query("SELECT a.KODE_ANGGOTA, a.NAMA_ANGGOTA, b.*, c.ID_KATPRODUK, c.NAMA_KATPRODUK FROM anggota a, postanggota b, katproduk c WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND b.STATUS_POSTANGGOTA = '1' AND TIPE_POSTANGGOTA = '$tipe' AND b.ID_KATPRODUK = c.ID_KATPRODUK ORDER BY TANGGAL_POSTANGGOTA DESC LIMIT 0, 10");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				$isi 		= strip_tags($val->ISI_POSTANGGOTA);
-				$ptisi		= token_truncate($isi, 150);
-				if (strlen($isi) > 150) $ptisi .= '...';
+				$ptisi		= token_truncate($isi, 120);
+				if (strlen($isi) > 120) $ptisi .= '...';
 				if (empty($val->FOTO_POSTANGGOTA))
 					$foto 	= '/upload/post/default.png';
 				else {
@@ -110,6 +110,7 @@ class FrontModel extends ModelBase {
 					'id' 		=> $val->ID_POSTANGGOTA,
 					'judul'		=> $val->JUDUL_POSTANGGOTA,
 					'kategori'	=> $val->NAMA_KATPRODUK,
+					'id_kategori'=> $val->ID_KATPRODUK,
 					'isi'		=> $ptisi,
 					'tanggal'	=> datedb_to_tanggal($val->TANGGAL_POSTANGGOTA, 'l, d M Y'),
 					'foto'		=> $foto,
@@ -331,6 +332,23 @@ class FrontModel extends ModelBase {
 		$r['numpage'] 	= $numpg;
 		$r['cpage']		= $cpage;
 		$r['link']		= preg_replace('/&cpage=[0-9]+/', '', http_build_query($r['param']));
+		return $r;
+	}
+	
+	/**
+	 * Dapatkan kategori direktori tapi hanya yang ada
+	 */
+	public function get_direktori_category() {
+		$run 	= $this->db->query("SELECT a.* FROM katdir a, direktori b WHERE a.ID_KATDIR = b.ID_KATDIR GROUP BY a.ID_KATDIR");
+		$r 		= array();
+		if ( ! empty($run)) {
+			foreach ($run as $val) {
+				$r[] = array(
+					'id'	=> $val->ID_KATDIR,
+					'nama'	=> $val->NAMA_KATDIR
+				);
+			}
+		}
 		return $r;
 	}
 	

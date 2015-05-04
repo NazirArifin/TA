@@ -59,6 +59,21 @@ app.directive('muter', function() {
 });
 
 /**
+ * set kategori direktori
+ */
+app.directive('setKategoriDirektori', function() {
+	return function($scope, elm, attrs) {
+		elm.on('click', function() {
+			var $form = $(this).closest('form'),
+				$text = $form.find('span.text'),
+				$input = $form.find('input:hidden');
+			$text.html($(this).html());
+			$input.val(attrs.id);
+		});
+	};
+});
+
+/**
  * date picker
  */
 app.directive('datePicker', function() {

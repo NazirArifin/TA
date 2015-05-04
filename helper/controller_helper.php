@@ -90,16 +90,16 @@ function cek_token(&$ctr) {
 /**
  * Redirect ke home
  */
-function redirect_home() {
-	header('Location: /home');
+function redirect_home($message = '') {
+	header('Location: /home' . ( ! empty($message) ? '?pesan=' . $message : ''));
 	exit;
 }
 
 /**
  * Redirect ke root
  */
-function redirect_index() {
-	header('Location: /');
+function redirect_index($message = '') {
+	header('Location: /' . ( ! empty($message) ? '?pesan=' . $message : ''));
 	exit;
 }
  

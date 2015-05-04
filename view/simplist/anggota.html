@@ -135,13 +135,14 @@ window.me = '{{member_kode}}';
 								<h3 class="text-center text-info"><i class="fa fa-file-o"></i> Belum ada Kiriman</h3>
 							</div>
 							{% verbatim %}
-							<div class="media" data-ng-repeat="c in postList">
+							<div class="media" style="border-bottom: 1px solid #ddd" data-ng-repeat="c in postList">
 								<a data-ng-href="{{c.link}}" class="pull-left">
 									<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
 								</a>
 								<div class="media-body">
 									<h4 class="media-heading">
 										<a data-ng-href="{{c.link}}">{{c.judul}}</a>
+										<small class="label" style="font-size: 0.5em" data-ng-class="c.tipe == 'jual' ? 'label-success' : 'label-info'">{{c.tipe|uppercase}}</small>
 									</h4>
 									<p style="margin-bottom: 10px;">{{c.isi}}</p>
 									<p>
@@ -163,7 +164,7 @@ window.me = '{{member_kode}}';
 							<div data-ng-repeat="c in reviewList">
 								<div class="media" style="padding-bottom: 5px;">
 									<a data-ng-href="{{c.link}}" class="pull-left">
-										<img data-ng-src="{{c.foto}}" alt="" class="post-image">
+										<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
 									</a>
 									<div class="media-body full-width">
 										<h4 class="media-heading">
@@ -173,7 +174,7 @@ window.me = '{{member_kode}}';
 										<p style="margin-bottom: 10px">{{c.isi}}</p>
 									</div>
 								</div>
-								<hr class="main">
+								<hr class="main" style="margin: 1.4em 0;">
 							</div>
 							{% endverbatim %}
 							

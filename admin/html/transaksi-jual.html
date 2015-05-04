@@ -50,10 +50,10 @@
 								</thead>
 								<tbody>
 									<tr data-ng-repeat="c in itemList">
-										<td><a href="">#{{c.id}}</a></td>
+										<td><a data-ng-href="{{server|rootserver}}/invoice/{{c.id}}" target="_blank">#{{c.id}}</a></td>
 										<td>{{c.tanggal}}</td>
 										<td>
-											<a href="" class="user-link" show-modal="{{c.anggota.kode}}" data-type="anggota" data-target="modal-1"><span data-ng-show="c.anggota.valid == 1"><i class="fa fa-check-circle"></i> </span>{{c.anggota.nama}}</a>
+											<a data-ng-href="{{server|rootserver}}/anggota/{{c.anggota.kode}}" class="user-link" target="_blank"><span data-ng-show="c.anggota.valid == 1"><i class="fa fa-check-circle"></i> </span>{{c.anggota.nama}}</a>
 										</td>
 										<td class="text-center">
 											<span class="label" data-ng-class="getLabelStatus(c.status)">{{c.status}}</span>

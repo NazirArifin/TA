@@ -24,7 +24,7 @@
 		</div>
 		<div class="col-md-8">
 			<blockquote>
-			<p class="" style="font-size: 0.9em;">
+			<p class="" style="font-size: 0.8em;">
 				<i class="fa fa-fw fa-info-circle fa-3x pull-left"></i>
 				{{tips.bisnis.isi}}
 			</p>
@@ -97,16 +97,26 @@
 		<div class="col-md-8 col-md-offset-2">
 			<form action="/direktori">
 				<div class="input-group has-warning">
-					<input type="text" name="query" class="form-control input-lg" placeholder="Direktori yang Anda Cari?">
-					<span class="input-group-btn">
-						<button class="btn btn-default btn-lg" type="submit"><i class="fa fa-search"></i> Cari</button>
-					</span>
+					<input type="text" name="query" class="form-control" placeholder="Direktori yang Anda Cari?">
+					<div class="input-group-btn">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="max-width: 155px; overflow: hidden;">
+							<span class="text">Semua Kategori</span> <span class="caret"></span>
+						</button>
+						<button class="btn btn-primary" type="submit"><i class="fa fa-search"></i> Cari</button>
+						<ul class="dropdown-menu pull-left">
+							<li><a href="" data-id="" set-kategori-direktori>Semua Kategori</a></li>
+							{% for c in kategori_direktori %}
+							<li><a href="" data-id="{{c.id}}" set-kategori-direktori>{{c.nama}}</a></li>
+							{% endfor %}
+						</ul>
+					</div>
+					<input type="hidden" name="kategori" value="">
 				</div>
 			</form>
 			<br>
 		</div>
 	</div>
-	<div class="row well well-sm">
+	<div class="row">
 		<div class="text-center col-md-12">
 			<ul class="pagination pagination hidden-xs">
 				{% for c in direktori %}
@@ -137,7 +147,7 @@
 		{% endverbatim %}
 	</div>
 	
-	<hr class="main">
+	<!--
 	<div class="row">
 		<div class="col-md-12">
 			<h4 class="text-center">
@@ -149,6 +159,7 @@
 			</h4>
 		</div>
 	</div>
+	-->
 	
 	<div class="row">
 		{% if premium_direktori %}
@@ -156,7 +167,7 @@
 			<!--<h6 style="font-weight: 600" class="text-muted">Direktori Rekanan</h6><hr>-->
 			<ul class="list-unstyled" style="font-size: .9em">
 				{% for c in premium_direktori %}
-				<li><a href="{{c.link}}"><i class="fa fa-fw fa-lg fa-angle-double-right"></i> {{c.nama}}</a></li>
+				<li><a href="{{c.link}}"><i class="fa fa-fw fa-lg fa-square-o"></i> {{c.nama}}</a></li>
 				{% endfor %}
 			</ul>
 		</div>
@@ -164,11 +175,11 @@
 		{% if direktori_produk %}
 		<div class="col-md-9">
 			<!--<h6 style="font-weight: 600" class="text-muted">Produk Rekanan</h6><hr>-->
-			<div class="panel panel default">
-				<div class="panel-body">
+			<!--<div class="panel panel default">
+				<div class="panel-body">-->
 					<div class="row">
 						{% for c in direktori_produk %}
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<div class="media">
 								<a class="media-left" href="{{c.link}}">
 									<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
@@ -178,22 +189,21 @@
 									<h4 class="media-heading produk">
 										<a href="{{c.link}}">{{c.nama}}</a>
 									</h4>
-									<p>{{c.info}}</p>
-									<div style="font-size: 0.9em;">
-										<span class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</span>
-										<a href="{{c.link_direktori}}" class="pull-right">{{c.direktori}}</a>
+									<div>
+										<span class="text-muted" style="font-size: 0.86em;"><i class="fa fa-tag"></i> {{c.kategori}}</span><br>
+										<a href="{{c.link_direktori}}"><i class="fa fa-fw fa-square-o"></i> {{c.direktori}}</a>
 									</div>
 								</div>
 							</div>
 						</div>
 						{% endfor %}
 					</div>
-				</div>
-			</div>
+				<!--</div>
+			</div>-->
 		</div>
 		{% endif %}
 	</div>
-	<hr class="main">
+	<hr class="main" style="margin: 1.4em 0">
 	<div class="row">
 		<div class="col-md-12">
 			<h4 class="text-center">
@@ -201,7 +211,7 @@
 					<i class="fa fa-circle fa-stack-2x"></i>
 					<i class="fa fa-money fa-stack-1x fa-inverse"></i> 
 				</span>
-				JUAL BELI BARANG
+				JUAL BELI
 			</h4>
 		</div>
 	</div>
@@ -220,22 +230,21 @@
 					</form>
 					<div class="clearfix"></div>
 			<div class="panel panel-default">
-				<div class="panel-body" scrollable data-height="550px">
+				<div class="panel-body" scrollable data-height="600px">
 					{% for c in jual %}
-					<div class="media" style="border-bottom: 1px solid #D9D9D9; padding-bottom: 5px;">
+					<div class="media" style="border-bottom: 1px solid #ddd; padding-bottom: 0px; padding-right: 15px;">
 						<a class="media-left" href="{{c.link}}">
 							<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
 						</a>
 						<div class="media-body">
-							<h4 class="media-heading">
+							<h4 class="media-heading" style="margin-bottom: 10px;">
 								<a href="{{c.link}}">{{c.judul}}</a> 
 								<span class="label label-success" style="font-size: 0.5em">JUAL</span>
 							</h4>
-							<p class="text-justify">{{c.isi}}</p>
-							<p class="text-muted sender">
-								<i class="fa fa-tag"></i> {{c.kategori}} &nbsp;  
-								<i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a>
-								<span class="pull-right">{{c.tanggal}}</span>
+							<p>{{c.isi}}</p>
+							<p class="text-muted sender" style="font-size: 0.87em; margin-top: 10px;">
+								<a href="/jual?kategori={{c.id_kategori}}" class=""><i class="fa fa-tag"></i> {{c.kategori}}</a> &nbsp;  
+								<span class="pull-right"><i class="fa fa-history"></i> {{c.tanggal}}</span>
 							</p>
 						</div>
 					</div>
@@ -259,22 +268,21 @@
 					</form>
 					<div class="clearfix"></div>
 			<div class="panel panel-info">
-				<div class="panel-body" scrollable data-height="550px">
+				<div class="panel-body" scrollable data-height="600px">
 					{% for c in beli %}
-					<div class="media" style="border-bottom: 1px solid #D9D9D9; padding-bottom: 5px;">
+					<div class="media" style="border-bottom: 1px solid #ddd; padding-bottom: 0px; padding-right: 15px;">
 						<a class="media-left" href="{{c.link}}">
 							<div class="img"><span class="helper"></span><img src="{{c.foto}}" alt=""></div>
 						</a>
 						<div class="media-body">
-							<h4 class="media-heading">
+							<h4 class="media-heading" style="margin-bottom: 10px;">
 								<a href="{{c.link}}">{{c.judul}}</a> 
-								<span class="label label-info" style="font-size: 0.5em">BELI</span>
+								<span class="label label-success" style="font-size: 0.5em">JUAL</span>
 							</h4>
-							<p class="text-justify">{{c.isi}}</p>
-							<p class="text-muted sender">
-								<i class="fa fa-tag"></i> {{c.kategori}} &nbsp;  
-								<i class="fa fa-edit"></i> <a href="{{c.link_angg}}">{{c.anggota}}</a>
-								<span class="pull-right">{{c.tanggal}}</span>
+							<p>{{c.isi}}</p>
+							<p class="text-muted sender" style="font-size: 0.87em; margin-top: 10px;">
+								<a href="/beli?kategori={{c.id_kategori}}" class=""><i class="fa fa-tag"></i> {{c.kategori}}</a> &nbsp;  
+								<span class="pull-right"><i class="fa fa-history"></i> {{c.tanggal}}</span>
 							</p>
 						</div>
 					</div>
@@ -307,6 +315,7 @@
 				<div class="caption" style="padding: 0;">
 					<h5>
 						<a href="{{c.link}}">{{c.nama}}</a>
+						<!--
 						{% if c.stok > 0 %}
 						<a href="" class="pull-right tooltips" title="keranjang" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">
 							<span class="fa-stack">
@@ -315,9 +324,15 @@
 							</span>
 						</a>
 						{% endif %}
+						-->
 					</h5>
-					<p>
-						<strong class="label label-success">Rp. {{c.harga}}</strong>
+					<p class="clearfix">
+						<a href="" class="btn btn-default btn-sm pull-left">{{c.harga}}</a>
+						{% if c.stok > 0 %}
+						<a href="" class="btn btn-success btn-sm pull-right" title="keranjang" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})">
+							<i class="fa fa-lg fa-cart-plus"></i>
+						</a>
+						{% endif %}
 					</p>
 					<div class="well well-sm" style="margin-bottom: 0;"><small style="font-size: 75%;" class="text-muted"><i class="fa fa-tag"></i> {{c.kategori}}</small></div>
 				</div>
@@ -332,8 +347,8 @@
 	</div>
 	<div class="row">
 		{% if produk %}
-		<div class="col-md-12">
-			<p class="text-center">
+		<div class="col-md-12 text-center">
+			<p class="btn-group">
 				<a href="/fproduk" class="btn btn-default"><i class="fa fa-search"></i> LIHAT SEMUA PRODUK</a> 
 				<a href="/katalog/fproduk" class="btn btn-default"><i class="fa fa-download"></i> UNDUH KATALOG</a>
 			</p>
@@ -348,5 +363,9 @@
 
 {% include 'post-page.html' %}
 
+
+{% if (message) %}
+<script>alertify.error('{{message}}');</script>
+{% endif %}
 </body>
 </html>

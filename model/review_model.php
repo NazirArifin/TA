@@ -9,8 +9,10 @@ class ReviewModel extends ModelBase {
 		parent::__construct();
 	}
 	
-	public function get_review() {
-		extract($this->prepare_get(array('member', 'produk')));
+	public function get_review($produk = '', $member = '') {
+		if (empty($produk)) extract($this->prepare_get(array('produk')));
+		if (empty($member)) extract($this->prepare_get(array('member')));
+		
 		// berdasarkan produk
 		if ( ! empty($produk)) {
 			$id		= filter_var($produk, FILTER_SANITIZE_NUMBER_INT);
@@ -38,9 +40,12 @@ class ReviewModel extends ModelBase {
 			}
 		} else {
 			// berdasarkan pengirim
-			$id		= filter_var($member, FILTER_SANITIZE_NUMBER_INT);
+			$kode	= $this->db->escape_str($member);
+			$run	= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$kode'", TRUE);
+			if (empty($run)) return FALSE;
+			$id 	= $run->ID_ANGGOTA;
 			$r 		= array();
-			$run 	= $this->db->query("SELECT b.ID_PRODUK, b.NAMA_PRODUK, b.FOTO_PRODUK, a.ID_REVIEWPRODUK, a.ISI_REVIEWPRODUK, a.TANGGAL_REVIEWPRODUK FROM reviewproduk a, produk b WHERE a.ID_PRODUK = b.ID_PRODUK AND a.ID_ANGGOTA = '$id' AND a.STATUS_REVIEWPRODUK = '1'");
+			$run 	= $this->db->query("SELECT b.ID_PRODUK, b.NAMA_PRODUK, b.FOTO_PRODUK, a.ID_REVIEWPRODUK, a.ISI_REVIEWPRODUK, a.TANGGAL_REVIEWPRODUK FROM reviewproduk a, produk b WHERE a.ID_PRODUK = b.ID_PRODUK AND a.ID_ANGGOTA = '$id' AND a.STATUS_REVIEWPRODUK = '2'");
 			if ( ! empty($run)) {
 				foreach ($run as $val) {
 					if (empty($val->FOTO_PRODUK))
@@ -74,7 +79,9 @@ class ReviewModel extends ModelBase {
 				$run	= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE VALID_ANGGOTA = '1' AND STATUS_ANGGOTA = '1' AND KODE_ANGGOTA = '$member'", TRUE);
 				if (empty($run)) return FALSE;
 				$upd 	= $this->db->query("UPDATE reviewproduk SET STATUS_REVIEWPRODUK = '2' WHERE ID_REVIEWPRODUK = '$id'");
-				return array('type'		=> TRUE);
+				return array(
+					'type'		=> TRUE
+				);
 			}
 		}
 		
@@ -90,6 +97,7 @@ class ReviewModel extends ModelBase {
 		$run	= $this->db->query("SELECT TANGGAL_REVIEWPRODUK FROM reviewproduk WHERE ID_ANGGOTA = '$id' AND (STATUS_REVIEWPRODUK = '1' OR STATUS_REVIEWPRODUK = '2') ORDER BY TANGGAL_REVIEWPRODUK DESC LIMIT 0, 1", TRUE);
 		if (empty($run)) {
 			$ins	= $this->db->query("INSERT INTO reviewproduk VALUES(0, '$produk', '$id', '$data', NOW(), '1')");
+			$type	= true;
 		} else {
 			$now	= time();
 			$lpost	= datedb_to_tanggal($run->TANGGAL_REVIEWPRODUK, 'U');

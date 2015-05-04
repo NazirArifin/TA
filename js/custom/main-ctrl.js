@@ -102,7 +102,7 @@ app.controller('ProdukCtrl', function($scope, $http, notify) {
 	}; $scope.loadData();
 	$scope.setStatus = function(id, status) {
 		$http.post('/review/' + id, { 'status': status, 'member': member }).
-		success(function(d) { $scope.reviewList = d.review; });
+		success(function(d) { $scope.loadData(); });
 	};
 });
 

@@ -225,6 +225,14 @@ class PostModel extends ModelBase {
 			}
 			$run 	= $this->db->query("INSERT INTO postanggota VALUES(0, '$idmember', '$kategori', '$judul', '$data', NOW(), '$tipe', '1', '')");
 			$id		= $this->db->get_insert_id();
+			
+			// jika post 50 dan belum valid, maka jadikan valid
+			if ( ! $member['member_valid']) {
+				$run	= $this->db->query("SELECT COUNT(ID_POSTANGGOTA) AS HASIL FROM postanggota WHERE ID_ANGGOTA = '$idmember'", TRUE);
+				if ($run->HASIL == 50) {
+					$run = $this->db->query("UPDATE anggota SET VALID_ANGGOTA = '1' WHERE ID_ANGGOTA = '$idmember'");
+				}
+			}
 		} else {
 			$run	= $this->db->query("SELECT * FROM postanggota WHERE ID_POSTANGGOTA = '$id' AND ID_ANGGOTA = '$idmember'", TRUE);
 			if (empty($run)) return FALSE;

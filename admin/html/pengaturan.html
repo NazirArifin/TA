@@ -180,7 +180,7 @@
 												<div class="panel panel-info">
 													<div class="panel-heading">
 														<strong>&nbsp; Jasa Kurir</strong>
-														<a href="" class="pull-right tooltips" title="Tambah"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
+														<a href="" show-prompt="" data-scope="kurir" data-text="Nama kurir:" class="pull-right tooltips" title="Tambah"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
 													</div>
 													<table class="table table-condensed table-striped">
 														<tbody>
@@ -212,11 +212,15 @@
 														<a href="" class="pull-right tooltips" show-modal data-target="modal-4"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
 													</div>
 													<div class="div" scrollable data-height="400px">
-														<table class="table table-condensed table-striped" data-ng-show="ongkir">
-															<thead>
+														<table class="table table-condensed table-striped">
+															<thead class="form-inline">
 																<tr>
 																	<th rowspan="2"></th>
-																	<th rowspan="2">KURIR</th>
+																	<th rowspan="2">
+																		<select name="kurir" id="ongkir-kurir" class="form-control" data-ng-options="c.id as c.nama for c in kurir" data-ng-model="ongkirPage.kurir" data-ng-change="loadData('ongkir')">
+																			<option value="">Semua Kurir</option>
+																		</select>
+																	</th>
 																	<th rowspan="2">TUJUAN</th>
 																	<th colspan="2" class="text-center">BIAYA (dalam rupiah)</th>
 																	<th rowspan="2">&nbsp;</th>
@@ -226,7 +230,7 @@
 																	<th>LANJUTAN</th>
 																</tr>
 															</thead>
-															<tbody>
+															<tbody data-ng-show="ongkir">
 																<tr data-ng-repeat="c in ongkir">
 																	<td class="text-muted" width="1">&nbsp;</td>
 																	<td>{{c.k}}</td>

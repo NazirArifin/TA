@@ -474,7 +474,14 @@ class AdminmainModel extends ModelBase {
 				}
 				break;
 			case 'ongkir':
-				$run 	= $this->db->query("SELECT a.ID_BIAYAKURIR, a.BIAYA_BIAYAKURIR, a.LANJUTAN_BIAYAKURIR, b.ID_KOTA, b.NAMA_KOTA, c.ID_KURIR, c.NAMA_KURIR FROM biayakurir a, kota b, kurir c WHERE a.ID_KOTA = b.ID_KOTA AND a.ID_KURIR = c.ID_KURIR ORDER BY c.NAMA_KURIR, b.NAMA_KOTA");
+				extract($this->prepare_get(array('kurir')));
+				intval($kurir);
+				$where		= array();
+				$where[]	= "a.ID_KOTA = b.ID_KOTA";
+				$where[]	= "a.ID_KURIR = c.ID_KURIR";
+				if ( ! empty($kurir)) $where[]	= "a.ID_KURIR = '$kurir'";
+				
+				$run 	= $this->db->query("SELECT a.ID_BIAYAKURIR, a.BIAYA_BIAYAKURIR, a.LANJUTAN_BIAYAKURIR, b.ID_KOTA, b.NAMA_KOTA, c.ID_KURIR, c.NAMA_KURIR FROM biayakurir a, kota b, kurir c WHERE " . implode(" AND ", $where) . " ORDER BY c.NAMA_KURIR, b.NAMA_KOTA");
 				if ( ! empty($run)) {
 					foreach ($run as $val) {
 						$r[] = array(

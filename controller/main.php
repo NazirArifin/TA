@@ -19,18 +19,30 @@ $app->get('/', function() use($app, $ctr) {
 	$tips		= $ctr->FrontModel->get_tips();
 	$pdirektori	= $ctr->FrontModel->get_premium_direktori();
 	$pproduk	= $ctr->FrontModel->get_direktori_produk();
+	$katdir		= $ctr->FrontModel->get_direktori_category();
+	
+	// pesan error gagal login
+	$message 	= '';
+	if (isset($_GET['pesan'])) {
+		switch ($_GET['pesan']):
+			case 1: $message = 'Akun tidak dapat ditemukan. Daftar sekarang juga!'; break;
+		endswitch;
+	}
+	
 	$param		= array(
 		'info' 				=> $info,
 		'bisnis'			=> $bisnis,
 		'berita'			=> true,
 		'direktori'			=> $direktori,
 		'premium_direktori'	=> $pdirektori,
+		'kategori_direktori'=> $katdir,
 		'jual'				=> $jual,
 		'beli'				=> $beli,
 		'produk'			=> $produk,
 		'direktori_produk'	=> $pproduk,
 		'tips'				=> $tips,
-		'at_home'			=> true
+		'at_home'			=> true,
+		'message'			=> $message
 	);
 	
 	if (cek_token($ctr)) {
@@ -162,7 +174,7 @@ $app->post('/login', function() use($app, $ctr) {
 	if ($r['type']) {
 		save_token($r['data']['token'], $r['data']['expired']);
 		redirect_home();
-	} else redirect_index();
+	} else redirect_index(1);
 });
 
 // ----------------------------------------------------------------
@@ -905,4 +917,23 @@ $app->delete('/komentar/:id', function($id) use($app, $ctr) {
 	$ctr->load('model', 'post');
 	$r = $ctr->PostModel->delete_komentar($id);
 	if ($r !== FALSE) json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: invoice/:id
+ */
+$app->options('/invoice/:id', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/invoice/:id', function($id) use($app, $ctr) {
+	// cari data invoice
+	$ctr->load('helper', 'date');
+	$ctr->load('model', 'produk');
+	$r = $ctr->ProdukModel->get_order_by_id($id);
+	$ctr->load('view', 'home-invoice.html', array(
+		'invoice' 		=> $r['invoice'],
+		'member_nama'	=> $r['member_nama'],
+		'member_alamat'	=> $r['member_alamat'],
+		'member_telepon'=> $r['member_telepon']
+	));
 });

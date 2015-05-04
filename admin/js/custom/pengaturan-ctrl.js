@@ -21,7 +21,8 @@ app.controller('PengaturanCtrl', function($scope, $location, $http, notify) {
 	$scope.ongkir = [];
 	$scope.ongkirPage = { 
 		cpage: 0, 
-		numpage: 0 
+		numpage: 0,
+		kurir: ''
 	};
 	$scope.ongkirSelected = {};
 	$scope.ongkirReset = function() {
@@ -88,7 +89,7 @@ app.controller('PengaturanCtrl', function($scope, $location, $http, notify) {
 			$scope[f].cpage--; $scope.loadData(t);
 		}
 	};
-	$scope.nextPage = function() {
+	$scope.nextPage = function(f, t) {
 		if ($scope[f].cpage < $scope[f].numpage - 1) {
 			$scope[f].cpage++; $scope.loadData(t);
 		}
