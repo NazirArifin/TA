@@ -424,7 +424,7 @@ h4.media-heading.produk-title {
 	width: 50px;
 	height: 50px;
 	overflow: hidden;
-	border-radius: 50%;
+	border-radius: 2%;
 	background-clip: padding-box;
 }
 .list-group-item .img img {
@@ -485,7 +485,7 @@ h4.media-heading.produk-title {
 	overflow: hidden;
 	background-color: #fefbfd;
 	border: 1px solid #D9D9D9;
-	border-radius: 50%;
+	border-radius: 2%;
 	white-space: nowrap;
 }
 .img .helper {
