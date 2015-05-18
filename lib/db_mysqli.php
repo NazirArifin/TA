@@ -169,6 +169,10 @@ class Db {
 		return $str;
 	}
 	
+	public function field_count() {
+		return @mysqli_field_count($this->conn_id);
+	}
+	
 	protected function _version() {
 		return "SELECT version() AS ver";
 	}

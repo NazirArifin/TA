@@ -1,5 +1,5 @@
 body {
-	font-family: Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
+	/*font-family: Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;*/
 	background: url('/img/tile1.png') repeat center 0 fixed;
 }
 
@@ -75,7 +75,6 @@ textarea{
 .footer a {
 	color: #C73F3F;
 	font-weight: bold;
-	font-size: 1.2em;
 }
 .img-profil{
 	margin-top: 25px;
@@ -97,8 +96,7 @@ h4.media-heading.produk {
 	margin-bottom: 15px;
 }
 .media-body p {
-	line-height: 1.2em;
-	font-size: 0.9em;
+	font-size: 0.8em;
 	margin-bottom: 4px;
 	width: 100%;
 }
@@ -157,8 +155,7 @@ body > .container {
 	font-size: 0.875em;
 }
 .info-list .desc {
-	font-size: 0.9em;
-	line-height: 1.2;
+	font-size: 0.8em;
 }
 
 .direktori-image {
@@ -471,7 +468,7 @@ h4.media-heading.produk-title {
 .footer li > a {
 	color: #1B1B1B;
 	font-weight: bold;
-	font-size: 1em;
+	font-size: 0.875em;
 }
 
 .list-group {

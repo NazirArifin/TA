@@ -6,7 +6,8 @@ app.controller('PengaturanCtrl', function($scope, $location, $http, notify) {
 	$scope.kotaList = [];
 	$scope.kotaPage = {	
 		cpage: 0, 
-		numpage: 0
+		numpage: 0,
+		kota: ''
 	};
 	$scope.kategori_direktori = [];
 	$scope.kategori_produk = [];
@@ -20,9 +21,7 @@ app.controller('PengaturanCtrl', function($scope, $location, $http, notify) {
 	};
 	$scope.ongkir = [];
 	$scope.ongkirPage = { 
-		cpage: 0, 
-		numpage: 0,
-		kurir: ''
+		cpage: 0, numpage: 0, kota: '', kurir: ''
 	};
 	$scope.ongkirSelected = {};
 	$scope.ongkirReset = function() {
@@ -32,6 +31,14 @@ app.controller('PengaturanCtrl', function($scope, $location, $http, notify) {
 		$scope.ongkirSelected = d;
 	};
 	$scope.kurir = [];
+	
+	$scope.backup = [];
+	$scope.createBackup = function() {
+		$http.post($scope.server + '/backup').success(function(d) {
+			$scope.loadData('backup');
+		});
+	};
+	
 	$scope.loadData = function(t) {
 		var all = false;
 		if (angular.isUndefined(t)) {
@@ -75,6 +82,13 @@ app.controller('PengaturanCtrl', function($scope, $location, $http, notify) {
 			success(function(d) {
 				$scope.ongkirPage.numpage = d.numpage;
 				$scope.ongkir = d.ongkir;
+			});
+		}
+		// load backup
+		if (all || t == 'backup') {
+			$http.get($scope.server + '/backup').
+			success(function(d) {
+				$scope.backup = d.backup;
 			});
 		}
 	}; $scope.loadData();

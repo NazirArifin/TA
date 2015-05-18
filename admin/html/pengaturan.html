@@ -22,9 +22,9 @@
 								<li class="active">
 									<a href="" data-toggle="tab" data-target="#tab-master"><i class="fa fa-database fa-fw"></i> Data Master</a>
 								</li>
-								<!--<li>
+								<li>
 									<a href="" data-toggle="tab" data-target="#tab-situs"><i class="fa fa-globe fa-fw"></i> Data Situs</a>
-								</li>-->
+								</li>
 								<li>
 									<a href="" data-toggle="tab" data-target="#tab-pembayaran" data-ng-click="loadData('rekening,kurir,ongkir')"><i class="fa fa-money fa-fw"></i> Pembayaran</a>
 								</li>
@@ -95,9 +95,10 @@
 										<div class="row">
 											<div class="col-lg-12" style="margin-top: 20px;">
 												<div class="panel panel-info">
-													<div class="panel-heading">
-														<strong>&nbsp; Data Kota</strong>
+													<div class="panel-heading form-inline">
+														<strong>&nbsp; Cari Data Kota: </strong>
 														<a href="" class="pull-right tooltips" title="Tambah" show-prompt="" data-scope="kota" data-text="Masukkan nama kota:"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
+														<input type="text" name="kota" id="data-kota" class="form-control" data-ng-model="kotaPage.kota" data-ng-change="loadData('kota')">
 													</div>
 													<div class="div" scrollable data-height="400px">
 														<table class="table table-condensed table-striped table-small">
@@ -142,7 +143,64 @@
 									</div>
 								</div>
 								<div class="tab-pane fade" id="tab-situs">
-									situs
+									<div class="container">
+										<div class="row">
+											<div class="col-lg-8">
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<a href="" class="btn btn-xs btn-success pull-right tooltips" title="backup database" data-ng-click="createBackup()"><i class="fa fa-server"></i> BACK UP</a>
+														<strong>&nbsp; Back up Database<br>&nbsp;</strong>
+													</div>
+													<table class="table table-condensed table-striped table-hover">
+														<thead>
+															<tr>
+																<th></th>
+																<th>Tanggal</th>
+																<th>Berkas</th>
+																<th>Ukuran</th>
+																<th>&nbsp;</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr data-ng-repeat="c in backup">
+																<td>{{$index + 1}}.</td>
+																<td>{{c.tanggal}}</td>
+																<td>{{c.file}}</td>
+																<td>{{c.ukuran}}</td>
+																<td>
+																	<a data-ng-href="{{server}}/backup/{{c.file}}?token={{token}}" download="{{c.file}}" class="table-link">
+																		<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-download fa-stack-1x fa-inverse"></i></span>
+																	</a>
+																	<a href="" delete-button="/{{c.file}}" data-type="backup" data-load="backup" class="table-link danger">
+																		<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+																	</a>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+											<div class="col-lg-4">
+												<!--
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<strong>&nbsp; Restore Database</strong>
+													</div>
+													<div class="panel-body">
+														<span class="btn btn-success btn-sm btn-block btn-file">
+															<span><i class="fa fa-file-o"></i> FILE BACKUP</span>
+															<input type="file" name="file" id="file" accept=".csv,.sql">
+														</span>
+														<br>
+														<p class="alert alert-warning">
+															<small>PERINGATAN: Mode <em>overwrite</em>, pastikan data yang ada sudah dibackup</small>
+														</p>
+													</div>
+												</div>
+												-->
+											</div>
+										</div>
+									</div>
 								</div>
 								<div class="tab-pane fade" id="tab-pembayaran">
 									<div class="container">
@@ -211,8 +269,8 @@
 														<strong>&nbsp; Biaya Kurir</strong>
 														<a href="" class="pull-right tooltips" show-modal data-target="modal-4"><i class="fa fa-plus-circle fa-lg text-succes"></i></a>
 													</div>
-													<div class="div" scrollable data-height="400px">
-														<table class="table table-condensed table-striped">
+													<div class="div" scrollable data-height="600">
+														<table class="table table-condensed table-striped table-small">
 															<thead class="form-inline">
 																<tr>
 																	<th rowspan="2"></th>
@@ -221,7 +279,9 @@
 																			<option value="">Semua Kurir</option>
 																		</select>
 																	</th>
-																	<th rowspan="2">TUJUAN</th>
+																	<th rowspan="2">
+																		<input type="text" name="kota" id="ongkir-kota" class="form-control" data-ng-model="ongkirPage.kota" data-ng-change="loadData('ongkir')">
+																	</th>
 																	<th colspan="2" class="text-center">BIAYA (dalam rupiah)</th>
 																	<th rowspan="2">&nbsp;</th>
 																</tr>

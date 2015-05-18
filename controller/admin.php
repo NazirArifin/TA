@@ -768,3 +768,57 @@ $app->delete('/admin/tips/:id', function($id) use($app, $ctr) {
 	if ($r === FALSE) return halt401($app);
 	json_output($app, $r);
 });
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: backup
+ */
+$app->options('/admin/backup', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/backup', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('file', 'lib/IOFiles.php');
+	$ctr->load('model', 'adminmain');
+	$r = $ctr->AdminmainModel->get_backup(new IOFiles());
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+$app->post('/admin/backup', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('file', 'lib/IOFiles.php');
+	$ctr->load('model', 'adminmain');
+	$r = $ctr->AdminmainModel->create_backup(new IOFiles());
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: backup
+ */
+$app->options('/admin/backup/:file', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/backup/:file', function($file) use($app, $ctr) {
+	$ctr->load('helper', 'date');
+	$ctr->load('model', 'main');
+	if ( ! isset($_GET['token'])) return halt403($app);
+	if ($ctr->MainModel->validate_token($_GET['token']) === FALSE) return halt403($app);
+	$ctr->load('file', 'lib/IOFiles.php');
+	$iofiles = new IOFiles();
+	$iofiles->download('backup/' . $file);
+})->conditions(array('file' => '[0-9]+\.sql'));
+
+$app->delete('/admin/backup/:file', function($file) use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	@unlink('backup/' . $file);
+	json_output($app, array('type' => true));
+})->conditions(array('file' => '[0-9]+\.sql'));

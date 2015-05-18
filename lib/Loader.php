@@ -33,7 +33,7 @@ class Loader {
 		// set timezone
 		date_default_timezone_set('Asia/Jakarta');
 		// max execution time
-		@set_time_limit(300);
+		//@set_time_limit(360);
 		
 		// twig template
 		require_once 'lib/Twig/Autoloader.php';

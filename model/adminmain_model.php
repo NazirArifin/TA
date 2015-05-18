@@ -441,29 +441,40 @@ class AdminmainModel extends ModelBase {
 	}
 	
 	public function get_data_table($table) {
-		extract($this->prepare_get(array('cpage')));
+		extract($this->prepare_get(array('cpage', 'kurir', 'kota')));
 		$cpage	= intval($cpage);
 		$r 		= array();
 		$where	= array();
 		switch($table) {
 			case 'kota':
-				$numdt = 75;
-				$tabel = 'kota';
+				$numdt 	= 75;
+				$kota 	= $this->db->escape_str($kota);
 				$where[] = "STATUS_KOTA = '1'";
+				if ( ! empty($kota)) {
+					$where[] = "NAMA_KOTA LIKE '%{$kota}%'";
+				}
+				$run	= $this->db->query("SELECT COUNT(ID_KOTA) AS HASIL FROM kota WHERE " . implode(" AND ", $where), true);
 				break;
 			case 'ongkir':
-				$numdt = 25;
-				$tabel = 'biayakurir';
+				$numdt 		= 100;
+				$kurir 		= intval($kurir);
+				$where[] 	= "a.ID_KOTA = b.ID_KOTA";
+				if ( ! empty($kurir)) {
+					$where[] = "a.ID_KURIR = '$kurir'";
+				}
+				$kota 		= $this->db->escape_str($kota);
+				if ( ! empty($kota)) {
+					$where[] = "b.NAMA_KOTA LIKE '%{$kota}%'";
+				}
+				$run	= $this->db->query("SELECT COUNT(ID_BIAYAKURIR) AS HASIL FROM biayakurir a, kota b" . ( ! empty($where) ? " WHERE " . implode(" AND ", $where) : ''), true);
 				break;
 		}
-		$utabel	= strtoupper($tabel);
-		$run	= $this->db->query("SELECT COUNT(ID_{$utabel}) AS HASIL FROM $tabel" . ( ! empty($where) ? " WHERE " . implode(" AND ", $where) : ''), TRUE);
 		$numpg	= ceil($run->HASIL / $numdt);
 		$start	= $cpage * $numdt;
 		
 		switch ($table) {
 			case 'kota':
-				$run = $this->db->query("SELECT * FROM kota WHERE STATUS_KOTA = '1' ORDER BY NAMA_KOTA LIMIT $start, $numdt");
+				$run = $this->db->query("SELECT ID_KOTA, NAMA_KOTA FROM kota WHERE " . implode(" AND ", $where) . " ORDER BY NAMA_KOTA LIMIT $start, $numdt");
 				if ( ! empty($run)) {
 					foreach ($run as $val) {
 						$r[] = array(
@@ -474,12 +485,11 @@ class AdminmainModel extends ModelBase {
 				}
 				break;
 			case 'ongkir':
-				extract($this->prepare_get(array('kurir')));
-				intval($kurir);
 				$where		= array();
 				$where[]	= "a.ID_KOTA = b.ID_KOTA";
 				$where[]	= "a.ID_KURIR = c.ID_KURIR";
 				if ( ! empty($kurir)) $where[]	= "a.ID_KURIR = '$kurir'";
+				if ( ! empty($kota)) $where[]	= "b.NAMA_KOTA LIKE '%{$kota}%'";
 				
 				$run 	= $this->db->query("SELECT a.ID_BIAYAKURIR, a.BIAYA_BIAYAKURIR, a.LANJUTAN_BIAYAKURIR, b.ID_KOTA, b.NAMA_KOTA, c.ID_KURIR, c.NAMA_KURIR FROM biayakurir a, kota b, kurir c WHERE " . implode(" AND ", $where) . " ORDER BY c.NAMA_KURIR, b.NAMA_KOTA");
 				if ( ! empty($run)) {
@@ -500,5 +510,76 @@ class AdminmainModel extends ModelBase {
 		return array(
 			$table 	=> $r, 'numpage' => $numpg, 'type' => TRUE
 		);
+	}
+	
+	/**
+	 * Daftar backup
+	 */
+	public function get_backup($iofiles) {
+		$backup = array();
+		$files 	= scandir('backup');
+		foreach ($files as $file) {
+			if ($file != '.' && $file != '..') {
+				$attr = $iofiles->get_attrib('backup/' . $file);
+				$nama = preg_replace('/[^0-9]/', '', $file);
+				$backup[] = array(
+					'file'		=> $file,
+					'tanggal'	=> date('d/m/Y H:i', $nama),
+					'ukuran'	=> $this->human_filesize($attr['size'], 1)
+				);
+			}
+		}
+		$backup = array_reverse($backup);
+		
+		return array(
+			'type' => true, 'backup' => $backup
+		);
+	}
+	private function human_filesize($bytes, $decimals = 2) {
+		$sz = 'BKMGTP';
+		$factor = floor((strlen($bytes) - 1) / 3);
+		return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . ' ' . @$sz[$factor] . 'B';
+	}
+	
+	/**
+	 * Buat file backup
+	 */
+	public function create_backup($iofiles) {
+		$tables = array();
+		$return = '';
+		$run	= $this->db->query("SHOW TABLES", false, false);
+		foreach ($run as $val) {
+			$table 	= $val[0];
+			$srun 	= $this->db->query("SELECT * FROM $table", false, false);
+			$field	= $this->db->field_count();
+			
+			$return .= 'DROP TABLE IF EXISTS `'.$table.'`;';
+			$trun 	= $this->db->query("SHOW CREATE TABLE $table", true, false);
+			$return .= "\r\n" . $trun[1] . ";\r\n\r\n";
+			
+			if (empty($srun)) continue;
+			foreach ($srun as $k => $v) {
+				$return .= "INSERT INTO `$table` VALUES(";
+				for ($j = 0; $j < $field; $j++) {
+					$v[$j] = addslashes($v[$j]);
+					$v[$j] = str_replace("\n", "\\n", $v[$j]);
+					if (isset($v[$j])) {
+						$return .= '"' . $v[$j] . '"';
+					} else {
+						$return .= '""';
+					}
+					if ($j < ($field - 1)) {
+						$return .= ",";
+					}
+				}
+				$return .= ");\r\n";
+			}
+			$return .= "\r\n\r\n";
+		}
+		
+		// simpan ke file
+		$filename 	= 'backup/' . time() . '.sql';
+		$iofiles->write($filename, $return, 'wb');
+		return array( 'type' => true );
 	}
 }
