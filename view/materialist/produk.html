@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; {{nama|upper}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+{% if direktori != 'Semua Produk' %}
+<script>
+	window.produk = '{{id}}';
+	window.member = '{{member_kode}}';
+</script>
+{% endif %}
+
+</head>
+<body>
+	
+	{% include 'header.html' %}
+	
+	<div class="section grey lighten-4 z-depth-1">
+		<div class="container">
+			<div class="row no-pad-bot">
+				<div class="col m12" style="padding: 0">
+					<p class="breadcrumb">
+						<a href="/"><i class="fa fa-home"></i></a> / 
+						<a href="{{direktori_link}}">{{direktori}}</a> / 
+						<a href="{{direktori_link}}?kategori={{id_kategori}}">{{kategori}}</a> / 
+						{{nama}}
+					</p>
+				</div>
+			</div>
+			<div class="row grey lighten-5">
+				<div class="col m9">
+					<p>
+						<strong class=""><a href="{{direktori_link}}?kategori={{id_kategori}}"><i class="fa fa-tags"></i> {{kategori}}</a></strong>
+					</p>
+					<div class="row">
+						<div class="col s5 valign-wrapper">
+							<img src="{{foto[0]}}" alt="" class="valign responsive-img zoomable-gallery z-depth-1" data-zoom-image="{{foto[0]}}">
+						</div>
+						<div class="col s7">
+							{% autoescape false %}
+							<h5 class="light-text yellow-text text-darken-4" style="margin:0 0 1rem 0">
+								{% if stok %}
+								<a class="btn-floating waves-effect waves-light red darken-2 tooltipped" data-tooltip="masukkan keranjang" data-ng-click="addItem({{id}})" data-ng-hide="itemTaken({{id}})"><i class="mdi-action-add-shopping-cart left"></i></a>
+								{% endif %}
+								{{nama|upper}}
+							</h5>
+							{% if direktori == 'Semua Produk' %}
+							<p>
+								{% if stok == 0 %}<small class="red-text">TERJUAL</small>{% else %}<small class="green-text text-darken-2">TERSEDIA</small>{% endif %}
+							</p>
+							{% else %}
+							<div class="rating">
+								{% if rating.half %}
+								{% for i in 1..rating.fill %}
+								<i class="fa fa-star yellow-text text-darken-4"></i>
+								{% endfor %}
+								{% endif %}
+								{% if rating.half %}
+								<i class="fa fa-star-half-empty yellow-text text-darken-4"></i>
+								{% endif %}
+								{% for i in 1..rating.empty %}
+								<i class="fa fa-star-o yellow-text text-darken-4"></i>
+								{% endfor %}
+							</div>
+							{% endif %}
+							<h5 class="green-text text-darken-3">Rp. {{harga}},-</h5>
+							<p class="grey lighten-3 red-text text-darken-4" style="padding:10px;font-weight:400;font-size:0.87rem">{{info}}</p>
+							{% endautoescape %}
+							<p style="margin-top:30px" class="smaller"><a href="{{direktori_link}}" class="grey-text"><i class="mdi-maps-store-mall-directory"></i> {{direktori|upper}}</a></p>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12">
+							<hr>
+							<ul id="gallery" class="row">
+								{% for c in foto %}
+								<li id="0{{loop.index}}" class="col l2 m3 s6 grey lighten-3">
+									<a href="" data-zoom-image="{{c}}" data-image="{{c}}"><div class="photo-box" style="background-image: url('{{c}}');"></div></a>
+								</li>
+								{% endfor %}
+							</ul>
+							<hr>
+							<p>
+								<span class="right">
+								{% if direktori == 'Semua Produk' %}
+								<a href="/katalog/fproduk" class="btn green darken-1"><i class="mdi-action-assignment left"></i>KATALOG</a>
+								{% else %}
+								<a href="/katalog/{{direktori_id}}" class="btn green darken-1"><i class="mdi-action-assignment left"></i>KATALOG</a>
+								{% endif %}
+								<!--<a href="{{direktori_link}}" class="btn light-blue"><i class="fa {% if direktori == 'Semua Produk' %}fa-search{% else %}fa-home{% endif %}"></i></a></span>-->
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col m3 center-align">
+					
+				</div>
+			</div>
+	
+			{% if direktori != 'Semua Produk' %}
+			<div class="row">
+				<ul class="tabs">
+					<li class="tab col s6"><a class="active" href="#test1"><i class="fa fa-fw fa-binoculars"></i> Review Produk</a></li>
+					<li class="tab col s6"><a href="#test2" class=""><i class="fa fa-fw fa-gift"></i> Produk Lain</a></li>
+				</ul>
+				<div id="test1" class="col s12 tab-content grey lighten-5" data-ng-controller="ProdukCtrl" data-ng-cloak>
+					<div class="grey lighten-4" data-ng-hide="reviewList">
+						<h5 class="light-text center-align"><i class="fa fa-fw fa-file-o"></i> Belum ada Review</h5>
+					</div>
+					{% verbatim %}
+					<ul class="collection" data-ng-show="reviewList">
+						<li class="collection-item avatar" data-ng-repeat="c in reviewList" data-ng-show="c.lihat" id="review-{{c.id}}">
+							<img data-ng-src="{{c.foto}}" alt="" class="circle">
+							<span class="title">
+								<a data-ng-href="{{c.link}}"><span data-ng-show="c.valid"><i class="fa fa-check-circle"></i> </span>{{c.nama}}</a>
+							</span>
+							<div class="rating">
+								<i class="fa fa-star yellow-text text-darken-4" data-ng-repeat="d in range(c.rating.fill)"></i>
+								<i class="fa fa-star-o yellow-text text-darken-4" data-ng-repeat="d in range(c.rating.empty)"></i>
+							</div>
+							<p>
+								<span data-ng-bind-html="c.isi" class="grey-text">{{c.isi}}</span>
+								<br>
+								<a href="" class="btn-flat" data-ng-show="c.setuju" data-ng-click="setStatus(c.id, 2)">Tampilkan</a>
+								<a href="" class="btn-flat" delete-data="{{c.id}}" data-type="review" data-ng-show="c.hapus">Hapus</a>
+							</p>
+							<span class="secondary-content" style="font-size: 0.87em;"><i class="fa fa-clock-o"></i> {{c.tanggal}}</span>
+						</li>
+					</ul>
+					{% endverbatim %}
+					
+					{% if member_valid %}
+					{% if not direktori_id in member_direktori %}
+					<div class="row no-pad-bot" style="padding-top: 0">
+						<h6 class="light-text red-text text-darken-3">
+							Tambahkan Review 
+							<a href="/help#review" class="help" target="_blank" title="bantuan dan faq tentang review"><i class="fa fa-fw fa-question-circle"></i></a>
+						</h6>
+						<hr>
+						<br>
+						<form class="col s12">
+							<div class="row no-pad-bot">
+								<div class="input-field col s6">
+									<i class="mdi-action-stars prefix grey-text" data-ng-click="setRating(0)"></i>
+									<input type="number" name="rate" id="review-rate" value="0" rating-input data-ng-model="rating">
+									<div class="rating">
+										{% for c in 1..5 %}
+										<a href="" data-ng-click="setRating({{loop.index}})"><i class="fa yellow-text text-darken-4 fa-2x" data-ng-class="{{loop.index}} <= rating ? 'fa-star' : 'fa-star-o'"></i></a>
+										{% endfor %}
+									</div>
+									<label for="review-rate" class="active">Penilaian</label>
+								</div>
+							</div>
+							<div class="row no-pad-bot">
+								<div class="input-field col s12">
+									<i class="mdi-editor-mode-edit prefix grey-text"></i>
+									<textarea name="review" id="review-data" cols="30" rows="8" class="materialize-textarea" data-ng-model="review" placeholder=""></textarea>
+									<label for="review-data" class="active">Tulis review Anda</label>
+								</div>
+							</div>
+							<div class="row">
+								<button class="btn green darken-3 waves-effect waves-light" save-review><i class="mdi-action-done left"></i> Simpan</button>
+							</div>
+						</form>
+					</div>
+					{% endif %}
+					{% endif %}
+
+				</div>
+				<div id="test2" class="col s12 tab-content grey lighten-5">
+					<div class="row">
+						{% for c in other %}
+						<div class="col product m3 s6s">
+							<div class="card">
+								<div class="card-image waves-effect waves-block waves-light">
+									<img src="{{c.foto}}" class="activator" alt="">
+								</div>
+								<div class="card-content">
+									<p>
+										<a href="" class="truncate">{{c.nama}}</a>
+										<a href="" class="activator">
+											<i class="mdi-action-info-outline right"></i>
+										</a>
+									</p>
+								</div>
+								<div class="card-action row">
+									<div class="col s6 grey-text truncate">{{c.kategori}}</div>
+									<div class="col s6 right-align truncate">
+										<strong>Rp. {{c.harga}}</strong>
+									</div>
+								</div>
+								<div class="card-reveal">
+									<span class="card-title grey-text text-darken-4 truncate">
+										{{c.nama}}
+										<i class="mdi-navigation-close right"></i>
+									</span>
+									<p>{{c.info}}</p>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			{% else %}
+			<div class="row">
+				<ul class="tabs">
+					<li class="tab col-s12"><a href="#test1" class="active"><i class="fa fa-fw fa-gift"></i> Produk Lain</a></li>
+				</ul>
+				<div class="col s12 tab-content grey lighten-5" id="test1">
+					<div class="row">
+						{% for c in other %}
+						<div class="col product m3 s6s">
+							<div class="card">
+								<div class="card-image waves-effect waves-block waves-light">
+									<img src="{{c.foto}}" class="activator" alt="">
+								</div>
+								<div class="card-content">
+									<p>
+										<a href="" class="truncate">{{c.nama}}</a>
+										<a href="" class="activator">
+											<i class="mdi-action-info-outline right"></i>
+										</a>
+									</p>
+								</div>
+								<div class="card-action row">
+									<div class="col s6 grey-text truncate">{{c.kategori}}</div>
+									<div class="col s6 right-align truncate">
+										<strong>Rp. {{c.harga}}</strong>
+									</div>
+								</div>
+								<div class="card-reveal">
+									<span class="card-title grey-text text-darken-4 truncate">
+										{{c.nama}}
+										<i class="mdi-navigation-close right"></i>
+									</span>
+									<p>{{c.info}}</p>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

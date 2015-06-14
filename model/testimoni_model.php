@@ -17,7 +17,7 @@ class TestimoniModel extends ModelBase {
 		if (empty($run)) return FALSE;
 		$id		= $run->ID_ANGGOTA;
 		$r 		= array();
-		$run	= $this->db->query("SELECT a.*, b.KODE_ANGGOTA, b.FOTO_ANGGOTA, b.NAMA_ANGGOTA FROM testimoni a, anggota b WHERE a.PENGIRIM_TESTIMONI = b.ID_ANGGOTA AND a.ID_ANGGOTA = '$id' AND (a.STATUS_TESTIMONI = '1' OR a.STATUS_TESTIMONI = '2')");
+		$run	= $this->db->query("SELECT a.*, b.KODE_ANGGOTA, b.FOTO_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA FROM testimoni a, anggota b WHERE a.PENGIRIM_TESTIMONI = b.ID_ANGGOTA AND a.ID_ANGGOTA = '$id' AND (a.STATUS_TESTIMONI = '1' OR a.STATUS_TESTIMONI = '2')");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				//jika pengirim atau pemilik profil bisa hapus				
@@ -25,6 +25,7 @@ class TestimoniModel extends ModelBase {
 					'id'		=> $val->ID_TESTIMONI,
 					'kode'		=> $val->KODE_ANGGOTA,
 					'nama'		=> $val->NAMA_ANGGOTA,
+                    'valid'     => ($val->VALID_ANGGOTA == '1'),
 					'link'		=> '/anggota/' . $val->KODE_ANGGOTA,
 					'foto'		=> '/upload/member/' .(empty($val->FOTO_ANGGOTA) ? 'default.png' : str_replace('.', '_thumb.', $val->FOTO_ANGGOTA)),
 					'isi'		=> nl2br($val->ISI_TESTIMONI, FALSE),

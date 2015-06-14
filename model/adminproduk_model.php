@@ -4,7 +4,7 @@
  */
 namespace Model;
 
-set_time_limit(0);
+//set_time_limit(0);
 
 class AdminprodukModel extends ModelBase {
 	public function __construct() {
@@ -198,8 +198,8 @@ class AdminprodukModel extends ModelBase {
 					$config['source_image']		= $filepath;
 					$config['new_image']		= $filethumb;
 					$config['maintain_ratio']	= TRUE;
-					$config['width']			= 120;
-					$config['height']			= 120;
+					$config['width']			= 200;
+					$config['height']			= 200;
 					$iofiles->image_config($config);
 					$iofiles->image_resize();
 				}

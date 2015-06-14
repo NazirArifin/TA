@@ -104,7 +104,7 @@ app.directive('dateRangePicker', function() {
  */
 app.directive('maskedInput', function() {
 	return function($scope, elm, attrs) { 
-		$.mask.definitions['f'] = '[0-9,]';
+		$.mask.definitions['f'] = '[0-9,\.]';
 		if (attrs.placeholder) elm.mask(attrs.maskedInput, { placeholder: attrs.placeholder }); 
 		else elm.mask(attrs.maskedInput);
 	};

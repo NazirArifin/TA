@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; Beranda &mdash; {{member_nama}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+</head>
+<body>
+
+	{% include 'header.html' %}
+	
+	<div class="section grey lighten-5 z-depth-2">
+		<div class="container">
+			<div class="row" data-ng-controller="HomeDirektoriCtrl" data-ng-cloak>
+				<div class="col s12">
+					<h4 class="light-text yellow-text text-darken-3">
+						Data Direktori
+					</h4>
+					<hr>
+					<br>
+					<div class="row no-pad-bot">
+						<div class="col s4 m3">
+							<ul class="collection">
+								{% for c in direktori %}
+								<a href="" class="collection-item" data-ng-class="activeDirektori == {{c.id}} ? 'active' : ''" data-ng-click="setActiveDirektori({{c.id}}, '{{c.nama}}')"><i class="fa fa-angle-right"></i> {{c.nama}}</a>
+								{% endfor %}
+							</ul>
+							<!-- scrollspy -->
+							<div class="row">
+								<div class="col hide-on-small-only m12" style="position:fixed" data-ng-hide="activeDirektori.length == 0">
+									<ul class="section table-of-content">
+										<li><a href="#data-utama" class="grey-text text-lighten-1">Data Utama</a></li>
+										<li><a href="#im-socmed" class="grey-text text-lighten-1">IM dan SocMed</a></li>
+										<li><a href="#selesai" class="grey-text text-lighten-1">Selesai</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						{% verbatim %}
+						<div class="col s8 m9">
+							<div class="row no-pad-bot">
+								<div class="col s12" data-ng-show="activeDirektori.length == 0">
+									<p class="light-blue lighten-1 white-text text-darken-3 z-depth-1" style="padding:20px;margin-bottom:50px;">
+										<a href="/help#direktori" class="help white-text right" target="_blank" title="bantuan tentang direktori"><i class="fa fa-fw fa-question-circle"></i></a>
+										
+										<i class="fa fa-info-circle fa-3x left"></i> Pada halaman ini Anda dapat mengatur data profil direktori yang Anda miliki.<br>Pilih nama direktori disebelah kiri untuk mengatur direktori yang bersangkutan<br>
+									</p>
+								</div>
+								
+								<div class="col s12" data-ng-show="activeDirektori.length != 0">
+									<h4 class="light-text">
+										<a href="" class="grey-text tooltipped" data-tooltip="batalkan" data-ng-click="cancel()"><i class="mdi-content-reply"></i></a>
+										{{namaDirektori|uppercase}}
+										<a href="/home/produk" class="btn red darken-1 right tooltipped waves-effect waves-light" data-tooltip="atur produk toko"><i class="mdi-action-wallet-giftcard"></i></a>
+									</h4>
+									<div class="row" style="">
+										<form role="form" class="col s12 grey lighten-4">
+											<div class="section scrollspy" id="data-utama">
+												<div class="row" data-ng-class="direktori.subdomain ? '' : 'no-pad-bot'">
+													<div class="input-field col s4">
+														<h5 class="light-text grey-text">Data Utama</h5>
+													</div>
+												</div>
+												<div class="row grey-text text-darken-2" data-ng-hide="direktori.subdomain">
+													<div class="input-field col m10 offset-m1 pad grey lighten-2">
+														<p class="center-align">Setiap Toko yang Anda miliki harus memiliki alamat subdomain dengan pola: <br><span class="grey-text text-lighten-1">http://madura.bz/</span><strong class="light-blue-text underlined">nama.subdomain</strong>.<br>Cek ketersediaan nama subdomain pada input berikut:</p>
+														<p style="font-size:0.75rem;margin-bottom:20px;" class="grey-text">* Nama subdomain hanya dapat diisi satu kali dan tidak dapat diubah. Karakter yang diperbolehkan adalah a-z, 0-9, dan titik (.)</p>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<i class="mdi-social-public prefix"></i>
+														<input type="text" name="website" id="website" class="" placeholder="" maxlength="60" length="60" data-ng-model="direktori.web" data-ng-disabled="direktori.subdomain" check-subdomain-saved data-ng-pattern="/[a-z0-9\.]+/" style="text-transform:lowercase">
+														<label for="website" data-ng-class="direktori.website.length > 0 ? 'active' : ''">
+															<span class="default">SUBDOMAIN TOKO</span>
+															<span class="loader right red-text hide"><i class="fa fa-spinner fa-spin"></i></span>
+														</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<select name="kategori" id="kategori" data-ng-model="direktori.kategori" data-ng-options="c.id as c.nama for c in kategori" class="browser-default" required>
+															<option value="">-- pilih kategori --</option>
+														</select>
+														<label for="kategori" class="active">Kategori Direktori</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<input type="text" name="nama" id="nama" class="" maxlength="80" length="80" data-ng-model="direktori.nama" required>
+														<label for="nama" data-ng-class="direktori.nama.length > 0 ? 'active' : ''">Nama Usaha</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<select name="kota" id="kota" class="browser-default" data-ng-options="c.id as c.nama for c in kota" data-ng-model="direktori.kota" required>
+															<option value="">-- pilih kota --</option>
+														</select>
+														<label for="kota" class="active">Kota Asal</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<input type="text" name="alamat" id="alamat" class="" maxlength="120" length="120" data-ng-model="direktori.alamat" required>
+														<label for="alamat" data-ng-class="direktori.alamat.length > 0 ? 'active' : ''">Alamat Usaha</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<input type="text" name="alamat2" id="alamat2" class="" maxlength="120" length="120" data-ng-model="direktori.alamat2">
+														<label for="alamat2" data-ng-class="direktori.alamat2.length > 0 ? 'active' : ''">Alamat Usaha 2 (Opsional)</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m4 offset-m1 pad">
+														<input type="text" name="telepon" id="telepon" class="" placeholder="+62-___________" maxlength="30" length="30" data-ng-model="direktori.telepon" masked-input="+62-999999999?99" required>
+														<label for="telepon" data-ng-class="direktori.telepon.length > 0 ? 'active' : ''">Telepon</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m4 offset-m1 pad">
+														<input type="text" name="telepon2" id="telepon2" class="" placeholder="+62-___________" maxlength="30"length="30" data-ng-model="direktori.telepon2" masked-input="+62-999999999?99">
+														<label for="telepon2" data-ng-class="direktori.telepon2.length > 0 ? 'active' : ''">Telepon 2 (Opsional)</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<textarea name="info" id="info" cols="30" rows="4" class="materialize-textarea" data-ng-model="direktori.info" required></textarea>
+														<label for="info" data-ng-class="direktori.info.length > 0 ? 'active' : ''">Keterangan</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m4 offset-m1 pad">
+														<input type="email" name="email" id="email" class="" maxlength="60" length="60" data-ng-model="direktori.email">
+														<label for="email" data-ng-class="direktori.email.length > 0 ? 'active' : ''">Email (Opsional)</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<i class="mdi-maps-place prefix grey-text"></i>
+														<input type="text" name="koordinat" id="koordinat" class="" placeholder="Koordinat" maxlength="60" length="60" data-ng-model="direktori.koordinat">
+														<label for="koordinat" data-ng-class="direktori.koordinat.length > 0 ? 'active' : ''">Koordinat (Opsional)</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<i class="mdi-maps-place prefix grey-text"></i>
+														<input type="text" name="koordinat2" id="koordinat2" class="" placeholder="Koordinat 2" maxlength="60" data-ng-model="direktori.koordinat2">
+														<label for="koordinat2" data-ng-class="direktori.koordinat2.length > 0 ? 'active' : ''">Koordinat 2 (Opsional)</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m2 offset-m1 pad">
+														<img data-ng-src="{{direktori.image}}" alt="thumb" class="responsive-img z-depth-1">
+													</div>
+												</div>
+												<div class="row">
+													<div class="file-field input-field col m10 offset-m1 pad">
+														<input type="text" name="" id="" placeholder="file jpg, jpeg, png, maksimal 1 MB" class="file-path validate" disabled>
+														<div class="btn green darken-1" style="left:10px;">
+															<span>Foto</span>
+															<input type="file" name="file" id="file" accept=".png,.jpg,.jpeg" simple-file-input>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="section scrollspy" id="im-socmed">
+												<div class="row">
+													<div class="input-field col s12">
+														<h5 class="light-text grey-text">Instant Messaging</h5>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m5 offset-m1 pad">
+														<i class="fa fa-whatsapp prefix grey-text"></i>
+														<input type="text" name="wa" id="wa" class="form-control" placeholder="whatsapp" maxlength="20" data-ng-model="direktori.im.wa" length="20">
+														<label for="wa">WHATSAPP</label>
+													</div>
+													<div class="input-field col m5 pad">
+														<i class="fa fa-comments prefix grey-text"></i>
+														<input type="text" name="bbm" id="bbm" class="form-control" placeholder="bbm" maxlength="20" data-ng-model="direktori.im.bbm" length="20">
+														<label for="bbm">BBM</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m5 offset-m1 pad">
+														<i class="fa fa-comments prefix grey-text"></i>
+														<input type="text" name="line" id="line" class="form-control" placeholder="line" maxlength="20" data-ng-model="direktori.im.line" length="20">
+														<label for="line">LINE</label>
+													</div>
+													<div class="input-field col m5 pad">
+														<i class="fa fa-wechat prefix grey-text"></i>
+														<input type="text" name="wechat" id="wechat" class="form-control" placeholder="wechat" maxlength="20" data-ng-model="direktori.im.wechat" length="20">
+														<label for="wechat">WECHAT</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col s12">
+														<h5 class="light-text grey-text">Social Media</h5>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<i class="fa fa-facebook-official prefix grey-text"></i>
+														<input type="text" name="fb" id="fb" class="form-control" placeholder="https://" maxlength="60" data-ng-model="direktori.sm.fb" length="60">
+														<label for="fb">Facebook</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<i class="fa fa-twitter prefix grey-text"></i>
+														<input type="text" name="twitter" id="twitter" class="form-control" placeholder="https://" maxlength="60" data-ng-model="direktori.sm.twitter" length="60">
+														<label for="twitter">Twitter</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<i class="fa fa-google-plus prefix grey-text"></i>
+														<input type="text" name="gplus" id="gplus" class="form-control" placeholder="https://" maxlength="60" data-ng-model="direktori.sm.gplus" length="60">
+														<label for="gplus">Google+</label>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1 pad">
+														<i class="fa fa-instagram prefix grey-text"></i>
+														<input type="text" name="ig" id="ig" class="form-control" placeholder="https://" maxlength="60" data-ng-model="direktori.sm.ig" length="60">
+														<label for="ig">Instagram</label>
+													</div>
+												</div>
+											</div>
+											<div class="section scrollspy" id="selesai">
+												<div class="row">
+													<div class="input-field col s12">
+														<h5 class="light-text grey-text">Selesai &amp; Simpan</h5>
+													</div>
+												</div>
+												<div class="row">
+													<div class="input-field col m10 offset-m1">
+														<button class="btn-large green darken-2" save-direktori><i class="mdi-action-done left"></i> SIMPAN DATA</button>
+														<a href="" class="btn-flat" data-ng-click="cancel()">BATALKAN</a>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endverbatim %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

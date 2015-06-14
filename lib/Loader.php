@@ -19,7 +19,8 @@ class Loader {
 	/**
 	 * Tema untuk halaman depan
 	 */
-	private $theme = 'simplist';
+	//private $theme = 'simplist';
+    private $theme = 'materialist';
 	
 	/**
 	 * Cache view

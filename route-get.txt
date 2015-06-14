@@ -1,0 +1,32 @@
+/data
+/ongkir
+/pesan
+/daftar
+/katalog/:type
+/logout
+/home
+/home/:type
+/email/:state
+/:type ->conditions(berita|info)
+/berita/:id/:judul
+/info/:id/:judul
+/direktori/:alpha
+/direktori
+/direktori/:id/:nama
+/anggota/:kode
+/testimoni
+/post/:id
+/:type ->conditions(jual|beli)
+/review
+/fproduk
+/order
+/produk/:id
+/produk/:id/:nama
+/fproduk/:id/:nama
+/jual/:id/:nama
+/beli/:id/:nama
+/komentar
+/invoice/:id
+/tos
+/help
+/fpass

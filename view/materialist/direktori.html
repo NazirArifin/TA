@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; {{nama}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+</head>
+<body>
+	
+	{% include 'header.html' %}
+	
+	<div class="section grey lighten-4 z-depth-2">
+		<div class="container">
+			<div class="row">
+				<div class="col m12" style="padding: 0">
+					<p class="breadcrumb"><a href="/"><i class="fa fa-home"></i></a> / <a href="/direktori">Direktori Bisnis</a> / <a href="/direktori?type=advanced&kategori={{id_kategori}}">{{kategori}}</a> / {{nama}}</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col m2 hide-on-small-only responsive-img-bg" style="background-image:url({{foto}}); height: 150px;"></div>
+				<div class="col m7 s12">
+					<h4 class="yellow-text text-darken-4 light-text" style="margin:0 0 1rem 0">{{nama|upper}}</h4>
+					{% if anggota and website %}
+					<p>
+						<a href="{{website}}" class="btn"><i class="mdi-maps-store-mall-directory left"></i>TOKO</a>
+					</p>
+					{% endif %}
+					<hr>
+					<p>
+						<a href="/direktori?type=advanced&kategori={{id_kategori}}"><span class="grey-text"><i class="fa fa-fw fa-tag"></i> {{kategori}}</span></a><br>
+						<i class="fa fa-fw fa-map-marker"></i> {{alamat[0]}} {% if alamat[1] %}, {{alamat[1]}} {% endif %} &mdash; <strong>{{kota}}</strong>
+					</p>
+					<p>
+						<button class="btn light-blue darken-3"><i class="fa fa-phone-square"></i> {{telepon[0]}}</button>
+						{% if email %}<a class="btn red darken-1 tooltipped" data-tooltip="email: {{email}}" href="mailto:{{email}}"><i class="fa fa-envelope"></i></a>{% endif %}
+					</p>
+					{% if telepon[1] %}
+					<p class="grey-text">
+						<i class="fa fa-fw fa-phone"></i> {{telepon[1]}}
+					</p>
+					{% endif %}
+				</div>
+				<div class="col m3 s12 grey lighten-2">
+					&nbsp;<br>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col m12" style="padding: 0">
+					<p class="breadcrumb"><a href="/"><i class="fa fa-home"></i></a> / <a href="/direktori">Direktori Bisnis</a> / <a href="/direktori?type=advanced&kategori={{id_kategori}}">{{kategori}}</a> / {{nama}}</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col s12 z-depth-1 grey lighten-5">
+					<div class="row">
+						<ul class="tabs">
+						  <li class="tab col s3"><a class="active" href="#test1"><i class="fa fa-fw fa-info-circle"></i> Profil</a></li>
+						  <li class="tab col s3"><a href="#test2" class=""><i class="fa fa-fw fa-wechat"></i> Pesan Instan</a></li>
+						  <li class="tab col s3"><a href="#test3" class=""><i class="fa fa-fw fa-connectdevelop"></i> Media Sosial</a></li>
+						  <li class="tab col s3"><a href="#test4" class=""><i class="fa fa-fw fa-gift"></i> Produk</a></li>
+						</ul>
+						<div id="test1" class="col s12 tab-content">
+							<div class="row">
+								<table class="bordered  condensed hoverable">
+									<tbody>
+										{% if anggota %}
+										<tr><td><h5 class="light-text">Pemilik</h5></td></tr>
+										<tr>
+											<td><a href="{{link_angg}}">{% if valid_angg %}<i class="fa fa-check-circle text-info"></i> {% endif %}{{pemilik}}</a></td>
+										</tr>
+										{% endif %}
+										{% if website %}
+										<tr><td><h5 class="light-text">Website</h5></td></tr>
+										<tr><td><a href="{{website}}">{{website}}</a></td></tr>
+										{% endif %}
+										<tr><td><h5 class="light-text">Profil</h5></td></tr>
+										<tr><td>{{info}}</td></tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div id="test2" class="col s12 tab-content">
+							<div class="row">
+								<table class="bordered condensed hoverable">
+									<tbody>
+										{% if chat.wa %}
+										<tr><td><h5 class="light-text"><i class="fa fa-whatsapp"></i> WhatsApp</h5></td></tr>
+										<tr><td>{{chat.wa}}</td></tr>
+										{% endif %}
+										{% if chat.wechat %}
+										<tr><td><h5 class="light-text"><i class="fa fa-wechat"> WeChat</h5></td></tr>
+										<tr><td>{{chat.wechat}}</td></tr>
+										{% endif %}
+										{% if chat.bbm %}
+										<tr><td><h5 class="light-text"><i class="fa fa-comments"></i> BBM</h5></td></tr>
+										<tr><td>{{chat.bbm}}</td></tr>
+										{% endif %}
+										{% if chat.line %}
+										<tr><td><h5 class="light-text"><i class="fa fa-comments"></i> LINE</h5></td></tr>
+										<tr><td>{{chat.line}}</td></tr>
+										{% endif %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div id="test3" class="col s12 tab-content">
+							<div class="row">
+								<table class="bordered condensed hoverable">
+									<tbody>
+										{% if socmed.fb %}
+										<tr><td><h5 class="light-text"><i class="fa fa-fw fa-facebook-official"> Facebook</h5></td></tr>
+										<tr><td>
+											<a href="{{socmed.fb}}" rel="external nofollow" target="_blank">{{socmed.fb}}</a>
+										</td></tr>
+										{% endif %}
+										{% if socmed.twitter %}
+										<tr><td><h5 class="light-text"><i class="fa fa-fw fa-twitter-square"></i> Twitter</h5></td></tr>
+										<tr><td>
+											<a href="{{socmed.twitter}}" rel="external nofollow" target="_blank">{{socmed.twitter}}</a>
+										</td></tr>
+										{% endif %}
+										{% if socmed.gplus %}
+										<tr><td><h5 class="light-text"><i class="fa fa-fw fa-google-plus-square"></i> Google Plus</h5></td></tr>
+										<tr><td>
+											<a href="{{socmed.gplus}}" rel="external nofollow" target="_blank">{{socmed.gplus}}</a>
+										</td></tr>
+										{% endif %}
+										{% if socmed.ig %}
+										<tr><td><h5 class="light-text"><i class="fa fa-fw fa-instagram"></i> Instagram</h5></td></tr>
+										<tr><td>
+											<a href="{{socmed.ig}}" rel="external nofollow" target="_blank">{{socmed.ig}}</a>
+										</td></tr>
+										{% endif %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div id="test4" class="col s12 tab-content">
+							<div class="row product">
+								{% for c in produk %}
+								<div class="col m3 s4">
+									<div class="card">
+										<div class="card-image waves-effect waves-block waves-light">
+											<img src="{{c.foto}}" alt="produk" class="activator">
+										</div>
+										<div class="card-content">
+											<div class="rating">
+												{% if c.rating.fill %}
+												{% for i in 1..c.rating.fill %}
+												<i class="fa fa-star yellow-text text-darken-4"></i>
+												{% endfor %}
+												{% endif %}
+												{% if c.rating.half %}
+												<i class="fa fa-star-half-empty yellow-text text-darken-4"></i>
+												{% endif %}
+												{% for i in 1..c.rating.empty %}
+												<i class="fa fa-star-o yellow-text text-darken-4"></i>
+												{% endfor %}
+											</div>
+											<h4 class="truncate tooltipped" data-tooltip="{{c.nama}}" style="font-size: 1rem;margin:0"><a href="{{c.link}}">{{c.nama}}</a></h4>
+										</div>
+										<div class="card-action row">
+											<div class="col s6 grey-text truncate">{{c.kategori}}</div>
+											<div class="col s6"><strong class="right">Rp. {{c.harga}}</strong></div>
+										</div>
+										<div class="card-reveal">
+											<span class="card-title grey-text text-darken-4">{{c.nama}} <i class="mdi-navigation-close right"></i></span>
+											<p>{{c.info}}</p>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="directory section white z-depth-1">
+		<div class="container">
+			<div class="row">
+				<ul class="pagination center-align hide-on-small-only">
+					{% for c in direktori %}
+					<li{% if not c.h %} class="disabled"{% endif %}><a href=""{% if c.h %} data-ng-click="loadDirektoriList('{{c.a}}')" class="tooltipped" data-position="top" data-delay="0" data-tooltip="Lihat direktori {{c.a}}"{% endif %}>{{c.a}}</a></li>
+					{% endfor %}
+				</ul>
+				
+				<ul class="pagination hide-on-med-and-up">
+					{% for c in direktori %}
+					{% if c.h %}<li><a href="/direktori/{{c.a}}" class="tooltipped" data-tooltip="Lihat direktori {{c.a}}">{{c.a}}</a></li>{% endif %}
+					{% endfor %}
+				</ul>
+			</div>
+			<div class="row">
+				{% verbatim %}
+				<div class="col m10 offset-m1" data-ng-show="direktoriList.length > 0" data-ng-cloak>
+					<table class="striped">
+						<tbody>
+							<tr data-ng-repeat="c in direktoriList">
+								<td data-ng-repeat="d in c">
+									<a data-ng-href="/direktori/{{d.link}}">
+										<strong data-ng-show="d.nama.length > 0">&bull; {{d.nama}}</strong>
+									</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				{% endverbatim %}
+			</div>
+		</div>
+	</div>
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

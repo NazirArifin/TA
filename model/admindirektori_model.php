@@ -4,7 +4,7 @@
  */
 namespace Model;
 
-set_time_limit(0);
+//set_time_limit(0);
 
 class AdmindirektoriModel extends ModelBase {
 	public function __construct() {
@@ -85,6 +85,7 @@ class AdmindirektoriModel extends ModelBase {
 			'info' 		=> $run->INFO_DIREKTORI,
 			'email' 	=> $run->EMAIL_DIREKTORI,
 			'web'		=> $run->WEB_DIREKTORI,
+            'subdomain' => ( ! empty($run->WEB_DIREKTORI)),
 			'im'		=> json_decode($run->CHAT_DIREKTORI),
 			'sm'		=> json_decode($run->SOCMED_DIREKTORI),
 			'alamat'	=> $alamat[0],

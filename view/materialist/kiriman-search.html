@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; TEMPAT {{type|upper}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+</head>
+<body>
+	
+	{% include 'header.html' %}
+	
+	<div class="section white z-depth-1">
+		<div class="container">
+			<div class="row no-pad-bot">
+				<div class="col m4 hide-on-small-only">
+					<h4 class="light-text yellow-text text-darken-3">TEMPAT {{type|upper}}</h4>
+					{% if type == 'jual' %}
+					<p style="margin:0;font-size:0.87rem;"><a href="/beli" class="tooltipped" data-tooltip="ke tempat beli"><i class="mdi-action-swap-horiz"></i> TEMPAT BELI</a></p>
+					{% else %}
+					<p style="margin:0;font-size:0.87rem;"><a href="/jual" class="tooltipped" data-tooltip="ke tempat jual"><i class="mdi-action-swap-horiz"></i> TEMPAT JUAL</a></p>
+					{% endif %}
+				</div>
+				<div class="col m8">
+					<div class="row no-pad-bot">
+						<form action="/{{type}}" class="col s10 right">
+							<div class="row no-pad-bot">
+								<div class="input-field col s5">
+									<input type="text" name="query" id="query" class="form-control" value="{{param.query}}">
+									<label for="query">Pencarian</label>
+								</div>
+								<div class="input-field col s5">
+									<select name="kategori" id="kategori" class="select browser-default" value="{{param.kategori}}">
+										<option value="">-- pilih kategori --</option>
+										{% for c in kategori %}<option value="{{c.id}}"{% if param.kategori == c.id %} selected{% endif %}>{{c.nama}}</option>{% endfor %}
+									</select>
+									<label for="kategori"></label>
+								</div>
+								<div class="input-field col s2">
+									<button class="btn light-blue darken-1 waves-effect waves-light" type="submit" style="height:43px"><i class="fa fa-search"></i></button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="section market grey lighten-4">
+		<div class="container">
+			<div class="row">
+				<div class="col s4 m2">
+					<div class="collection" style="font-size:0.87rem;">
+						{% if param.kategori %}
+						<a href="/{{type}}" class="collection-item light-blue-text text-darken-1"><strong>SEMUA KATEGORI</strong></a>
+						{% endif %}
+						
+						{% for c in kategori %}
+						{% if c.id != param.kategori %}
+						<a href="/{{type}}?kategori={{c.id}}" class="collection-item" style="padding:7px 20px;">{{c.nama}}</a>
+						{% else %}
+						<a href="" class="collection-item grey-text text-lighten-3" disabled>{{c.nama}}</a>
+						{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+				<div class="col s8 m10">
+					{% if data %}
+					<table class="bordered hoverable">
+						<tbody>
+							{% for c in data %}
+							<tr>
+								<td><div class="img green lighten-5" style="background-image:url('{{c.foto}}')"></div></td>
+								<td style="width:30%;">
+									<h6 class="" style="margin:0">
+										<a href="{{c.link}}">{{c.judul}}</a>
+									</h6>
+									<span class="grey-text" style="font-size: 0.87rem">
+										<i class="fa fa-comments"></i> {{c.komentar}} &nbsp; 
+										<i class="fa fa-calendar"></i> {{c.tanggal}}
+									</span><br>
+									<p><a href="{{c.anggota_link}}">{% if c.anggota_valid %}<i class="fa fa-check-circle"></i> {% endif %}{{c.anggota_nama}}</a></p>
+								</td>
+								<td>
+									<h6 style="margin:0 0 1rem 0">
+										{% if type == 'jual' %}<small class="green lighten-1 white-text"> JUAL </small>{% endif %}
+										{% if type == 'beli' %}<small class="light-blue lighten-1 white-text"> BELI </small>{% endif %}
+									</h6>
+									<p>{{c.isi}}</p>
+									<p><a href="/{{type}}?kategori={{c.id_kategori}}" class="grey-text"><i class="fa fa-tag"></i> {{c.kategori}}</a></p>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					
+					<ul class="pagination pagination-sm" style="margin: 30px 0;">
+						<li{% if cpage == 0 %} class="disabled"{% endif %}><a href="/{{type}}?{{link}}&cpage=0"><i class="mdi-navigation-chevron-left"></i></a></li>
+						{% for i in 0..(numpage - 1) %}
+						<li{% if cpage == loop.index0 %} class="active"{% endif %}><a href="/{{type}}?{{link}}&cpage={{loop.index0}}">{{loop.index}}</a></li>
+						{% endfor %}
+						<li{% if cpage == (numpage - 1) %} class="disabled"{% endif %}><a href="/{{type}}?{{link}}&cpage={{numpage - 1}}"><i class="mdi-navigation-chevron-right"></i></a></li>
+					</ul>
+					{% else %}
+					<div class="row">
+						<div class="col m8 offset-m2">
+							<div class="card yellow darken-4">
+								<div class="card-content">
+									<h5 class="white-text center-align"><i class="fa fa-file-o"></i> Tidak Ada Hasil</h5>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

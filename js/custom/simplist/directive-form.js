@@ -99,15 +99,15 @@ app.directive('saveRegister', ['$http', 'notify', function($http, notify) {
 			elm.on('click', function(e) {
 				var valid = true;
 				if (angular.isUndefined($scope.user.email) || $scope.user.email.length == 0) {
-					$('#email').closest('.form-group').addClass('has-error');
+					$('#login-email').addClass('invalid');
 					valid = false;
 				}
 				if ($scope.user.nama.length < 3) {
-					$('#nama').closest('.form-group').addClass('has-error');
+					$('#login-nama').addClass('invalid');
 					valid = false;
 				}
 				if ($scope.user.telepon.length < 8) {
-					$('#telp').closest('.form-group').addClass('has-error');
+					$('#login-telp').closest('.form-group').addClass('has-error');
 					valid = false;
 				}
 				if (valid) {

@@ -58,7 +58,7 @@
 										<td class="text-center">
 											<span class="label" data-ng-class="getLabelStatus(c.status)">{{c.status}}</span>
 										</td>
-										<td>{{c.info}}</td>
+										<td data-ng-bind-html="c.info">{{c.info}}</td>
 										<td class="text-center">
 											<a href="" class="table-link info tooltips" title="Set Dikonfirmasi" data-ng-click="setStatus(c.id, 4)" data-ng-show="c.status == 'Tertunda'">
 												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-check-square fa-stack-1x fa-inverse"></i></span>

@@ -1,0 +1,242 @@
+
+<!-- dropdown di nav -->
+<ul id="dropdown-pasar" class="dropdown-content">
+	<li{% if page == 'jual' %} class="active"{% endif %}><a href="/jual" class="waves-effect waves-grey">Jual Barang</a></li>
+	<li{% if page == 'beli' %} class="active"{% endif %}><a href="/beli" class="waves-effect waves-grey">Beli Barang</a></li>
+</ul>
+<ul id="dropdown-berita" class="dropdown-content">
+	<li{% if page == 'berita' %} class="active"{% endif %}><a href="/berita" class="waves-effect waves-grey">Kabar Bisnis</a></li>
+	<li{% if page == 'info' %} class="active"{% endif %}><a href="/info" class="waves-effect waves-grey">G2B &amp; Info</a></li>
+</ul>
+
+<div class="navbar-fixed">
+<nav class="" style="background-color:rgba(223,223,223,0.6)">
+	<div class="container">
+		<div class="nav-wrapper">
+			<a href="/" class="left brand-logo"><img src="/img/logo-long.png" alt=""></a>
+			<ul id="nav-mobile" class="left hide-on-med-and-down">
+				<li{% if page == 'direktori' %} class="active"{% endif %}><a href="/direktori" class="waves-effect waves-grey">Direktori Bisnis</a></li>
+				<li{% if page == 'berita' or page == 'info' %} class="active"{% endif %}><a href="" class="dropdown-button" data-activates="dropdown-berita">Berita &amp; Info<i class="mdi-navigation-arrow-drop-down right"></i></a></li>
+				<li{% if page == 'jual' or page == 'beli' %} class="active"{% endif %}><a href="" class="dropdown-button" data-activates="dropdown-pasar">Jual Beli<i class="mdi-navigation-arrow-drop-down right"></i></a></li>
+				<li{% if page == 'produk' %} class="active"{% endif %}><a href="/fproduk" class="waves-effect waves-grey">Produk</a></li>
+			</ul>
+			
+			<ul class="right hide-on-med-and-down">
+				{% if not authenticate %}
+					{% if not registering %}
+						<li><a href="/daftar" class="waves-effect waves-grey">DAFTAR</a></li>
+					{% endif %}
+					<li><a href="" data-target="login" class="waves-effect waves-grey modal-trigger">MASUK</a></li>
+				{% else %}
+					<li><a href="" class="waves-effect waves-grey" show-modal data-target="modal-3" id="link-edit-profil">EDIT PROFIL</a></li>
+					<li><a href="" class="red-text text-darken-2 waves-effect waves-light" data-ng-click="logout()" id="link-logout">KELUAR</a></li>
+				{% endif %}
+				
+				{% if authenticate %}
+					{% verbatim %}
+						<li data-ng-cloak>
+							<a href="/home/checkout" class="waves-effect waves-grey" data-ng-class="item.length > 0 ? 'red-text' : 'teal-text'">
+								<i class="mdi-action-shopping-cart left"></i>
+								<span data-ng-show="item.length > 0">{{item.length}}</span>
+							</a>
+						</li>
+					{% endverbatim %}
+				{% else %}
+					{% verbatim %}
+						<li data-ng-cloak>
+							<a href="" onclick="Materialize.toast('Anda harus login untuk melakukan checkout', 4000)" class="waves-effect waves-grey" data-ng-class="item.length > 0 ? 'red-text' : 'teal-text'">
+								<i class="mdi-action-shopping-cart left"></i>
+								<span data-ng-show="item.length > 0">{{item.length}}</span>
+							</a>
+						</li>
+					{% endverbatim %}
+				{% endif %}
+			</ul>
+			
+			<ul id="slide-out" class="side-nav">
+				{% if not authenticate %}
+					{% verbatim %}
+						<li><a href="" onclick="Materialize.toast('Anda harus login untuk melakukan checkout', 4000)"  class="waves-effect waves-grey" data-ng-class="item.length > 0 ? 'red-text': 'teal-text text-lighten-1'">Cart: {{item.length}} Barang</a></li>
+					{% endverbatim %}
+					{% if not registering %}
+						<li><a href="/daftar" class="waves-effect waves-grey">Daftar</a></li>
+					{% endif %}
+					<li><a href="/login" class="waves-effect waves-grey">Masuk Aplikasi</a></li>
+				{% else %}
+					{% verbatim %}
+						<li><a href="/home/checkout" class="waves-effect waves-grey" data-ng-class="item.length > 0 ? 'red-text': 'teal-text text-lighten-1'">Cart: {{item.length}} Barang</a></li>
+					{% endverbatim %}
+					<li><a href="" class="waves-effect waves-grey" show-modal data-target="modal-3">EDIT PROFIL</a></li>
+					<li><a href="" class="waves-effect waves-grey" data-ng-click="logout()">KELUAR</a></li>
+				{% endif %}
+				
+				<li class="divider"></li>
+				<li{% if page == 'direktori' %} class="active"{% endif %}><a href="/direktori" class="waves-effect waves-grey">Direktori Bisnis</a></li>
+				<li{% if page == 'berita' %} class="active"{% endif %}><a href="/berita" class="waves-effect waves-grey">Kabar Bisnis</a></li>
+				<li{% if page == 'info' %} class="active"{% endif %}><a href="/info" class="waves-effect waves-grey">G2B &amp; Info</a></li>
+				<li{% if page == 'jual' %} class="active"{% endif %}><a href="/jual" class="waves-effect waves-grey">Jual Barang</a></li>
+				<li{% if page == 'beli' %} class="active"{% endif %}><a href="/beli" class="waves-effect waves-grey">Beli Barang</a></li>
+				<li{% if page == 'produk' %} class="active"{% endif %}><a href="/fproduk" class="waves-effect waves-grey">Produk</a></li>
+			</ul>
+			<a href="#" data-activates="slide-out" class="button-collapse" side-nav-slider><i class="mdi-navigation-menu"></i></a>
+		</div>
+	</div>
+</nav>
+</div>
+
+{% if not authenticate %}
+	<div class="container header-mdbz">
+		<div class="row">
+			<div class="col m1 hide-on-med-and-down">
+				<img src="/img/logo-small-bw.png" class="responsive-img circle" alt="logo">
+			</div>
+			<div class="col m8 s12">
+				<h2>MADURA.BZ</h2>
+				<p class="text-flow grey-text">Pengembangan ekonomi Madura secara global melalui industri dan perdagangan menyongsong Perdagangan Bebas Asia Tenggara</p>
+			</div>
+			<div class="col m3 s12">
+				{% if not registering %}
+				<p class="right-align padded">
+					<a href="/daftar" class="waves-effect waves-light btn-large green darken-1"><i class="mdi-social-person-add left"></i>DAFTAR</a> 
+				</p>
+				{% endif %}
+			</div>
+		</div>
+		
+		{% if tips %}
+		<div class="row hide-on-small-only" style="margin-bottom: 20px;">
+			<div class="col m6">
+				<blockquote class="red-text text-darken-4">
+					<i class="medium left mdi-maps-local-florist" style="line-height: 3rem; font-size: 3rem;"></i> {{tips.daerah.isi}}
+				</blockquote>
+			</div>
+			<div class="col m6">
+				<blockquote class="light-blue-text text-darken-1">
+					<i class="medium left mdi-action-info-outline" style="line-height: 3rem; font-size: 3rem;"></i> {{tips.bisnis.isi}}
+				</blockquote>
+			</div>
+		</div>
+		{% endif %}
+			
+	</div>
+{% else %}
+	<div class="section no-pad-bot header-menu">
+		<div class="container">
+			<div class="row">
+				<a href="/anggota/{{member_kode}}">
+				<div class="col m2 center-align hide-on-med-and-down responsive-img-bg" style="background-image:url('{{member_foto}}')"></div>
+				</a>
+				<div class="col m10 center-align">
+					<h5 class="light-text">
+						{% if member_valid %}
+							<i class="fa fa-check-circle light-blue-text text-darken-3"></i> 
+						{% endif %}
+						<a href="/home"><span id="link-welcome">{{member_nama|upper}}</span></a>
+					</h5>
+					
+					<p>
+						<a href="/home" class="btn-floating waves-effect waves-light green tooltipped{% if path %} btn-large{% endif %}" data-tooltip="beranda" id="link-home" data-position="top"><i class="fa fa-home"></i></a>
+						
+						<a href="/anggota/{{member_kode}}" class="btn-floating waves-effect waves-light light-blue darken-2 tooltipped{% if member_me %} btn-large{% endif %}" data-tooltip="lihat profil" id="link-profil" data-position="top"><i class="fa fa-male"></i></a>
+						
+						<a href="/home/post" class="btn-floating waves-effect waves-light tooltipped{% if path == 'post' %} btn-large{% endif %}" id="link-kiriman" data-tooltip="jual beli" data-position="top"><i class="fa fa-dollar"></i></a>
+						
+						{% if member_direktori %}
+						<a href="/home/direktori" class="btn-floating waves-effect waves-light orange darken-1 tooltipped{% if path == 'direktori' %} btn-large{% endif %}" id="link-direktori" data-tooltip="data toko" data-position="top"><i class="fa fa-map-marker"></i></a>
+						
+						<a href="/home/produk" class="btn-floating waves-effect waves-light red darken-1 tooltipped{% if path == 'produk' %} btn-large{% endif %}" id="link-produk" data-tooltip="produk toko" data-position="top"><i class="fa fa-gift"></i></a>
+						{% endif %}
+						
+						{% if member_order %}
+						<a href="/home/order" class="btn-floating waves-effect waves-light yellow darken-4 tooltipped{% if path == 'order' %} btn-large{% endif %}" id="link-pemesanan" data-tooltip="pemesanan" data-position="top"><i class="fa fa-ticket"></i></a>
+						{% endif %}
+						
+						<a href="/home/pesan" class="btn-floating waves-effect waves-light blue darken-1 tooltipped{% if path == 'pesan' %} btn-large{% endif %}" id="link-pesan" data-tooltip="data pesan" data-position="top"><i class="fa fa-envelope-o"></i></a>
+						
+						<!--<a href="" class="btn-floating waves-effect waves-light tooltipped" id="link-" data-tooltip=""><i class="fa fa-dollar"></i></a>-->
+					</p>
+					
+				</div>
+				<!--
+				<div class="col s4">
+					<ul class="menu-header left">
+						<li>
+							{% if path != 'post' %}
+							<a href="/home/post" class="btn-flat waves-effect waves-light small light-blue-text text-darken-1 tooltipped" id="link-kiriman" data-tooltip="jual beli barang">
+								<i class="fa fa-fw fa-lg fa-send"></i> KIRIMAN
+							</a>
+							{% else %}
+							<a href="" class="btn-flat waves-effect waves-light small grey-text text-lighten-2">
+								<i class="fa fa-fw fa-lg fa-send"></i> KIRIMAN
+							</a>
+							{% endif %}
+						</li>
+						{% if member_direktori %}
+							{% if path != 'direktori' %}
+							<li>
+								<a href="/home/direktori" class="btn-flat small waves-effect waves-light light-blue-text text-darken-1 tooltipped" data-tooltip="data toko" id="link-direktori">
+									<i class="fa fa-fw fa-lg fa-map-marker"></i> DIREKTORI
+								</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="" class="btn-flat small waves-effect waves-light grey-text text-lighten-2">
+									<i class="fa fa-fw fa-lg fa-map-marker"></i> DIREKTORI
+								</a>
+							</li>
+							{% endif %}
+							
+							{% if path != 'produk' %}
+							<li>
+								<a href="/home/produk" class="btn-flat small waves-effect waves-light light-blue-text text-darken-1 tooltipped" data-tooltip="produk toko" id="link-produk">
+									<i class="fa fa-fw fa-lg fa-gift"></i> PRODUK
+								</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="" class="btn-flat small waves-effect waves-light grey-text text-lighten-2">
+									<i class="fa fa-fw fa-lg fa-gift"></i> PRODUK
+								</a>
+							</li>
+							{% endif %}
+						
+						{% endif %}
+					</ul>
+					<ul class="menu-header left">
+						{% if member_order or path == 'order' %}
+						<li>
+							<a href="/home/order" class="btn-flat small waves-effect waves-light orange-text text-darken-1 tooltipped" data-tooltip="pemesanan" id="link-pemesanan">
+								<i class="fa fa-ticket fa-lg"></i> PEMESANAN
+							</a>
+						</li>
+						{% endif %}
+						
+						{% if path != 'pesan' %}
+						<li>
+							<a href="/home/pesan" class="btn-flat small waves-effect waves-light light-blue-text text-darken-1 tooltipped" data-tooltip="data pesan" id="link-pesan">
+								<i class="fa fa-fw fa-lg fa-envelope-o"></i> PESAN
+							</a>
+						</li>
+						{% else %}
+						<li>
+							<a href="" class="btn-flat small waves-effect waves-light grey-text text-lighten-2">
+								<i class="fa fa-fw fa-lg fa-envelope-o"></i> PESAN
+							</a>
+						</li>
+						{% endif %}
+						
+						
+						{% if path == 'checkout' %}
+						<li>
+							<a href="/home/checkout" class="btn-flat small waves-effect waves-light grey-text text-lighten-2 tooltipped" data-tooltip="proses checkout">
+								<i class="fa fa-fw fa-lg fa-check-square-o"></i> CHECKOUT
+							</a>
+						</li>
+						{% endif %}	
+					</ul>
+				</div>
+				-->
+			</div>
+		</div>
+	</div>
+{% endif %}

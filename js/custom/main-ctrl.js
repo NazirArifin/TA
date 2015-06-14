@@ -96,6 +96,8 @@ app.controller('ProdukCtrl', function($scope, $http, notify) {
 		member = window.member || '';
 	$scope.reviewList = [];
 	$scope.review = '';
+	$scope.rating = 0;
+	$scope.setRating = function(i) { $scope.rating = i; };
 	$scope.loadData = function() {
 		$http.get('/review?produk=' + produk + '&member=' + member).
 		success(function(d) { $scope.reviewList = d.review; });
@@ -124,17 +126,23 @@ app.controller('HomePostCtrl', function($scope, $http, notify) {
 		valid = window.valid;
 	$scope.cpage = 0;
 	$scope.numpage = 0;
+	$scope.query = '';
+	$scope.categories = '';
 	$scope.dataList = [];
 	$scope.editing = false;
 	$scope.maxUpload = (valid == '1' ? 5 : 3);
 	$scope.loadData = function() {
-		$http.get('/post?member=' + member + '&page=' + $scope.cpage).
+		var param = {
+			member: member, page: $scope.cpage,
+			query: $scope.query, kategori: $scope.categories
+		};
+		$http.get('/post?' + jQuery.param(param)).
 		success(function(d) { $scope.dataList = d.kiriman; $scope.numpage = d.numpage; });
 	}; $scope.loadData();
 	$scope.post = {};
 	$scope.file = null;
 	$scope.resetData = function() {
-		$scope.post = { id: '', tipe: '1', kategori: '', judul: '', isi: '', foto: [] };
+		$scope.post = { id: '', tipe: '1', kategori: '', judul: '', isi: '', foto: [], agree: false };
 	}; $scope.resetData();
 	$scope.setEdit = function(id) {
 		$http.get('/post/' + id).
@@ -233,9 +241,9 @@ app.controller('HomeDirektoriCtrl', function($scope, $http, notify) {
 	$scope.kota = [];
 	$scope.kategori = [];
 	$scope.loadTable = function() {
-		$http.get('/data?t=kota,kategori_direktori').
+		$http.get('/data?t=kota_direktori,kategori_direktori').
 		success(function(d) {
-			$scope.kota = d.kota;
+			$scope.kota = d.kota_direktori;
 			$scope.kategori = d.kategori_direktori;
 		}).error(function(e, s, h) {
 			alertify.error('Terjadi kesalahan. Periksa koneksi internet Anda');
@@ -252,11 +260,22 @@ app.controller('HomeProdukCtrl', function($scope, $http, notify) {
 		$scope.activeDirektori = id;
 		$scope.namaDirektori = nama.replace(/`/g, "'");
 		$scope.loadData();
-		$scope.resetProduk();
+		$scope.cancel();
 	};
+	
+	$scope.cpage = 0;
+	$scope.numpage = 0;
+	$scope.query = '';
+	$scope.categories = '';
+	
 	$scope.loadData = function() {
-		$http.get('/direktori/' + $scope.activeDirektori).
-		success(function(d) { $scope.produkList = d.produk; });
+		var param = {
+			page: $scope.cpage, query: $scope.query, kategori: $scope.categories
+		};
+		$http.get('/direktori/' + $scope.activeDirektori + '?' + jQuery.param(param)).
+		success(function(d) { 
+			$scope.produkList = d.produk; $scope.numpage = d.numpage;
+		});
 	};
 	$scope.getDirektoriLink = function() {
 		return '/direktori/' + $scope.activeDirektori + '/' + $scope.namaDirektori.toLowerCase().replace(/[^a-z0-9]/, '-');
@@ -266,15 +285,31 @@ app.controller('HomeProdukCtrl', function($scope, $http, notify) {
 		$scope.activeDirektori = $scope.namaDirektori = '';
 	};
 	
+	$scope.setPage = function() {
+		if ($scope.cpage != this.n) {
+			$scope.cpage = this.n; $scope.loadData();
+		}
+	};
+	$scope.prevPage = function() {
+		if ($scope.cpage > 0) {
+			$scope.cpage--; $scope.loadData();
+		}
+	};
+	$scope.nextPage = function() {
+		if ($scope.cpage < $scope.numpage - 1) {
+			$scope.cpage++; $scope.loadData();
+		}
+	};
+	
 	$scope.produk = {};
 	$scope.file = null;
 	$scope.resetProduk = function() {
 		$scope.produk = {
-			id: '', kategori: '', nama: '', harga: '', info: '', foto: [], direktori: $scope.activeDirektori
+			id: '', kategori: '', nama: '', harga: '', info: '', foto: [], direktori: $scope.activeDirektori, agree: false
 		};
 	}; $scope.resetProduk();
 	$scope.cancel = function() {
-		$scope.resetProduk;
+		$scope.resetProduk();
 		$scope.editing = false;
 		$scope.file = null;
 	};
@@ -307,6 +342,7 @@ app.controller('HomeProdukCtrl', function($scope, $http, notify) {
 /** untuk home checkout **/
 app.controller('HomeCheckoutCtrl', function($scope, $http, notify) {
 	$scope.shipRate = 0;
+	$scope.shipRateTemp = 0;
 	$scope.subTotal = 0;
 	$scope.grandTotal = 0;
 	$scope.itemList = [];
@@ -316,6 +352,18 @@ app.controller('HomeCheckoutCtrl', function($scope, $http, notify) {
 	$scope.kurirList = [];
 	$scope.kurir = '';
 	$scope.berat = 0;
+	$scope.shipping = 'kurir';
+	$scope.codenable = false;
+	$scope.setCOD = function() { 
+		$scope.shipRateTemp = $scope.shipRate;
+		$scope.shipRate = 0; 
+		$scope.grandTotal -= $scope.shipRateTemp;
+	};
+	$scope.setKurir = function() {
+		$scope.shipRate = $scope.shipRateTemp;
+		$scope.shipRateTemp = 0;
+		$scope.grandTotal += $scope.shipRate;
+	};
 	$scope.loadData = function() {
 		$http.get('/data?t=fproduk,rekening,kota,kurir').
 		success(function(d) {
@@ -345,7 +393,9 @@ app.controller('HomeCheckoutCtrl', function($scope, $http, notify) {
 		$http.get('/ongkir?' + jQuery.param({ kota: $scope.tujuan, kurir: $scope.kurir, berat: $scope.berat })).
 		success(function(d) { 
 			$scope.shipRate = d.biaya;
-			$scope.grandTotal = $scope.subTotal + $scope.shipRate;			
+			$scope.grandTotal = $scope.subTotal + $scope.shipRate;
+			$scope.shipping = 'kurir';
+			$scope.codenable = d.cod;
 		});
 	};
 	$scope.reCalculate = function(i) {
@@ -361,6 +411,10 @@ app.controller('HomeCheckoutCtrl', function($scope, $http, notify) {
 			$scope.berat += berat;
 		});
 		$scope.loadOngkir();
+	};
+	$scope.removeItem = function(i, id) {
+		$scope.itemList.splice(i, 1);
+		$scope.itemRemove(id);
 	};
 });
 

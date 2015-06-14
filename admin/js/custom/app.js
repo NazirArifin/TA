@@ -82,7 +82,7 @@ config(function($routeProvider, $httpProvider, $locationProvider, cfpLoadingBarP
 run(['$rootScope', '$location', function($rootScope, $location) {
 	// server url
 	var protocol 	= 'http',
-		host		= 'nazirarifin.16mb.com/admin',
+		host		= 'skripsi.com/admin',
 		port		= '80';
 	$rootScope.server = protocol + '://' + host + (port != '80' ? ':' + port : '');
 	
@@ -127,7 +127,7 @@ filter('rootserver', function() {
 	};
 }).
 factory('Main', ['$http', '$localStorage', function($http, $localStorage) {
-	var baseUrl = 'http://nazirarifin.16mb.com/admin';
+	var baseUrl = 'http://skripsi.com/admin';
 	function changeUser(user) {
 		angular.extend(currentUser, user);
 	}

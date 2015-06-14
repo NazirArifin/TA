@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; Beranda &mdash; {{member_nama}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+</head>
+<body>
+	
+	{% include 'header.html' %}
+	
+	<div class="section white z-depth-2">
+		<div class="container">
+			<div class="row">
+				<div class="col m9 s12">
+					<h4 class="light-text center-align"><span class="grey-text">Selamat Datang</span></h4>
+					<hr>
+					<p>Anda berhasil login pada situs direktori bisnis dan jual beli MADURA.BZ.</p>
+					<p><a href="" class="btn green darken-3 white-text waves-effect waves-light" joyride><i class="mdi-image-slideshow left"></i>IKUTI TOUR</a></p>
+					
+					{% if tips %}
+					<div class="row hide-on-small-only" style="margin-bottom: 20px;">
+						<div class="col m6">
+							<blockquote class="red-text text-darken-4">
+								<i class="medium left mdi-maps-local-florist" style="line-height: 3rem; font-size: 3rem;"></i> {{tips.daerah.isi}}
+							</blockquote>
+						</div>
+						<div class="col m6">
+							<blockquote class="light-blue-text text-darken-1">
+								<i class="medium left mdi-action-info-outline" style="line-height: 3rem; font-size: 3rem;"></i> {{tips.bisnis.isi}}
+							</blockquote>
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- tip content -->
+	<ol id="joyRideTipContent">
+		<li data-id="link-welcome" data-text="Mulai" data-options="tipAnimation:fade;">
+			<h4 class="light-text" style="text-align:center">Selamat Datang</h4>
+			<p style="text-align:center;margin:0"><strong>{{member_nama}}</strong></p>
+			<p>Anda akan memulai Tour untuk mengenal menu dan fitur yang tersedia bagi Anggota di situs MADURA.BZ. Untuk bantuan yang lebih lengkap Anda dapat mengunjungi halaman <a href="/help">Bantuan dan FAQ</a> kami.</p>
+		</li>
+		<li data-id="link-edit-profil" data-text="Berikutnya" data-options="tipAnimation:fade">
+			<h4 class="light-text"><i class="fa fa-fw fa-cog"></i> Edit Profil</h4>
+			<p>Anda dapat mengubah profil dan password Anda dengan mengklik menu ini. Pastikan Anda mengubah password secara teratur dan saat Anda pertama kalinya masuk dalam sistem.</p>
+		</li>
+		<li data-id="link-home" data-text="Berikutnya" data-options="tipAnimation:fade">
+			<h4><i class="fa fa-fw fa-home"></i> Beranda</h4>
+			<p>Dimanapun Anda berada, tombol inilah akan selalu membawa Anda ke halaman ini :)</p>
+		</li>
+		<li data-id="link-profil" data-text="Berikutnya" data-options="tipAnimation:fade">
+			<h4><i class="fa fa-fw fa-male"></i> Lihat Profil</h4>
+			<p>Klik link ini untuk melihat profil Anda yang berisi data profil serta Testimoni anggota lain</p>
+		</li>
+		<li data-id="link-kiriman" data-text="Berikutnya" data-options="tipAnimation:fade">
+			<h4><i class="fa fa-fw fa-send"></i> Kiriman</h4>
+			<p>Anda dapat melihat dan menambah data kiriman di tempat JUAL BELI (Gratis)</p>
+		</li>
+		{% if member_direktori %}
+		<li data-id="link-direktori" data-text="Berikutnya" data-options="tipAnimation:fade">
+			<h4><i class="fa fa-fw fa-map-marker"></i> Data Direktori</h4>
+			<p>Anda dapat mengatur informasi direktori yang Anda miliki secara lengkap</p>
+		</li>
+		<li data-id="link-produk" data-text="Berikutnya" data-options="tipAnimation:fade">
+			<h4><i class="fa fa-fw fa-gift"></i> Data Produk</h4>
+			<p>Pastikan produk di toko Anda selalu terbaru dengan menambah atau mengedit data produk di halaman ini</p>
+		</li>
+		{% endif %}
+		{% if member_order or path == 'order' %}
+		<li data-id="link-pemesanan" data-text="Berikutnya" data-options="tipAnimation:fade">
+			<h4><i class="fa fa-fw fa-ticket"></i> Pemesanan</h4>
+			<p>Lihat status atau melakukan konfirmasi pemesanan produk yang Anda beli di situs MADURA.BZ</p>
+		</li>
+		{% endif %}
+		<li data-id="link-pesan" data-text="Berikutnya" data-options="tipAnimation:fade">
+			<h4><i class="fa fa-fw fa-envelope-o"></i> Pesan</h4>
+			<p>Lihat pesan yang Anda kirim atau terima dari anggota lain ataupun dari Administator</p>
+		</li>
+		<li data-id="link-logout" data-text="Selesai" data-options="tipAnimation:fade;tipLocation:left">
+			<h4><i class="fa fa-fw fa-sign-out"></i> Keluar</h4>
+			<p>Keluar dari sistem dan terima kasih telah menggunakan layanan di MADURA.BZ</p>
+		</li>
+	</ol>
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

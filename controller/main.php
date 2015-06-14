@@ -51,6 +51,7 @@ $app->get('/', function() use($app, $ctr) {
 			$param[$key] = $val;
 		$param['authenticate']	= TRUE;
 	}
+    
 	$ctr->load('view', 'index.html', $param);
 });
 
@@ -122,7 +123,8 @@ $app->get('/katalog/:type', function($type) use($app, $ctr) {
 	} else {
 		$ctr->load('model', 'direktori');
 		$direktori = $ctr->DirektoriModel->get_name($type);
-		$produk = $ctr->ProdukModel->get_produk($type);
+		$cproduk = $ctr->ProdukModel->get_produk($type);
+        $produk = $cproduk['produk'];
 	}
 	foreach ($produk as $key => $val) {
 		$produk[$key]['foto'] = substr($val['foto'], 1, strlen($val['foto']));
@@ -203,6 +205,7 @@ $app->get('/home', function() use($app, $ctr) {
 	$member['path'] = ' ';
 	$ctr->load('model', 'front');
 	$member['tips'] = $ctr->FrontModel->get_tips();
+    $member['page'] = 'home';
 	$ctr->load('view', 'home.html', $member);
 });
 // ----------------------------------------------------------------
@@ -244,6 +247,7 @@ $app->get('/home/:type', function($type) use($app, $ctr) {
 			break;
 	}
 	$member['path'] = $type;
+    $member['page'] = 'home';
 	$ctr->load('view', 'home-' . $type . '.html', $member);
 });
 
@@ -256,6 +260,18 @@ $app->options('/email/:state', function() use($app) { $app->status(200); $app->s
 $app->get('/email/:state', function($state) use($app, $ctr) {
 	$ctr->load('model', 'main');
 	$r = $ctr->MainModel->validate_email($state);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: subdomain/:state 
+ */
+$app->options('/subdomain/:state', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/subdomain/:state', function($state) use($app, $ctr) {
+	$ctr->load('model', 'direktori');
+	$r = $ctr->DirektoriModel->validate_subdomain($state);
 	json_output($app, $r);
 });
 
@@ -279,6 +295,7 @@ $app->get('/:type', function($type) use($app, $ctr) {
 		foreach ($member['data'] as $key => $val)
 			$news[$key] = $val;
 	}
+    $news['page'] = $type;
 	$ctr->load('view', 'berita-search.html', $news);
 })->conditions(array('type' => '(berita|info)'));
 
@@ -301,6 +318,7 @@ $app->get('/berita/:id/:judul', function($id, $judul) use($app, $ctr) {
 		foreach ($member['data'] as $key => $val)
 			$news[$key] = $val;
 	}
+    $news['page'] = 'berita';
 	$ctr->load('view', 'berita.html', $news);
 });
 
@@ -323,6 +341,7 @@ $app->get('/info/:id/:judul', function($id, $judul) use($app, $ctr) {
 		foreach ($member['data'] as $key => $val)
 			$news[$key] = $val;
 	}
+    $news['page'] = 'info';
 	$ctr->load('view', 'berita.html', $news);
 });
 
@@ -344,9 +363,7 @@ $app->get('/direktori/:alpha', function($alpha) use($app, $ctr) {
 		$ctr->load('helper', 'string');
 		$ctr->load('model', 'produk');
 		$produk = $ctr->ProdukModel->get_produk($alpha);
-		json_output($app, array(
-			'type'	=> TRUE, 'produk' => $produk
-		));
+		json_output($app, $produk);
 	}
 });
 
@@ -374,10 +391,11 @@ $app->get('/direktori', function() use($app, $ctr) {
 	// jika advance
 	if ($dirlist['param']['type'] == 'advanced') {
 		$ctr->load('model', 'main');
-		$d = $ctr->MainModel->get_data_table('kota,kategori_direktori');
-		$dirlist['kota'] = $d['kota'];
+		$d = $ctr->MainModel->get_data_table('kota_direktori,kategori_direktori');
+		$dirlist['kota'] = $d['kota_direktori'];
 		$dirlist['kategori'] = $d['kategori_direktori'];
 	}
+    $dirlist['page'] = 'direktori';
 	$ctr->load('view', 'direktori-search.html', $dirlist);
 });
 
@@ -408,7 +426,8 @@ $app->get('/direktori/:id/:nama', function($id, $nama) use($app, $ctr) {
 	$direktori = $ctr->DirektoriModel->get_detail($id, $nama);
 	if ($direktori === FALSE) halt404($app);
 	$ctr->load('model', 'produk');
-	$produk = $ctr->ProdukModel->get_produk($id);
+	$cproduk = $ctr->ProdukModel->get_produk($id, false, true);
+    $produk = $cproduk['produk'];
 	$direktori['produk'] = $produk;	
 	$ctr->load('model', 'front');
 	$list = $ctr->FrontModel->get_direktori_list();
@@ -421,6 +440,7 @@ $app->get('/direktori/:id/:nama', function($id, $nama) use($app, $ctr) {
 		foreach ($member['data'] as $key => $val)
 			$direktori[$key] = $val;
 	}
+    $direktori['page'] = 'direktori';
 	$ctr->load('view', 'direktori.html', $direktori);
 });
 
@@ -435,6 +455,7 @@ $app->get('/anggota/:kode', function($kode) use($app, $ctr) {
 	$ctr->load('helper', 'string');
 	$ctr->load('model', 'anggota');
 	$anggota = $ctr->AnggotaModel->get_detail($kode);
+    
 	// cek token
 	if (cek_token($ctr)) {
 		$member	= $ctr->MainModel->member_me($_COOKIE['token'], $kode);
@@ -622,6 +643,7 @@ $app->get('/:type', function($type) use($app, $ctr) {
 	$ctr->load('model', 'main');
 	$r = $ctr->MainModel->get_data_table('kategori_produk');
 	if ($r) $post['kategori'] = $r['kategori_produk'];
+    $post['page'] = $type;
 	$ctr->load('view', 'kiriman-search.html', $post);
 })->conditions(array('type' => '(jual|beli)'));
 
@@ -696,6 +718,7 @@ $app->get('/fproduk', function() use($app, $ctr) {
 	}
 	$ctr->load('model', 'main');
 	$produk['kategori'] = $ctr->ProdukModel->get_kategori_fproduk();
+    $produk['page'] = 'produk';
 	$ctr->load('view', 'produk-search.html', $produk);
 });
 
@@ -815,6 +838,7 @@ $app->get('/produk/:id/:nama', function($id, $nama) use($app, $ctr) {
 		foreach ($member['data'] as $key => $val)
 			$produk[$key] = $val;
 	}
+    $produk['page'] = 'direktori';
 	$ctr->load('view', 'produk.html', $produk);
 });
 // ----------------------------------------------------------------
@@ -836,6 +860,7 @@ $app->get('/fproduk/:id/:nama', function($id, $nama) use($app, $ctr) {
 		foreach ($member['data'] as $key => $val)
 			$produk[$key] = $val;
 	}
+    $produk['page'] = 'produk';
 	$ctr->load('view', 'produk.html', $produk);
 });
 
@@ -857,6 +882,7 @@ $app->get('/jual/:id/:nama', function($id, $nama) use($app, $ctr) {
 		foreach ($member['data'] as $key => $val)
 			$post[$key] = $val;
 	}
+    $post['page'] = 'jual';
 	$ctr->load('view', 'kiriman.html', $post);
 });
 
@@ -878,6 +904,7 @@ $app->get('/beli/:id/:nama', function($id, $nama) use($app, $ctr) {
 		foreach ($member['data'] as $key => $val)
 			$post[$key] = $val;
 	}
+    $post['page'] = 'beli';
 	$ctr->load('view', 'kiriman.html', $post);
 });
 
@@ -937,3 +964,57 @@ $app->get('/invoice/:id', function($id) use($app, $ctr) {
 		'member_telepon'=> $r['member_telepon']
 	));
 });
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: tos
+ */
+$app->options('/tos', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/tos', function() use($app, $ctr) {
+	$ctr->load('view', 'tos.html', array());
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: help
+ */
+$app->options('/help', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/help', function() use($app, $ctr) {
+	$ctr->load('view', 'help.html', array());
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: fpass
+ */
+$app->options('/fpass', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/fpass', function() use($app, $ctr) {
+	$ctr->load('view', 'forget-pass.html', array());
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: /:nama
+ */
+$app->options('/:nama', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/:nama', function($nama) use($app, $ctr) {
+	$ctr->load('helper', 'string');
+	$ctr->load('helper', 'date');
+	
+    $ctr->load('model', 'anggota');
+    $toko   = $ctr->AnggotaModel->get_data($nama);
+    if ($toko === FALSE) halt404($app);
+    
+	// cek token
+	if (cek_token($ctr)) {
+		$member	= $ctr->MainModel->member_me($_COOKIE['token']);
+		$toko['authenticate'] = TRUE;
+		foreach ($member['data'] as $key => $val)
+			$toko[$key] = $val;
+	}
+    $ctr->load('view', 'toko.html', $toko);
+})->conditions(array('nama' => '[a-z0-9\.]+'));

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; {{nama}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+<script>
+var url = window.location.href.split('/');
+window.you = url[url.length - 1];
+window.me = '{{member_kode}}';
+</script>
+
+</head>
+<body data-ng-controller="AnggotaCtrl">
+	
+	{% include 'header.html' %}
+	
+	<div class="section grey lighten-4 z-depth-1">
+		<div class="container">
+			<div class="row">
+				<div class="col m3 grey lighten-5 z-depth-1">
+					<h5 class="center-align light-blue-text text-darken-1">
+						{% if valid %}<i class="fa fa-check-circle text-primary"></i> {% endif %}{{nama}}
+					</h5>
+					<hr>
+					<p class="center-align"><img src="{{foto}}" alt="" class="responsive-img materialboxed z-depth-1" data-caption="{{nama}}"></p>
+					
+					{% if direktori %}
+					<p class="center-align light-text">Pemilik Toko:</p>
+					<ul class="collection">
+						{% for c in direktori %}
+						<a href="{{c.link}}" style="font-size:0.87rem;font-weight:400" class="collection-item"><i class="mdi-maps-store-mall-directory"></i> {{c.nama}}</a>
+						{% endfor %}
+					</ul>
+					{% endif %}
+					
+					<div class="row no-pad-bot grey lighten-2" style="font-size:0.87rem">
+						<div class="col s8 offset-s2" style="line-height:2.5rem;">
+							<span class="fa-stack green-text text-darken-2 tooltipped" data-tooltip="tanggal daftar">
+								<i class="fa fa-square fa-stack-2x"></i>
+								<i class="fa fa-user-plus fa-stack-1x fa-inverse"></i>
+							</span>
+							<span class="right grey-text" style="font-weight:400">{{daftar}}</span>
+							{% if telepon and authenticate %}
+							<br>
+							<span class="fa-stack light-blue-text text-darken-1 tooltipped" data-tooltip="nomor telepon">
+								<i class="fa fa-square fa-stack-2x"></i>
+								<i class="fa fa-phone fa-stack-1x fa-inverse"></i>
+							</span>
+							<span class="right grey-text" style="font-weight:400">{{telepon}}</span>
+							{% endif %}
+						</div>
+					</div>
+					<div class="row grey lighten-3" style="font-size:0.87rem">
+						<div class="col s8 offset-s2" style="line-height:2.5rem;">
+							<span class="fa-stack green-text tooltipped" data-tooltip="jumlah testimoni">
+								<i class="fa fa-square fa-stack-2x"></i>
+								<i class="fa fa-thumbs-up fa-stack-1x fa-inverse"></i>
+							</span>
+							<span class="right" style="font-weight:400">{{testi}}</span>
+							<br>
+							<span class="fa-stack red-text text-darken-1 tooltipped" data-tooltip="jumlah posting">
+								<i class="fa fa-square fa-stack-2x"></i>
+								<i class="fa fa-envelope-o fa-stack-1x fa-inverse"></i>
+							</span>
+							<span class="right" style="font-weight:400">{{post}}</span>
+							<br>
+							<span class="fa-stack yellow-text text-darken-4 tooltipped" data-tooltip="jumlah review">
+								<i class="fa fa-square fa-stack-2x"></i>
+								<i class="fa fa-certificate fa-stack-1x fa-inverse"></i>
+							</span>
+							<span class="right" style="font-weight:400">{{review}}</span>
+						</div>
+					</div>
+					
+					<blockquote class="">{{info}}</blockquote>
+					
+					<div class="row">
+						<div class="col s12 center-align">
+							<hr><br>
+							{% if not member_me and authenticate %}
+							<a href="" class="btn green darken-1 waves-effect waves-light" show-modal="" data-target="modal-2" data-nama="{{nama}}" data-type="4"><i class="fa fa-fw fa-envelope"></i> Kirim Pesan</a>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="col m9">
+					<div class="row">
+						<div class="col s12">
+							<ul class="tabs">
+								<li class="tab col s4"><a class="active" href="#test1"><i class="fa fa-thumbs-up"></i> Testimoni</a></li>
+								<li class="tab col s4"><a href="#test2"><i class="fa fa-envelope-o"></i> Kiriman</a></li>
+								<li class="tab col s4"><a href="#test3"><i class="fa fa-certificate"></i> Review</a></li>
+							</ul>
+						</div>
+						<div id="test1" class="col s12" data-ng-cloak>
+						
+							<div class="grey lighten-3" data-ng-hide="testiList">
+								<h5 class="light-text center-align" style="padding: 20px"><i class="fa fa-fw fa-file-o"></i> Belum ada Testimoni</h5>
+							</div>
+							
+							{% verbatim %}
+							<ul class="collection">
+								<li class="collection-item avatar" data-ng-repeat="c in testiList" data-ng-show="c.lihat">
+									<img data-ng-src="{{c.foto}}" alt="" class="circle">
+									<span class="title">
+										<a data-ng-href="{{c.link}}"><span data-ng-show="c.valid"><i class="fa fa-check-circle"></i> </span>{{c.nama}}</a>
+									</span>
+									<p>
+										<span data-ng-bind-html="c.isi" class="grey-text">{{c.isi}}</span>
+										<br>
+										<a href="" class="btn-flat" data-ng-show="c.setuju" data-ng-click="setStatus(c.id, 2)">Tampilkan</a>
+										<a href="" class="btn-flat" delete-testi="{{c.id}}" data-ng-show="c.hapus">Hapus</a>
+									</p>
+									<span class="secondary-content" style="font-size: 0.87em;"><i class="fa fa-clock-o"></i> {{c.tanggal}}</span>
+								</li>
+							</ul>
+							{% endverbatim %}
+							
+							{% if member_me == false and member_valid %}
+								<div class="row no-pad-bot" style="padding-top:0">
+									<div class="col s12">
+										<h6 class="light-text red-text text-darken-3">Tambahkan Testimoni</h6>
+										<hr>
+										<br>
+									</div>
+									<form class="col s12">
+										<div class="row no-pad-bot">
+											<div class="input-field col s12">
+												<i class="mdi-editor-mode-edit prefix grey-text"></i>
+												<textarea name="testi" id="testi-data" cols="30" rows="8" class="materialize-textarea" data-ng-model="testi" length="340"></textarea>
+												<label for="review-data" class="active">Tambahkan Testimoni Anda</label>
+											</div>
+										</div>
+										<div class="row no-pad-bot" data-ng-show="testi.length > 15">
+											<div class="input-field col s12">
+												<button class="btn waves-effect waves-light" save-testimoni><i class="mdi-action-done left"></i> Simpan</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							{% endif %}
+							
+						</div>
+						<div id="test2" class="col s12" data-ng-cloak>
+						
+							<div class="grey lighten-3" data-ng-hide="postList">
+								<h5 class="light-text center-align" style="padding: 20px"><i class="fa fa-fw fa-file-o"></i> Belum ada Kiriman</h5>
+							</div>
+							{% verbatim %}
+							<table class="bordered hoverable" data-ng-show="postList">
+								<tbody>
+									<tr data-ng-repeat="c in postList">
+										<!--<td><div class="img green lighten-5" style="background-image:url('{{c.foto}}')"></div></td>-->
+										<td><img data-ng-src="{{c.foto}}" alt="" class="responsive-img"></td>
+										<td style="width:30%;vertical-align:top">
+											<h6 class="" style="margin:0">
+												<a data-ng-href="{{c.link}}">{{c.judul}}</a>
+											</h6>
+											<span class="grey-text" style="font-size: 0.87rem">
+												<i class="fa fa-comments"></i> {{c.komentar}} &nbsp; 
+												<i class="fa fa-calendar"></i> {{c.tanggal}}
+											</span>
+										</td>
+										<td>
+											<h6 style="margin:0">
+												<small class="green lighten-1 white-text" data-ng-show="c.tipe == 'jual'"> JUAL </small>
+												<small class="light-blue lighten-1 white-text" data-ng-show="c.tipe == 'beli'"> BELI </small>
+											</h6>
+											<p style="margin:0;font-size:0.87rem;">{{c.isi}}</p>
+											<p style="margin:0;font-size:0.87rem;""><a data-ng-href="/{{type}}?kategori={{c.id_kategori}}" class="grey-text"><i class="fa fa-tag"></i> {{c.kategori}}</a></p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							{% endverbatim %}
+							
+						</div>
+						<div id="test3" class="col s12" data-ng-cloak>
+						
+							<div class="grey lighten-3" data-ng-hide="reviewList">
+								<h5 class="light-text center-align" style="padding: 20px"><i class="fa fa-fw fa-file-o"></i> Belum ada Review</h5>
+							</div>
+							
+							{% verbatim %}
+							<ul class="collection" data-ng-show="reviewList">
+								<li class="collection-item avatar" data-ng-repeat="c in reviewList">
+									<img data-ng-src="{{c.foto}}" alt="" class="circle">
+									<span class="title">
+										<a data-ng-href="{{c.link}}"><span data-ng-show="c.valid"><i class="fa fa-check-circle"></i> </span>{{c.nama}}</a>
+									</span>
+									<div class="rating">
+										<i class="fa fa-star yellow-text text-darken-4" data-ng-repeat="d in range(c.rating.fill)"></i>
+										<i class="fa fa-star-o yellow-text text-darken-4" data-ng-repeat="d in range(c.rating.empty)"></i>
+									</div>
+									<p>
+										<span data-ng-bind-html="c.isi" class="grey-text">{{c.isi}}</span>
+									</p>
+									<span class="secondary-content" style="font-size: 0.87em;"><i class="fa fa-clock-o"></i> {{c.tanggal}}</span>
+								</li>
+							</ul>
+							{% endverbatim %}
+						
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

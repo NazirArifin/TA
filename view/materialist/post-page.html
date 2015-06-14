@@ -1,0 +1,279 @@
+{% if not authenticate %}
+<div id="login" class="grey darken-3 modal bottom-sheet" style="overflow: hidden;">
+	<div class="modal-content">
+		<div class="container">
+			<div class="row">
+				<div class="col m10 offset-m1">
+					<div class="row">
+						<form action="/login" method="post" class="col s12 white z-depth-1">
+							<div class="row" style="margin-top: 20px; margin-bottom: 5px">
+								<div class="input-field col offset-s3 s6">
+									<i class="mdi-communication-email prefix"></i>
+									<input type="email" name="email" id="email">
+									<label for="email">Email</label>
+								</div>
+							</div>
+							<div class="row" style="margin-bottom: 5px">
+								<div class="input-field col offset-s3 s6">
+									<i class="mdi-communication-vpn-key prefix"></i>
+									<input type="password" name="password" id="password">
+									<label for="password">Password</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-field col s6 offset-s3">
+									<button type="submit" class="btn waves-effect waves-light yellow darken-4"><strong><i class="mdi-action-input left"></i>MASUK</strong></button> &nbsp;
+									<a href="/fpass" class="btn-flat right-align light-blue-text right" style="padding: 0; font-size: 0.87rem">Lupa Password?</a>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+
+{% if authenticate %}
+<!-- modal untuk menghapus -->
+<div id="modal0" class="modal" style="width: 35%;">
+	<div class="modal-content">
+		<h5 class="light-text red-text text-darken-3"><i class="fa fa-question-circle fa-lg pull-left"></i> Apakah Anda yakin?</h5>
+		<p class="grey-text" style="font-size: 0.87rem;">Data yang sudah dihapus kemungkinan tidak dapat dikembalikan lagi.</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-action waves-effect waves-red btn-flat">YAKIN</a>
+		<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">TIDAK</a>
+	</div>
+</div>
+
+<!-- modal untuk mengirim pesan -->
+<div class="md-modal md-effect-5" id="modal-2">
+	<div class="md-content">
+		<div class="modal-content" style="min-height: 354px;">
+			<div class="row grey lighten-4 z-depth-1">
+				<div class="col s12">
+					<h4 class="light-text">Kirim Pesan</h4>
+					<div class="row">
+						<form class="col s12">
+							<div class="row no-pad-bot">
+								<div class="col s12 input-field">
+									<input type="text" name="for" id="modalInputFor" class="form-control" data-ng-model="message.forName" disabled>
+									<label class="active" data-ng-class="message.forName.length > 0 ? 'active' : ''" for="modalInputFor">Penerima</label>
+								</div>
+							</div>
+							<div class="row no-pad-bot">
+								<div class="col s12 input-field">
+									<textarea name="pesan" id="modalInputText" cols="30" rows="4" class="materialize-textarea" data-ng-model="message.message" data-ng-focus="message.message.length == 0" length="160"></textarea>
+									<label for="modalInputText">Isi Pesan</label>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer grey lighten-1">
+			<button class="grey lighten-1 btn-flat right waves-effect waves-light" id="message-send" save-message-modal><i class="left mdi-content-send"></i> KIRIM</button>
+			<button class="btn-flat grey lighten-1 white-text md-close waves-effect waves-light">BATAL</button>
+		</div>
+	</div>
+</div>
+<!-- akhir modal -->
+
+<!-- modal untuk ubah profil -->
+<div class="md-modal md-effect-9" id="modal-3">
+	<div class="md-content">
+		<div class="modal-content">
+			<!--<h4 class="light-text">Edit Profil</h4>-->
+			<div class="row grey lighten-4 z-depth-1">
+				<form role="form" class="col s12" id="form-edit-profil">
+					<div class="row no-pad-bot">
+						<div class="input-field col s4">
+							<h5 class="light-text grey-text">Ubah Profil</h5>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s8 offset-s2">
+							<input type="text" name="nama" id="profil-nama" class="form-control" placeholder="Nama Lengkap" maxlength="60" value="{{member_nama}}" required>
+							<label for="profil-nama" class="active">Nama Lengkap</label>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s8 offset-s2">
+							<input type="text" name="alamat" id="profil-alamat" class="form-control" placeholder="Alamat" maxlength="120" value="{{member_alamat}}" required>
+							<label for="profil-alamat" class="active">Alamat</label>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s8 offset-s2">
+							<input type="text" name="telepon" id="profil-telepon" class="form-control" placeholder="+62-___________" maxlength="20" value="{{member_telepon}}" masked-input="+62-999999999?99" required>
+							<label for="profil-telepon" class="active">Telepon</label>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s8 offset-s2">
+							<input type="text" name="info" id="profil-info" class="form-control" placeholder="Tentang Anda" maxlength="240" length="240" value="{{member_info}}">
+							<label for="profil-info" class="active">Tentang Anda</label>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s4 offset-s2">
+							<img data-ng-src="{{member_foto}}" alt="thumb" class="responsive-img">
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="file-field input-field col s8 offset-s2">
+							<input type="text" name="" id="" placeholder="file jpg, jpeg, png, maksimal 1 MB" class="file-path validate" disabled>
+							<div class="btn green darken-1">
+								<span>Foto</span>
+								<input type="file" name="file" id="file" accept=".png,.jpg,.jpeg" simple-file-input>
+							</div>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s12">
+							<h5 class="light-text grey-text">
+								Ubah Password
+							</h5>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s8 offset-s2">
+							<input type="password" name="password" id="profil-password" class="form-control" placeholder="" maxlength="40" data-ng-model="profil.password">
+							<label for="profil-password" class="active">Password Baru</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s8 offset-s2">
+							<input type="password" name="password2" id="profil-password2" class="form-control" placeholder="" maxlength="40" data-ng-model="profil.password2">
+							<label for="profil-password2" class="active">Ulangi Password</label>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="modal-footer grey lighten-1">
+			<button class="grey lighten-1 btn-flat right waves-effect waves-light" data-kode="{{member_kode}}" save-profil><i class="left mdi-content-send"></i> SIMPAN PERUBAHAN</button> 
+			<button class="btn-flat grey lighten-1 white-text md-close waves-effect waves-light">BATAL</button>
+		</div>
+	</div>
+</div>
+
+<!-- modal untuk konfirmasi order -->
+<div class="md-modal md-effect-2" id="modal-4">
+	<div class="md-content">
+		<div class="modal-content">
+			<div class="row grey lighten-4 z-depth-1">
+				<form role="form" class="col s12" style="margin-bottom:50px">
+					<div class="row no-pad-bot">
+						<div class="input-field col s8 offset-s2">
+							<h5 class="light-text grey-text center-align">Data Pemesanan</h5>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s8 offset-s2">
+							<input type="text" name="id" id="order-id" class="grey-text text-darken-4" value="" placeholder="ID Pemesanan" disabled>
+							<label for="order-id">ID Pemesanan</label>
+						</div>
+					</div>
+					<!--<div class="row no-pad-bot">
+						<div class="input-field col s8 offset-s2">
+							<ul id="order-produk" style="padding:0;padding-left:2rem;font-size:0.75rem" class="list-unstyled"></ul>
+							<label for="" class="active">Produk</label>
+						</div>
+					</div>-->
+					<div class="row no-pad-bot">
+						<div class="input-field col s4 offset-s2">
+							<input type="text" name="bayar" id="order-bayar" class="form-control" placeholder="" value="">
+							<label for="order-bayar" class="active">Jumlah Transfer (dalam Rp)</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s8 offset-s2">
+							{% for c in rekening %}
+							<p style="margin:0;padding:0">
+								<input type="radio" name="rekening" id="rekening{{loop.index}}" value="{{c.id}}" class="with-gap radio-input">
+								<label for="rekening{{loop.index}}" style="font-size:0.75rem">{{c.bank}}<br>{{c.nomor}} <span class="grey-text">An.</span> {{c.an}}</label>
+							</p>
+							{% endfor %}
+							<label for="" class="active">Rekening</label>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s8 offset-s2">
+							<textarea name="pesan" id="order-pesan" cols="30" rows="5" class="materialize-textarea" placeholder="" style="padding:0" length="80"></textarea>
+							<label for="">Pesan Anda</label>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s8 offset-s2">
+							<p style="margin:0;padding:0">
+								<input type="checkbox" class="filled-in checkbox-input" id="agree">
+								<label for="agree" style="font-size:0.87rem;font-weight:500">dengan ini saya menyatakan bahwa informasi yang saya berikan benar dan dapat dipertanggungjawabkan</label>
+							</p>
+							<br>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="modal-footer grey lighten-1">
+			<button class="grey lighten-1 btn-flat right waves-effect waves-light" data-kode="{{member_kode}}" save-konfirmasi><i class="left mdi-content-send"></i> KIRIM</button> 
+			<button class="btn-flat grey lighten-1 white-text md-close waves-effect waves-light">BATAL</button>
+		</div>
+	</div>
+</div>
+
+<!-- modal untuk laporkan kiriman ke admin -->
+<div class="md-modal md-effect-9" id="modal-5">
+	<div class="md-content">
+		<div class="modal-content" style="min-height: 304px;">
+			<div class="row grey lighten-4 z-depth-1">
+				<div class="col s10 offset-s1">
+					<h4 class="light-text">Laporkan Kiriman</h4>
+					<p style="font-size:0.87rem">Anda menyatakan bahwa Anda tidak menyukai kiriman: &quot;<strong style="text-decoration:underline">{{judul}}</strong>&quot; ini karena:</p>
+					<div class="row no-pad-bot">
+						<form class="col s12">
+							<div class="row">
+								<div class="input-field col s12">
+									<select name="alasan" id="report-alasan" class="browser-default">
+										<option value="offense">isi melanggar peraturan atau undang-undang yang berlaku</option>
+										<option value="unmatch">isi tidak relevan atau tidak sesuai dengan judul</option>
+										<option value="spam">isi berupa spam tanpa tujuan dan manfaat</option>
+										<option value="porno">isi berisi pornografi atau tidak pantas</option>
+										<option value="sara">isi menyinggung isu agama, ras dan suku tertentu</option>
+										<option value="offense">isi menyerang, menghina atau merendahkan pihak tertentu</option>
+									</select>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="row no-pad-bot">
+						<p class="red-text text-darken-1" style="padding:10px;font-weight:500;font-size:0.87rem">Dengan ini saya menyatakan bahwa informasi yang saya berikan benar adanya dan tanpa didasari kepentingan pribadi</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer grey lighten-1">
+			<button class="grey lighten-1 btn-flat right waves-effect waves-light" save-aduan="{{id}}"><i class="left mdi-content-send"></i> KIRIM</button> 
+			<button class="btn-flat grey lighten-1 white-text md-close waves-effect waves-light">BATAL</button>
+		</div>
+	</div>
+</div>
+
+{% endif %}
+
+<div class="md-overlay"></div><!-- the overlay element -->
+
+<script src="/js/materialize.min.js"></script>
+<script src="/js/jquery-ui.custom.min.js"></script>
+<script src="/js/helper-lite.min.js"></script>
+<script src="/js/tools-lite.min.js"></script>
+
+<script src="/js/custom/app.js"></script>
+<script src="/js/custom/materialist/directive.js"></script>
+<script src="/js/custom/materialist/directive-form.js"></script>
+<script src="/js/custom/main-ctrl.js"></script>

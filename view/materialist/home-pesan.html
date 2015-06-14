@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; Beranda &mdash; {{member_nama}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+<script>
+window.foto = '{{member_foto}}';
+window.nama = '{{member_nama}}';
+</script>
+
+</head>
+<body>
+
+	{% include 'header.html' %}
+	
+	<div class="section grey lighten-5 z-depth-2">
+		<div class="container">
+			<div class="row">
+				<div class="col s12">
+					<h4 class="light-text yellow-text text-darken-2">DATA PESAN</h4>
+				</div>
+			</div>
+			<div class="row" data-ng-controller="HomeChatCtrl" data-ng-cloak>
+				{% verbatim %}
+				<div class="col m3 s4">
+					<div scrollable data-height="480px" class="row">
+						<ul class="collection" style="margin-right:20px;">
+							<li class="collection-item avatar" style="min-height:64px" data-ng-repeat="c in chatList">
+								<img data-ng-src="/{{c.foto}}" alt="" class="circle">
+								<span class="title">
+									<a href="" data-ng-click="loadPesan(c.id, c.tipe, c.foto)"><span data-ng-show="c.tipe == 'Anggota' && c.valid == '1'"><i class="fa fa-check-circle"></i> </span>
+									{{c.nama}}</a>
+								</span>
+								<p style="font-size:0.75rem" class="grey-text"><i class="fa fa-clock-o"></i> {{c.tanggal}}</p>
+								<p style="font-size:0.75rem" class="right-align" data-ng-show="c.tipe == 'Administrator'"><strong class="red darken-2 white-text">Administrator</strong></p>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col m9 s8">
+					<div data-ng-show="idSelected == ''" style="height: 400px" class="grey lighten-3 grey-text text-darken-1 valign-wrapper">
+						<p class="center-align valign" style="width:100%;font-size:1.2rem;">
+							<i class="fa fa-info-circle"></i> Pilih nama anggota atau administrator di PANEL sebelah kiri untuk melihat percakapan.<br>
+							<i class="fa fa-3x fa-comments"></i>
+						</p>
+					</div>
+					<div class="conversation-wrapper" data-ng-show="idSelected != ''">
+						<div class="row grey lighten-4">
+							<form role="form" class="col s12">
+								<div class="row no-pad-bot">
+									<div class="col s12 input-field">
+										<textarea name="" id="new-message" rows="3" class="materialize-textarea" data-ng-model="newMessage"></textarea>
+										<label for="new-message">Pesan Baru</label>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col s12 input-field">
+										<button class="btn light-blue darken-1 right" save-pesan><i class="fa fa-send"></i> KIRIMKAN</button>
+									</div>
+								</div>
+							</form>
+						</div>
+						
+						<div class="conversation-content">
+							<div class="slimScrollDiv" scrollable data-height="350px" data-start="bottom">
+								<div class="conversation-inner">
+									<div class="conversation-item clearfix" data-ng-class="c.f == 'me' ? 'item-left' : 'item-right'" data-ng-repeat="c in chat">
+										<div class="conversation-user">
+											<img data-ng-src="{{foto}}" style="width: 50px;" data-ng-show="c.f == 'me'" alt="">
+											<img data-ng-src="/{{fotoSelected}}" style="width: 50px;" data-ng-hide="c.f == 'me'" alt="">
+										</div>
+										<div class="conversation-body">
+											<div class="name">{{c.f == 'me' ? nama : c.f}}</div>
+											<div class="time hidden-xs"> {{c.t}}</div>
+											<div class="text" data-ng-bind-html="c.i">{{c.i}}</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+					</div>
+				</div>
+				{% endverbatim %}
+			</div>
+		</div>
+	</div>
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; Beranda &mdash; Checkout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+</head>
+<body>
+
+	{% include 'header.html' %}
+	
+	<div class="section z-depth-1 white">
+		<div class="container">
+			<div class="row no-pad-bot">
+				<div class="col s12">
+					<h4 class="light-text center-align yellow-text text-darken-4"><i class="fa fa-fw fa-lg fa-check-square-o"></i> CHECK OUT</h4>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="section grey lighten-4" data-ng-cloak>
+		<div class="container">
+			<div class="row" data-ng-show="item.length == 0">
+				<div class="col s12 m10 offset-m1 grey lighten-3 valign-wrapper" style="height:300px">
+					<h5 class="center-align valign" style="width:100%">
+						Keranjang belanja Anda kosong. Lihat <a href="/fproduk">Semua Produk</a>
+					</h5>
+				</div>
+			</div>
+			
+			<div class="row" data-ng-show="item.length > 0" data-ng-controller="HomeCheckoutCtrl">
+				<div class="col s12">
+					<p class="green" style="padding:20px;margin-bottom:30px">
+						<span class="white-text light-text">Masukkan rincian data berikut ini untuk melengkapi pembelian yang Anda lakukan.<br>Anda dapat mengganti nama dan alamat dengan identitas lain untuk tujuan pengiriman yang berbeda</span>
+					</p>
+					<div class="row">
+						<div class="col m5">
+							<h6 class="yellow-text text-darken-4">
+								<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-male fa-stack-1x fa-inverse"></i></span>
+								Informasi Penerima
+							</h6>
+							<hr>
+							<!--<p class="light-blue white-text" style="padding:10px;font-size:0.87rem;margin-bottom:20px;">Anda dapat mengganti nama dan alamat dengan identitas lain untuk tujuan pengiriman yang berbeda. <strong class="underlined">Hanya melayani pengiriman dalam negeri</strong>.</p>-->
+							
+							<div class="row white" style="margin-top:25px;padding-top:10px">
+								<form role="form" class="col s12">
+									<div class="row">
+										<div class="col input-field s12 pad">
+											<input type="text" name="nama" id="c-nama" class="form-control" value="{{member_nama}}">
+											<label for="c-nama">Nama Lengkap</label>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col input-field s12 pad">
+											<input type="text" name="alamat" id="c-alamat" class="form-control" value="{{member_alamat}}">
+											<label for="c-alamat">Alamat Lengkap</label>
+										</div>
+									</div>
+									<div class="row no-pad-bot">
+										<div class="col input-field s6 pad">
+											<input type="text" name="telepon" id="c-telepon" class="" placeholder="+62-___________" maxlength="20" masked-input="+62-999999999?99" value="{{member_telepon}}">
+											<label for="c-telepon">Telepon</label>
+										</div>
+									</div>
+									{% verbatim %}
+									<div class="row">
+										<div class="col input-field s12 pad">
+											<select name="tujuan" id="c-tujuan" data-ng-model="tujuan" data-ng-options="c.id as c.nama for c in kota" style="width: 100%" data-value="{{tujuan}}" data-ng-change="loadOngkir()" class="browser-default" select2 required>
+												<option value="">-- kota tujuan --</option>
+											</select>
+											<label for="c-tujuan" class="active">Kota Tujuan</label>
+										</div>
+									</div>
+									{% endverbatim %}
+									<div class="row" data-ng-show="codenable">
+										<div class="col input-field s12 pad">
+											<p>
+												<input name="shipping" type="radio" value="kurir" class="with-gap" id="shipping-1" data-ng-model="shipping"><label for="shipping-1" data-ng-click="setKurir()">Jasa Kurir</label> &nbsp; 
+												<input name="shipping" type="radio" value="cod" class="with-gap" id="shipping-2" data-ng-model="shipping"><label for="shipping-2" data-ng-click="setCOD()">Cash On Delivery</label>
+											</p>
+											<label for="" class="active">Metode Pengiriman</label>
+										</div>
+									</div>
+									<div class="row" data-ng-show="shipping == 'kurir'">
+										<div class="col input-field s12 pad">
+											<select name="kurir" id="c-kurir" data-ng-model="kurir" data-ng-options="c.id as c.nama for c in kurirList" class="browser-default" data-ng-change="loadOngkir()" required>
+												<option value="">-- pilih kurir --</option>
+											</select>
+											<label for="c-kurir" class="active">Pilih Kurir</label>
+										</div>
+									</div>
+								</form>
+							</div>
+							
+							<h6 class="yellow-text text-darken-4">
+								<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-truck fa-stack-1x fa-inverse"></i></span> 
+								Biaya Pengiriman
+							</h6>
+							<hr>
+							{% verbatim %}
+							<p style="font-weight:500" class="red-text text-darken-2">Rp. {{shipRate|number:0}},-</p>
+							{% endverbatim %}
+						</div>
+						<div class="col m7">
+							<h6 class="yellow-text text-darken-4">
+								<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-credit-card fa-stack-1x fa-inverse"></i></span>
+								Informasi Pembayaran
+							</h6>
+							<hr>
+							<p style="padding:10px;">Untuk melakukan pembayaran, Anda dapat menggunakan transfer ke rekening berikut ini:</p>
+							{% verbatim %}
+							<ul class="grey lighten-3">
+								<li data-ng-repeat="c in rekeningList" style="padding: 10px;">
+									{{c.bank}}<br>
+									<span class="grey-text text-darken-1">Nomor Rekening: {{c.nomor}}<br>
+									AN: {{c.an}}</span>
+								</li>
+							</ul>
+							{% endverbatim %}
+							
+							<h6 class="yellow-text text-darken-4" style="margin-top:20px;">
+								<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+								Rincian Pembelian
+							</h6>
+							<hr>
+							
+							{% verbatim %}
+							<table class="bordered hoverable no-pad grey lighten-3">
+								<thead>
+									<tr>
+										<th>&nbsp;</th>
+										<th>Nama Produk</th>
+										<th>Harga</th>
+										<th>Jumlah</th>
+										<th>Subtotal</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="c in itemList">
+										<td>
+											<a href="" class="red-text text-darken-2" title="buang item" data-ng-click="removeItem($index, c.id)">
+												<span class="fa-stack text-danger"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-remove fa-stack-1x fa-inverse"></i></span>
+											</a>
+										</td>
+										<td>{{c.nama}}</td>
+										<td>{{c.harga|number:0}},-</td>
+										<td><input type="text" name="" id="" class="form-control" style="width: 50px" data-ng-model="itemList[$index].jumlah" data-ng-change="reCalculate()" masked-input="9?999"></td>
+										<td>{{c.total|number:0}},-</td>
+									</tr>
+									<tr>
+										<td colspan="4">Berat Total</td>
+										<td class="grey-text">{{berat|number:2}} kg</td>
+									</tr>
+									<tr>
+										<td colspan="4">Subtotal</td>
+										<td class="grey-text">{{subTotal|number:0}}</td>
+									</tr>
+									<tr>
+										<td colspan="4">Biaya Kirim</td>
+										<td class="red-text text-darken-2">{{shipRate|number:0}}</td>
+									</tr>
+									<tr>
+										<td colspan="4"><strong class="">TOTAL BIAYA</strong></td>
+										<td><strong class="">Rp. {{grandTotal|number:0}}</strong></td>
+									</tr>
+								</tbody>
+							</table>
+							{% endverbatim %}
+							
+							<p>
+								<a href="" class="btn-flat pull-right grey-text text-lighten-1" onclick="window.history.back()"><i class="mdi-content-clear left"></i>BATALKAN</a>
+								<a href="/fproduk" class="btn-flat pull-right"><i class="mdi-action-search left"></i>Cari Produk Lain</a>
+							</p>
+							<hr><br>
+							<button class="btn-large green darken-2 pull-right" save-order><i class="mdi-action-done left"></i>SIMPAN PESANAN</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

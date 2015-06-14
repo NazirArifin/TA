@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; Pencarian Direktori</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+</head>
+<body>
+	
+	{% include 'header.html' %}
+	
+	<div class="section directory white z-depth-1">
+		<div class="container">
+			<h4 class="center-align yellow-text text-darken-4 light-text">Direktori Bisnis</h4>
+			{% if param.type == 'normal' or param.type == '' %}
+			<div class="row">
+				<form action="/direktori" class="col s12">
+					<div class="row">
+						<div class="input-field col s7 offset-m2">
+							<i class="mdi-maps-my-location prefix red-text text-darken-4"></i>
+							<input type="text" name="query" id="dir-search" value="{{param.query}}">
+							<label for="dir-search">Direktori yang Anda Cari?</label>
+						</div>
+						<div class="input-field col s1">
+							<button class="btn light-blue darken-1 waves-effect waves-light" type="submit"><i class="fa fa-search"></i></button>
+						</div>
+					</div>
+					<input type="hidden" name="type" value="{{param.type}}">
+				</form>
+				<div class="col s8 offset-m2">
+					<a href="/direktori?type=advanced" class="right"><i class="fa fa-search-plus"></i> PENCARIAN LANJUT</a>
+				</div>
+			</div>
+			{% else %}
+			<div class="row">
+				<form action="/direktori" class="col s12" style="margin-top: 20px;">
+					<div class="row nobotmargin">
+						<div class="input-field col s6 m4 offset-m2">
+							<i class="prefix mdi-maps-local-offer"></i>
+							<input type="text" name="nama" id="nama" value="{{param.nama}}" placeholder="">
+							<label for="nama">Nama Direktori</label>
+						</div>
+						<div class="input-field col s6 m4">
+							<i class="mdi-maps-layers prefix active"></i>
+							<select name="kategori" id="kategori" class="select" value="{{param.kategori}}">
+								<option value="">-- pilih kategori --</option>
+								{% for c in kategori %}
+								<option value="{{c.id}}"{% if c.id == param.kategori %} selected{% endif %}>{{c.nama}}</option>
+								{% endfor %}
+							</select>
+							<label for="kategori">Kategori Direktori</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s6 m4 offset-m2">
+							<i class="prefix mdi-maps-place"></i>
+							<input type="text" name="alamat" id="alamat" class="form-control" value="{{param.alamat}}" placeholder="">
+							<label for="alamat">Alamat Direktori</label>
+						</div>
+						<div class="input-field col s6 m4">
+							<i class="mdi-maps-directions-transit prefix active"></i>
+							<select name="kota" id="kota" class="select" value="{{param.kota}}">
+								<option value="">-- pilih kota --</option>
+								{% for c in kota %}
+								<option value="{{c.id}}"{% if c.id == param.kota %} selected{% endif %}>{{c.nama}}</option>
+								{% endfor %}
+							</select>
+							<label for="kota">Kota Direktori</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12 m8 offset-m2">
+							<input type="hidden" name="type" value="{{param.type}}">
+							<button class="btn light-blue darken-1 waves-effect waves-light" type="submit"><i class="fa fa-search fa-fw"></i> CARI</button>
+							<a href="/direktori" class="right"><i class="fa fa-search-minus"></i> PENCARIAN SEDERHANA</a>
+						</div>
+					</div>
+				</form>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+	
+	<div class="hero section grey lighten-3">
+		<div class="container">
+			<div class="row">
+				<div class="col-s12">
+					{% if data %}
+					<table class="bordered hoverable" style="margin-bottom: 30px;">
+						<tbody>
+							{% for c in data %}
+							<tr>
+								<td>
+									<p><a href="{{c.link}}"><div class="thumbnail green lighten-4" style="width:80px;height:80px;background-image:url('{{c.foto}}');"></div></a></p>
+								</td>
+								
+								<td style="vertical-align: top">
+									<p>
+										<a href="{{c.link}}" style="font-size: 1.18rem;">{% if c.web %}<i class="mdi-maps-store-mall-directory"></i> {% endif %}{{c.nama}}</a>
+										<br>
+										{{c.alamat}}<br><strong>{{c.kota}}</strong>
+									</p>
+								</td>
+								{% autoescape false %}
+								<td style="vertical-align: top">
+									<p>
+										<span class="grey-text text-darken-2"><i class="fa fa-phone-square fa-fw"></i> {{c.telepon}}</span><br>
+										<a href="/direktori?type=advanced&kategori={{c.kategori_id}}"><span class="grey-text"><i class="fa fa-tag"></i> {{c.kategori}}</span></a><br>
+										{% if c.pemilik %}
+										<a href="{{c.pemilik.link}}" class="light-blue-text text-lighten-2">{% if c.pemilik.valid %}<i class="fa fa-check-circle"></i> {% endif %}{{c.pemilik.nama}}</a>
+										{% endif %}
+									</p>
+								</td>
+								{% endautoescape %}
+								<td style="vertical-align: top"><p>{{c.info}}</p></td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					<ul class="pagination">
+						<li{% if cpage == 0 %} class="disabled"{% endif %}><a href="/direktori?{{link}}&cpage=0"><i class="mdi-navigation-chevron-left"></i></a></li>
+						{% for i in 0..(numpage - 1) %}
+						<li{% if cpage == loop.index0 %} class="active"{% endif %}><a href="/direktori?{{link}}&cpage={{loop.index0}}">{{loop.index}}</a></li>
+						{% endfor %}
+						<li{% if cpage == (numpage - 1) %} class="disabled"{% endif %}><a href="/direktori?{{link}}&cpage={{numpage - 1}}"><i class="mdi-navigation-chevron-right"></i></a></li>
+					</ul>
+					{% else %}
+					<div class="row">
+						<div class="col m8 offset-m2">
+							<div class="card yellow darken-4">
+								<div class="card-content">
+									<h5 class="white-text center-align"><i class="fa fa-file-o"></i> Tidak Ada Hasil</h5>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="directory section white z-depth-1">
+		<div class="container">
+			<div class="row">
+				<ul class="pagination center-align hide-on-small-only">
+					{% for c in direktori %}
+					<li{% if not c.h %} class="disabled"{% endif %}><a href=""{% if c.h %} data-ng-click="loadDirektoriList('{{c.a}}')" class="tooltipped" data-position="top" data-delay="0" data-tooltip="Lihat direktori {{c.a}}"{% endif %}>{{c.a}}</a></li>
+					{% endfor %}
+				</ul>
+				
+				<ul class="pagination hide-on-med-and-up">
+					{% for c in direktori %}
+					{% if c.h %}<li><a href="/direktori/{{c.a}}" class="tooltipped" data-tooltip="Lihat direktori {{c.a}}">{{c.a}}</a></li>{% endif %}
+					{% endfor %}
+				</ul>
+			</div>
+			<div class="row">
+				{% verbatim %}
+				<div class="col m10 offset-m1" data-ng-show="direktoriList.length > 0" data-ng-cloak>
+					<table class="striped">
+						<tbody>
+							<tr data-ng-repeat="c in direktoriList">
+								<td data-ng-repeat="d in c">
+									<a data-ng-href="/direktori/{{d.link}}">
+										<strong data-ng-show="d.nama.length > 0">&bull; {{d.nama}}</strong>
+									</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				{% endverbatim %}
+			</div>
+		</div>
+	</div>
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+	
+</body>
+</html>

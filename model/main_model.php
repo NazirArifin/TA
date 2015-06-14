@@ -47,9 +47,14 @@ class MainModel extends ModelBase {
 	public function validate_token($token = '') {
 		// token dari header
 		if (empty($token)) {
-			$header		= apache_request_headers();
-			if ( ! isset($header['Authorization'])) return FALSE;		
-			list($a, $token) = explode(' ', $header['Authorization']);
+			if ( ! function_exists('apache_request_headers')) {
+                if ( ! isset($_SERVER['Authorization'])) return FALSE;		
+                list($a, $token) = explode(' ', $_SERVER['Authorization']);
+			} else {
+                $header		= apache_request_headers();
+                if ( ! isset($header['Authorization'])) return FALSE;		
+                list($a, $token) = explode(' ', $header['Authorization']);
+			}
 		}
 		$token 		= (array) \JWT::decode($token, $this->salt);
 		$data 		= array('id', 'email', 'tokenid', 'user', 'level', 'source');
@@ -209,8 +214,8 @@ class MainModel extends ModelBase {
 			$config['source_image']		= 'upload/member/' . $filename;
 			$config['new_image']		= 'upload/member/' . str_replace('.', '_thumb.', $filename);
 			$config['maintain_ratio']	= TRUE;
-			$config['width']			= 120;
-			$config['height']			= 120;
+			$config['width']			= 200;
+			$config['height']			= 200;
 			$iofiles->image_config($config);
 			$iofiles->image_resize();
 			// update tabel
@@ -581,8 +586,12 @@ class MainModel extends ModelBase {
 		$r['data']['member_me']		= ($kode == $cari->KODE_ANGGOTA);
 		
 		// apakah memiliki direktori
-		$cari		= $this->db->query("SELECT ID_DIREKTORI FROM direktori WHERE PEMILIK_DIREKTORI = '{$token['id']}'", TRUE);
-		$r['data']['member_direktori'] 	= (empty($cari) ? FALSE : $cari->ID_DIREKTORI);
+		$cari		= $this->db->query("SELECT ID_DIREKTORI FROM direktori WHERE PEMILIK_DIREKTORI = '{$token['id']}'");
+        if ( ! empty($cari)) {
+            $dirs = array();
+            foreach ($cari as $val) { $dirs[] = floatval($val->ID_DIREKTORI); }
+        }
+		$r['data']['member_direktori'] 	= ( ! isset($dirs) ? FALSE : $dirs);
 		// apakah memiliki order
 		$cari 		= $this->db->query("SELECT COUNT(ID_PENJUALAN) AS HASIL FROM penjualan WHERE ID_ANGGOTA = '{$token['id']}' AND STATUS_PENJUALAN NOT IN('2', '3')", TRUE);
 		$r['data']['member_order']		= $cari->HASIL > 0;
@@ -596,10 +605,11 @@ class MainModel extends ModelBase {
 	 * Simpan profil anggota
 	 */
 	public function member_profil($token, $iofiles) {
-		extract($this->prepare_post(array('nama', 'alamat', 'telepon', 'pass', 'pass2')));
+		extract($this->prepare_post(array('nama', 'alamat', 'telepon', 'info', 'pass', 'pass2')));
 		$nama	= $this->db->escape_str($nama);
 		$alamat	= $this->db->escape_str($alamat);
 		$telepon= $this->db->escape_str($telepon);
+        $info   = $this->db->escape_str(strip_tags($info));
 		// validasi
 		if (strlen($nama) < 3) return FALSE;
 		if (strlen($alamat) < 5) return FALSE;
@@ -610,6 +620,7 @@ class MainModel extends ModelBase {
 		if ($cari->NAMA_ANGGOTA != $nama) 		$upd[] = "NAMA_ANGGOTA = '$nama'";
 		if ($cari->ALAMAT_ANGGOTA != $alamat) 	$upd[] = "ALAMAT_ANGGOTA = '$alamat'";
 		if ($cari->TELEPON_ANGGOTA != $telepon)	$upd[] = "TELEPON_ANGGOTA = '$telepon'";
+		if ($cari->INFO_ANGGOTA != $info)	    $upd[] = "INFO_ANGGOTA = '$info'";
 		if (strlen($pass) >= 6)					$upd[] = "PASSWORD_ANGGOTA = '" . crypt($pass, $this->salt) . "'";
 		if ( ! empty($upd)) {
 			$run = $this->db->query("UPDATE anggota SET " . implode(', ', $upd) . " WHERE ID_ANGGOTA = '{$token['id']}'");
@@ -626,6 +637,7 @@ class MainModel extends ModelBase {
 			$config['allowed_types']	= 'jpeg|jpg|png';
 			$config['encrypt_name']		= TRUE;
 			$config['overwrite']		= TRUE;
+            $config['max_size']		    = 1024 * 1024;
 			$iofiles->upload_config($config);
 			$iofiles->upload('file');
 			$filename 					= $iofiles->upload_get_param('file_name');
@@ -634,8 +646,8 @@ class MainModel extends ModelBase {
 			$config['source_image']		= 'upload/member/' . $filename;
 			$config['new_image']		= 'upload/member/' . str_replace('.', '_thumb.', $filename);
 			$config['maintain_ratio']	= TRUE;
-			$config['width']			= 120;
-			$config['height']			= 120;
+			$config['width']			= 200;
+			$config['height']			= 200;
 			$iofiles->image_config($config);
 			$iofiles->image_resize();
 			// update tabel

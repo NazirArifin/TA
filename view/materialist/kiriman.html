@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; {{judul}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+	
+<script>
+	window.post = '{{id}}';
+	window.member = '{{member_kode}}';
+	window.poster = '{{poster_kode}}';
+</script>
+	
+</head>
+<body>
+	
+	{% include 'header.html' %}
+	
+	<div class="section grey lighten-4 z-depth-1">
+		<div class="container">
+			<div class="row no-pad-bot">
+				<div class="col m12" style="padding: 0">
+					<p class="breadcrumb">
+						<a href="/"><i class="fa fa-home"></i></a> / 
+						<a href="/{{type|lower}}">Tempat {{type|capitalize}}</a> / 
+						<a href="/{{type|lower}}?kategori={{id_kategori}}">{{kategori}}</a> / 
+						{{judul}}
+					</p>
+				</div>
+			</div>
+			<div class="row grey lighten-5">
+				<div class="col m9">
+					<p>
+						<strong class=""><a href="/{{type|lower}}?kategori={{id_kategori}}"><i class="fa fa-tags"></i> {{kategori}}</a></strong>
+						<span class="grey-text right" style="font-size:0.87rem;"><i class="fa fa-calendar"></i> {{tanggal}}</span>
+					</p>
+					<div class="row">
+						<div class="col s4 valign-wrapper">
+							<img src="{{foto[0]}}" alt="" class="valign responsive-img zoomable-gallery z-depth-1" data-zoom-image="{{foto[0]}}">
+						</div>
+						<div class="col s8">
+							<h5 class="center-align light-text yellow-text text-darken-3" style="margin-top: 0">{{judul|upper}}</h5>
+							{% autoescape false %}
+							<p class="grey lighten-3 grey-text text-darken-3" style="padding:10px;font-weight:400;font-size:0.87rem">{{isi}}</p>
+							{% endautoescape %}
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12">
+							<hr>
+							<ul id="gallery" class="row">
+								{% for c in foto %}
+								<li id="0{{loop.index}}" class="col-md-2 col-sm-3 col-xs-6">
+									<a href="" data-zoom-image="{{c}}" data-image="{{c}}"><div class="photo-box" style="background-image: url('{{c}}');"></div></a>
+								</li>
+								{% endfor %}
+							</ul>
+							<hr>
+							<p>
+								<span class="grey-text">Dikirim:</span> <a href="{{poster_link}}">{% if poster_valid %}<i class="fa fa-check-circle"></i> {% endif %}{{poster_nama}}</a>
+								{% if authenticate and member_kode != poster_kode %}
+								<a href="" class="btn red tooltipped waves-effect waves-light right" data-tooltip="laporkan ke admin" show-modal data-target="modal-5"><i class="mdi-action-thumb-down left"></i></a>
+								{% endif %}
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col m3">
+					<ul class="collection">
+						{% for c in other1 %}
+						<a href="{{c.link}}" class="collection-item">{{c.judul}}</a>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+			
+			<div class="row grey lighten-5">
+				<div class="col s9">
+					<div class="row no-pad-bot">
+						<ul class="tabs">
+							<li class="tab col-s12"><a href="#test1" class="active"><i class="fa fa-fw fa-comments"></i> KOMENTAR</a></li>
+						</ul>
+						<div class="col s12 tab-content grey lighten-5" id="test1" data-ng-controller="KomentarCtrl" data-ng-cloak>
+							<div class="row">
+								<div class="grey lighten-4" style="padding:20px 0px" data-ng-hide="komentarList">
+									<h5 class="light-text center-align"><i class="fa fa-fw fa-file-o"></i> Belum ada Komentar</h5>
+								</div>
+								{% verbatim %}
+								<ul class="collection" data-ng-show="komentarList">
+									<li class="avatar collection-item" data-ng-repeat="c in komentarList">
+										<img data-ng-src="{{c.foto}}" alt="" class="circle">
+										<span class="title">
+											<a data-ng-href="{{c.link}}"><span data-ng-show="c.valid"><i class="fa fa-check-circle"></i> </span>{{c.nama}}</a>
+										</span>
+										<p data-ng-bind-html="c.isi" class="grey-text">{{c.isi}}</p>
+										<p>
+											<a href="" class="btn-flat" data-ng-show="c.hapus" delete-data="{{c.id}}" data-type="komentar">Hapus</a>
+										</p>
+										<span class="secondary-content" style="font-size: 0.87em;"><i class="fa fa-clock-o"></i> {{c.tanggal}}</span>
+									</li>
+								</ul>
+								{% endverbatim %}
+								{% if authenticate %}
+								<div class="row no-pad-bot" style="padding-top:20px">
+									<h6 class="light-text red-text text-darken-3">Tambahkan Komentar</h6>
+									<hr>
+									<br>
+									<form class="col s12">
+										<div class="row no-pad-bot">
+											<div class="input-field col s12">
+												<i class="mdi-editor-mode-edit prefix grey-text"></i>
+												<textarea name="review" id="review-data" cols="30" rows="8" class="materialize-textarea" data-ng-model="komentar" length="340"></textarea>
+												<label for="review-data" class="active">Tulis komentar Anda</label>
+											</div>
+										</div>
+										<div class="row no-pad-bot">
+											<button class="btn green darken-3 waves-effect waves-light" save-komentar><i class="mdi-action-done left"></i> Simpan</button>
+										</div>
+									</form>
+								</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col s3">
+					<ul class="collection">
+						{% for c in other2 %}
+						<a href="{{c.link}}" class="collection-item">{{c.judul}}</a>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

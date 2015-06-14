@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; Beranda &mdash; {{member_nama}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+<script>
+	window.member = '{{member_kode}}';
+	window.valid = '{{member_valid}}';
+</script>
+
+</head>
+<body>
+
+	{% include 'header.html' %}
+	{% verbatim %}
+	<div class="section grey lighten-5 z-depth-2">
+		<div class="container">
+			<div class="row" data-ng-controller="HomePostCtrl" data-ng-cloak>
+				<!-- tampilkan data -->
+				<div class="col s12" data-ng-hide="editing">
+					<div class="row no-pad-bot">
+						<div class="col m4 s12">
+							<h4 class="center-align light-text yellow-text text-darken-3">
+								KIRIMAN JUAL BELI
+								<a href="" class="btn-floating waves-effect waves-light red left tooltipped" data-tooltip="kirim baru" data-ng-click="editing = true"><i class="mdi-content-add"></i></a>
+							</h4>
+						</div>
+						<div class="col m8 s12">
+							<div class="row no-pad-bot">
+								<form class="col s10 right">
+									<div class="row no-pad-bot">
+										<div class="input-field col s5">
+											<input type="text" name="query" id="query" class="form-control" data-ng-model="query">
+											<label for="query">Pencarian</label>
+										</div>
+										<div class="input-field col s5">
+											<select name="kategori" id="kategori" class="select browser-default" data-ng-model="categories" data-ng-options="c.id as c.nama for c in kategori">
+												<option value="">-- pilih kategori --</option>
+											</select>
+											<label for="kategori"></label>
+										</div>
+										<div class="input-field col s2">
+											<button class="btn light-blue darken-1 waves-effect waves-light" data-ng-click="loadData()" style="height:43px"><i class="fa fa-search"></i></button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<table class="bordered striped hoverable" data-ng-show="dataList">
+						<tbody>
+							<tr data-ng-repeat="c in dataList">
+								<td><img data-ng-src="{{c.foto}}" alt="" class="responsive-img"></td>
+								<td style="width:30%;vertical-align:top">
+									<h6 class="" style="margin:0">
+										<a data-ng-href="{{c.link}}">{{c.judul}}</a>
+									</h6>
+									<span class="grey-text" style="font-size: 0.87rem">
+										<i class="fa fa-comments"></i> {{c.komentar}} &nbsp; 
+										<i class="fa fa-calendar"></i> {{c.tanggal}}
+									</span>
+								</td>
+								<td style="vertical-align:top">
+									<h6 style="margin:0 0 0.4rem 0">
+										<small class="green lighten-1 white-text" data-ng-show="c.tipe == 'jual'"> JUAL </small>
+										<small class="light-blue lighten-1 white-text" data-ng-show="c.tipe == 'beli'"> BELI </small>
+									</h6>
+									<p style="margin:0;font-size:0.87rem;">{{c.isi}}</p>
+									<p style="margin:0;font-size:0.87rem;""><a data-ng-href="/{{type}}?kategori={{c.id_kategori}}" class="grey-text"><i class="fa fa-tag"></i> {{c.kategori}}</a></p>
+								</td>
+								<td style="padding-top: 10px">
+									<span class="btn-group pull-right">
+										<a href="" class="btn-flat" title="edit" data-ng-click="setEdit(c.id)" data-ng-show="c.status == '1'"><i class="fa fa-pencil-square"></i></a>
+										<a href="" class="btn-flat yellow-text text-darken-3" title="nonaktifkan" data-ng-click="setStatus(c.id, 2)" data-ng-show="c.status == '1'"><i class="fa fa-ban"></i></a>
+										<a href="" class="btn-flat green-text text-darken-2" title="aktifkan" data-ng-click="setStatus(c.id, 1)" data-ng-show="c.status == '2'"><i class="fa fa-recycle"></i></a>
+										<a href="" class="btn-flat red-text text-darken-2" title="hapus" delete-data="{{c.id}}" data-type="post" data-ng-show="c.status == '2'"><i class="fa fa-trash-o"></i></a>
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<ul class="pagination" data-ng-show="dataList">
+						<li data-ng-class="{ disabled: cpage == 0 }">
+							<a href="" data-ng-click="prevPage()"><i class="fa fa-chevron-left" style="font-size:1rem"></i></a>
+						</li>
+						<li data-ng-repeat="n in range(numpage)" data-ng-class="{ active: n == cpage }">
+							<a href="" data-ng-click="setPage()" data-ng-bind="n + 1">1</a>
+						</li>
+						<li data-ng-class="{ disabled: cpage == numpage - 1 }">
+							<a href="" data-ng-click="nextPage()"><i class="fa fa-chevron-right" style="font-size:1rem"></i></a>
+						</li>
+					</ul>
+					<div class="grey lighten-3" data-ng-hide="dataList">
+						<h5 class="light-text center-align" style="padding: 20px"><i class="fa fa-fw fa-file-o"></i> Belum ada Kiriman</h5>
+					</div>
+				</div>
+				
+				<!-- editing data -->
+				<div class="col s12" data-ng-show="editing">
+					<h4 class="center-align light-text yellow-text text-darken-3">
+						TAMBAH/EDIT KIRIMAN
+						<a class="btn-floating waves-effect waves-light grey left tooltipped" data-tooltip="batalkan" cancel-form><i class="mdi-content-clear"></i></a>
+					</h4>
+					<hr>
+					<div class="row grey lighten-4">
+						<form class="col s8 offset-s2" style="margin-top: 20px">
+							<div class="row">
+								<div class="input-field col s12 pad center-align">
+									<input type="radio" name="tipe" id="tipe-jual" value="1" data-ng-model="post.tipe" class="with-gap"><label for="tipe-jual"> JUAL BARANG</label> &nbsp; 
+									<input type="radio" name="tipe" id="tipe-beli" value="2" data-ng-model="post.tipe" class="with-gap"><label for="tipe-beli"> BELI BARANG</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-field col s12 pad">
+									<select name="kategori" id="kategori" class="browser-default" data-ng-options="c.id as c.nama for c in kategori" data-ng-model="post.kategori">
+										<option value="">-- pilih kategori --</option>
+									</select>
+									<label for="kategori" class="active">Pilih Kategori</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-field col s12 pad">
+									<input type="text" name="judul" id="judul" maxlength="80" length="80" data-ng-model="post.judul">
+									<label for="judul" data-ng-class="post.judul.length > 0 ? 'active' : ''">Judul Kiriman (sebaiknya unik, singkat dan deskriptif)</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-field col s12 pad">
+									<textarea name="isi" id="isi" cols="30" rows="10" class="materialize-textarea" data-ng-model="post.isi"></textarea>
+									<label for="isi" data-ng-class="post.isi.length > 0 ? 'active' : ''">Isi Kiriman</label>
+								</div>
+							</div>
+							<div class="row" data-ng-show="post.foto.length > 0">
+								<div class="input-field col s12 gallery-photos-wrapper">
+									<ul id="gallery-photos" class="clearfix gallery-photos gallery-photos-hover row" sortable data-type="post">
+										<li id="foto_{{getFotoId(c)}}" class="col m2 s3" data-ng-repeat="c in post.foto">
+											<div class="photo-box" style="background-image: url('{{c}}');"></div>
+											<a href="" class="remove-photo-link" data-type="post">
+												<span class="fa-stack fa-lg">
+													<i class="fa fa-circle fa-stack-2x"></i>
+													<i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+												</span>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div class="row">
+								<div class="file-field input-field col s12 pad">
+									<input type="text" name="" id="" placeholder="file jpg, jpeg, png, maksimal {{maxUpload}} file @ < 1MB" class="file-path validate" disabled>
+									<div class="btn green darken-1" style="left:10px;">
+										<span>Foto</span>
+										<input type="file" name="file" id="file" accept=".png,.jpg,.jpeg" multiple simple-file-input>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col input-field s12">
+									<input type="checkbox" id="post-agree" data-ng-model="post.agree"> <label for="post-agree" class="label-text">Dengan ini saya menyatakan bahwa kiriman ini tidak melanggar <a href="/tos">Peraturan dan Kesepakatan</a> yang ada.</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-field col s12 pad">
+									<button class="btn-large light-blue darken-1" save-kiriman><i class="mdi-action-done left"></i> SIMPAN KIRIMAN</button> 
+									<a href="" class="btn-flat" cancel-form>BATALKAN</a>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endverbatim %}
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

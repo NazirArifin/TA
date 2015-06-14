@@ -4,7 +4,7 @@
  */
 namespace Model;
 
-set_time_limit(0);
+//set_time_limit(0);
 
 class AdminemarketModel extends ModelBase {
 	public function __construct() {

@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; Situs Jual Beli &amp; Direktori Bisnis Madura</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+</head>
+<body>
+	
+	{% include 'header.html' %}
+	
+	<div class="section directory white z-depth-1">
+		<div class="container">
+			<div class="row">
+				<h4 class="center-align yellow-text text-darken-4 light-text">Direktori Bisnis</h4>
+				<form action="/direktori" class="col s12">
+					<div class="row">
+						<div class="input-field col s6 offset-m1">
+							<i class="mdi-maps-my-location prefix red-text text-darken-4"></i>
+							<input type="text" name="query" id="dir-search">
+							<label for="dir-search">Direktori yang Anda Cari?</label>
+						</div>
+						<div class="input-field col s3">
+							<a href="" class="dropdown-button btn btn-block yellow darken-4" data-activates="kategoripick">Semua Kategori</a>
+							<ul id="kategoripick" class="dropdown-content">
+								<li><a href="" data-id="" set-kategori-direktori>Semua Kategori</a></li>
+								{% for c in kategori_direktori %}
+								<li><a href="" data-id="{{c.id}}" set-kategori-direktori>{{c.nama}}</a></li>
+								{% endfor %}
+							</ul>
+						</div>
+						<div class="input-field col s1">
+							<button class="btn light-blue darken-1 waves-effect waves-light" type="submit"><i class="fa fa-search"></i></button>
+						</div>
+					</div>
+					<input type="hidden" name="kategori" value="">
+				</form>
+				
+				<ul class="pagination center-align hide-on-small-only">
+					{% for c in direktori %}
+					<li{% if not c.h %} class="disabled"{% endif %}><a href=""{% if c.h %} data-ng-click="loadDirektoriList('{{c.a}}')" class="tooltipped" data-position="top" data-delay="0" data-tooltip="Lihat direktori {{c.a}}"{% endif %}>{{c.a}}</a></li>
+					{% endfor %}
+				</ul>
+				
+				<ul class="pagination hide-on-med-and-up">
+					{% for c in direktori %}
+					{% if c.h %}<li><a href="/direktori/{{c.a}}" class="tooltipped" data-tooltip="Lihat direktori {{c.a}}">{{c.a}}</a></li>{% endif %}
+					{% endfor %}
+				</ul>
+			</div>
+			<div class="row dir-list">
+				{% verbatim %}
+				<div class="col m10 offset-m1" data-ng-show="direktoriList.length > 0" data-ng-cloak>
+					<table class="striped">
+						<tbody>
+							<tr data-ng-repeat="c in direktoriList">
+								<td data-ng-repeat="d in c">
+									<a data-ng-href="/direktori/{{d.link}}">
+										<strong data-ng-show="d.nama.length > 0">&bull; {{d.nama}}</strong>
+									</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				{% endverbatim %}
+			</div>
+		</div>
+	</div>
+	
+	<div class="section hero grey lighten-3">
+		<div class="container">
+			<div class="row">
+				<div class="col m6">
+					<h5>
+						<a href="/berita" class="green-text text-darken-4">Kabar Bisnis</a>
+						<a href="/berita" class="right tooltipped" data-position="bottom" data-delay="50" data-tooltip="lihat semua"><i class="mdi-action-pageview"></i></a>
+					</h5>
+					{% for c in bisnis %}
+					<div class="row grey lighten-5 list">
+						<div class="col m3 s4 thumbnail" style="background-image:url('{{c.foto}}')"></div>
+						<div class="col m9 s8">
+							<h3><a href="{{c.link}}">{{c.judul}}</a></h3>
+							<p>{{c.isi}}</p>
+							<small class="grey-text text-darken-1"><i class="mdi-action-history"></i> {{c.tanggal}}</small>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				<div class="col m6">
+					<h5>
+						<a href="/info" class="green-text text-darken-4">G2B &amp; Info</a>
+						<a href="/info" class="right tooltipped" data-position="bottom" data-delay="50" data-tooltip="lihat semua"><i class="mdi-action-pageview"></i></a>
+					</h5>
+					{% for c in info %}
+					<div class="row grey lighten-5 list">
+						<div class="col m3 s4 thumbnail" style="background-image:url('{{c.foto}}')"></div>
+						<div class="col m9 s8">
+							<h3><a href="{{c.link}}">{{c.judul}}</a></h3>
+							<p>{{c.isi}}</p>
+							<small class="grey-text text-darken-1"><i class="mdi-action-history"></i> {{c.tanggal}}</small>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="section store grey lighten-2">
+		<div class="container">
+			<div class="row store-list">
+				<div class="col s12">
+					<h5 class="">
+						<i class="mdi-maps-local-mall left"></i>Toko Online
+						<a href="/direktori" class="right tooltipped" data-position="bottom" data-delay="50" data-tooltip="lihat semua"><i class="mdi-action-pageview"></i></a>
+					</h5>
+					<div class="row">
+						{% for c in premium_direktori %}
+						{% if loop.index0 < 8 %}
+						<div class="col l2 m3 s6">
+							<div class="card card1 red darken-4 z-depth-1">
+								<div class="card-image">
+									<img src="{{c.foto}}" alt="">
+									<span class="card-title"><a href="{{c.link}}" class="white-text truncate"><strong>{{c.nama}}</strong></a></span>
+								</div>
+								<div class="card-content center-align">
+									<a href="{{c.link}}" class="white-text"><i class="mdi-content-send"></i> LIHAT TOKO</a>
+								</div>
+							</div>
+						</div>
+						{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			<div class="row store-list">
+				<div class="col s12">
+					<h5 class=""><i class="mdi-action-redeem left"></i>Produk Toko</h5>
+					<div class="row">
+						{% for c in direktori_produk %}
+						<div class="col m3 s12">
+							<div class="card card2 z-depth-1">
+								<div class="card-image">
+									<img src="{{c.foto}}" alt="">
+									<span class="card-title"><a href="{{c.link_direktori}}" class="white-text"><strong>{{c.direktori}}</strong></a></span>
+								</div>
+								<div class="card-content">
+									<div class="rating">
+										{% if c.rating.fill %}
+										{% for i in 1..c.rating.fill %}
+										<i class="fa fa-star yellow-text text-darken-4"></i>
+										{% endfor %}
+										{% endif %}
+										{% if c.rating.half %}
+										<i class="fa fa-star-half-empty yellow-text text-darken-4"></i>
+										{% endif %}
+										{% for i in 1..c.rating.empty %}
+										<i class="fa fa-star-o yellow-text text-darken-4"></i>
+										{% endfor %}
+									</div>
+									<h4 class="truncate tooltipped" data-tooltip="{{c.nama}}"><a href="{{c.link}}">{{c.nama}}</a></h4>
+								</div>
+								<div class="card-action row">
+									<div class="col s6 grey-text truncate"><span class="tooltipped" data-tooltip="{{c.kategori}}">{{c.kategori}}</span></div>
+									<div class="col s6 truncate"><strong class="right tooltipped" data-tooltip="{{c.harga}}">Rp. {{c.harga}}</strong></div>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="section market z-depth-1">
+		<div class="container">
+			<div class="row" style="padding-bottom: 0;">
+				<h4 class="center-align blue-text text-darken-4 light-text">Forum Jual Beli <sup><small class="red white-text">GRATIS</small></sup></h4>
+				<div class="col m6 s12">
+					<h5>
+						<a href="/jual" class="light-text">JUAL BARANG</a>
+						<a href="/jual" class="right tooltipped" data-position="bottom" data-delay="50" data-tooltip="lihat semua"><i class="mdi-action-pageview"></i></a>
+					</h5>
+					<div class="row scroll" scrollable data-height="350px">
+						<table class="bordered hoverable">
+							<tbody>
+								{% for c in jual %}
+								<tr>
+									<td><div class="img green lighten-5" style="background-image:url('{{c.foto}}')"></div></td>
+									<td>
+										<a href="{{c.link}}">
+											{{c.judul|upper}}
+											<small class="right green lighten-1 white-text"> JUAL </small>
+										</a>
+										<p>{{c.isi}}</p>
+										<p class="grey-text">
+											<a href="/jual?kategori={{c.id_kategori}}" class="grey-text"><i class="mdi-maps-local-offer"></i> {{c.kategori}}</a> &nbsp;  
+											<span class="pull-right"><i class="mdi-action-history"></i> {{c.tanggal}}</span>
+										</p>
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<div class="row" style="margin-bottom: 0;">
+						<form action="/jual" class="col s12">
+							<div class="row">
+								<div class="input-field col s9">
+									<i class="mdi-action-wallet-giftcard prefix green-text text-darken-1"></i>
+									<input type="text" name="query" id="jual-query">
+									<label for="jual-query">Cari Jual</label>
+								</div>
+								<div class="col s3 input-field">
+									<button type="submit" class="btn-flat waves-effect waves-grey green-text text-darken-1"><i class="mdi-action-search"></i> CARI JUAL</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="col m6 s12">
+					<h5>
+						<a href="/beli" class="light-text">BELI BARANG</a>
+						<a href="/beli" class="right tooltipped" data-position="bottom" data-delay="50" data-tooltip="lihat semua"><i class="mdi-action-pageview"></i></a>
+					</h5>
+					<div class="row scroll" scrollable data-height="350px">
+						<table class="bordered hoverable">
+							<tbody>
+								{% for c in beli %}
+								<tr>
+									<td><div class="img light-blue lighten-5" style="background-image:url('{{c.foto}}')"></div></td>
+									<td>
+										<a href="{{c.link}}">
+											{{c.judul|upper}}
+											<small class="right light-blue lighten-1 white-text"> BELI </small>
+										</a>
+										<p>{{c.isi}}</p>
+										<p class="grey-text">
+											<a href="/jual?kategori={{c.id_kategori}}" class="grey-text"><i class="mdi-maps-local-offer"></i> {{c.kategori}}</a> &nbsp;  
+											<span class="pull-right"><i class="mdi-action-history"></i> {{c.tanggal}}</span>
+										</p>
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<div class="row" style="margin-bottom: 0;">
+						<form action="/beli" class="col s12">
+							<div class="row">
+								<div class="input-field col s9">
+									<i class="mdi-action-wallet-giftcard prefix light-blue-text text-darken-1"></i>
+									<input type="text" name="query" id="beli-query">
+									<label for="beli-query">Cari Beli</label>
+								</div>
+								<div class="col s3 input-field">
+									<button type="submit" class="btn-flat waves-effect waves-light-blue light-blue-text text-darken-1"><i class="mdi-action-search"></i> CARI BELI</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="section product grey lighten-3">
+		<div class="container">
+			<h5 class="">
+				<span class="green-text text-darken-4"><i class="mdi-action-redeem left"></i>Etalase Produk</span>
+				<a href="/fproduk" class="right tooltipped" data-position="bottom" data-delay="50" data-tooltip="lihat semua produk"><i class="mdi-action-pageview"></i></a>
+			</h5>
+			<div class="row product-list">
+				<div class="col m1 navigator valign-wrapper">
+					<p class="valign"><a href="" id="product-scroller-left"><i class="mdi-navigation-chevron-left"></i></a></p>
+				</div>
+				<div class="col m10">
+					<div class="row" product-scroller style="overflow: hidden">
+						{% for c in produk %}
+						<div class="col product-item m3 s6">
+							<div class="card">
+								<div class="card-image waves-effect waves-block waves-light">
+									<img src="{{c.foto}}" alt="" class="activator">
+								</div>
+								<div class="card-content">
+									<!--<span class="card-title activator grey-text text-darken-4">Card Title</span>-->
+									<p class="stok">
+										{% if c.stok > 0 %}<span class="green-text text-darken-1">TERSEDIA</span>{% else %}<span class="red-text text-darken-1">TERJUAL</span>{% endif %}
+										<a href="" class="activator"><i class="mdi-action-info-outline right"></i></a>
+									</p>
+									<p>
+										<a href="{{c.link}}" class="truncate">{{c.nama}}</a>
+										{% if c.stok > 0 %}
+										<a class="btn-floating waves-effect waves-light red darken-2 right tooltipped" data-tooltip="masukkan keranjang" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})"><i class="mdi-action-add-shopping-cart"></i></a>
+										{% endif %}
+									</p>
+								</div>
+								<div class="card-action row">
+									<div class="col s6 grey-text truncate"><span class="tooltipped" data-tooltip="{{c.kategori}}">{{c.kategori}}</span></div>
+									<div class="col s6 right-align truncate"><strong class="tooltipped" data-tooltip="{{c.harga}}">Rp. {{c.harga}}</strong></div>
+								</div>
+								<div class="card-reveal">
+									<span class="card-title grey-text text-darken-4 truncate">{{c.nama}} <i class="mdi-navigation-close right"></i></span>
+									<p>{{c.info}}</p>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				<div class="col m1 navigator valign-wrapper">
+					<p class="valign"><a href="" id="product-scroller-right"><i class="mdi-navigation-chevron-right"></i></a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+	
+{% if (message) %}
+<script>Materialize.toast('{{message}}  <a class="btn-flat yellow-text" href="/daftar">DAFTAR<a>', 4000)</script>
+{% endif %}
+</body>
+</html>

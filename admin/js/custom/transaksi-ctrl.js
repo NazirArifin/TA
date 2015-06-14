@@ -62,9 +62,11 @@ app.controller('TransaksiCtrl', function($scope, $location, $http, notify) {
 	$scope.getLabelStatus = function(f) {
 		switch (f) {
 			case 'Tertunda': return 'label-primary';
+			case 'Dikonfirmasi': return 'label-success';
 			case 'Lewat': return 'label-default';
 			case 'Batal': return 'label-danger';
 			case 'Diproses': return 'label-warning';
+			case 'Dikirim': return 'label-primary';
 			case 'Selesai': return 'label-success';
 			default: return '';
 		}

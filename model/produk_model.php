@@ -9,12 +9,45 @@ class ProdukModel extends ModelBase {
 		parent::__construct();
 	}
 	
-	public function get_produk($id, $for_edit = FALSE) {
+	public function get_produk($id, $for_edit = false, $for_sample = false) {
 		$r 		= array();
 		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+        
 		if ( ! $for_edit) {
-			$run	= $this->db->query("SELECT b.ID_KATPRODUK, b.NAMA_KATPRODUK, a.* FROM produk a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.ID_DIREKTORI = '$id' AND a.STATUS_PRODUK != '0' ORDER BY NAMA_PRODUK");
-			if ( ! empty($run)) {
+			extract($this->prepare_get(array('page', 'query', 'kategori')));
+            $query      = $this->db->escape_str($query);
+            $kategori   = intval($kategori);
+            $start      = 0;
+            $where      = array();
+            $where[]    = "a.ID_KATPRODUK = b.ID_KATPRODUK";
+            $where[]    = "a.ID_DIREKTORI = '$id'";
+            $where[]    = "a.STATUS_PRODUK != '0'";
+            $numpg      = 0;
+            if ($page != '') {
+                if ( ! empty($query)) {
+                    $where[]    = "(a.NAMA_PRODUK LIKE '%" . $query . "%' OR a.INFO_PRODUK LIKE '%" . $query . "%')";
+                }
+                if ( ! empty($kategori)) {
+                    $where[]    = "a.ID_KATPRODUK = '$kategori'";
+                }
+                $numdt  = 25;
+                // hitung total halaman
+                $run    = $this->db->query("SELECT COUNT(a.ID_PRODUK) AS HASIL FROM produk a, katproduk b WHERE " . implode(" AND ", $where), true);
+                $numpg  = ceil($run->HASIL / $numdt);
+                $start  = $page * $numdt;
+            }
+            if ($for_sample) {
+                $limit = " ORDER BY RAND() LIMIT 0, 4";
+            } else {
+                if (isset($numdt)) {
+                    $limit = " ORDER BY a.NAMA_PRODUK LIMIT $start, $numdt";
+                } else {
+                    $limit = " ORDER BY a.NAMA_PRODUK";
+                }
+            }
+            $run	= $this->db->query("SELECT b.ID_KATPRODUK, b.NAMA_KATPRODUK, a.* FROM produk a, katproduk b WHERE " . implode(" AND ", $where) . $limit);
+            $row    = array();
+            if ( ! empty($run)) {
 				foreach ($run as $val) {
 					$infoe	= strip_tags($val->INFO_PRODUK);
 					$info 	= token_truncate($infoe, 150) . (strlen($infoe) > 150 ? '...' : '');
@@ -24,7 +57,25 @@ class ProdukModel extends ModelBase {
 						$f 		= unserialize($val->FOTO_PRODUK);
 						$foto 	= '/upload/produk/' . str_replace('.', '_thumb.', $f[0]);
 					}
-					$r[]	= array(
+                    
+                    // skor review produk
+                    $srun       = $this->db->query("SELECT AVG(SKOR_REVIEWPRODUK) AS RATING FROM reviewproduk WHERE ID_PRODUK = '" . $val->ID_PRODUK . "'", true);
+                    $skor       = floor($srun->RATING * 2) / 2;
+                    if (strlen($skor) > 1) {
+                        $rating = array(
+                            'fill'  => floor($skor),
+                            'half'  => 1,
+                            'empty' => 5 - ceil($skor)
+                        );
+                    } else {
+                        $rating = array(
+                            'fill'  => $skor,
+                            'half'  => 0,
+                            'empty' => 5 - $skor
+                        );
+                    }
+                    
+					$row[]	= array(
 						'id'		=> $val->ID_PRODUK,
 						'kategori'	=> $val->NAMA_KATPRODUK,
 						'id_kategori'=> $val->ID_KATPRODUK,
@@ -33,10 +84,15 @@ class ProdukModel extends ModelBase {
 						'info'		=> $info,
 						'foto'		=> $foto,
 						'link'		=> '/produk/' . $val->ID_PRODUK . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_PRODUK)),
-						'status'	=> $val->STATUS_PRODUK
+						'status'	=> $val->STATUS_PRODUK,
+                        'rating'    => $rating
 					);
 				}
 			}
+            
+            $r = array(
+                'produk' => $row, 'type' => true, 'numpage' => $numpg
+            );
 		}
 		
 		if ($for_edit) {
@@ -80,7 +136,7 @@ class ProdukModel extends ModelBase {
 		$where[]	= "a.STATUS_PRODUKUTAMA = '1'";
 		$where[]	= "a.ID_KATPRODUK = b.ID_KATPRODUK";
 		// jumlah halaman
-		$numdt		= 21;
+		$numdt		= 48;
 		$r['produk']= array();
 		$run		= $this->db->query("SELECT COUNT(a.ID_PRODUKUTAMA) AS HASIL FROM produkutama a, katproduk b WHERE " . implode(" AND ", $where), TRUE);
 		$numpg		= ceil($run->HASIL / $numdt);
@@ -88,7 +144,7 @@ class ProdukModel extends ModelBase {
 		if ($cpage < 0) $cpage = 0;
 		if ($cpage > $numpg - 1) $cpage = $numpg - 1;
 		$start		= $cpage * $numdt;
-		$run		= $this->db->query("SELECT a.*, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE " . implode(" AND ", $where) . " ORDER BY a.NAMA_PRODUKUTAMA LIMIT $start, $numdt");
+		$run		= $this->db->query("SELECT a.*, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE " . implode(" AND ", $where) . " ORDER BY b.NAMA_KATPRODUK, a.NAMA_PRODUKUTAMA LIMIT $start, $numdt");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				if ( ! empty($val->FOTO_PRODUKUTAMA)) {
@@ -137,10 +193,27 @@ class ProdukModel extends ModelBase {
 		if (isset($run['STOK_' . $utable])) $r['stok']		= $run['STOK_' . $utable];
 		// jika produk maka dapatkan nama direktorinya
 		if ($table == 'produk') {
-			$srun	= $this->db->query("SELECT a.ID_DIREKTORI, a.NAMA_DIREKTORI FROM direktori a, produk b WHERE a.ID_DIREKTORI = b.ID_DIREKTORI AND a.ID_DIREKTORI = '{$run['ID_DIREKTORI']}'", TRUE);
+			$srun	= $this->db->query("SELECT a.ID_DIREKTORI, a.NAMA_DIREKTORI, a.WEB_DIREKTORI FROM direktori a, produk b WHERE a.ID_DIREKTORI = b.ID_DIREKTORI AND a.ID_DIREKTORI = '{$run['ID_DIREKTORI']}'", TRUE);
 			$r['direktori'] 		= $srun->NAMA_DIREKTORI;
 			$r['direktori_id']		= $srun->ID_DIREKTORI;
-			$r['direktori_link']	= '/direktori/' . $run['ID_DIREKTORI'] . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($srun->NAMA_DIREKTORI));
+			$r['direktori_link']	= '/' . $srun->WEB_DIREKTORI;
+            // rating
+            $srun       = $this->db->query("SELECT AVG(SKOR_REVIEWPRODUK) AS RATING FROM reviewproduk WHERE ID_PRODUK = '$id'", true);
+            $skor       = floor($srun->RATING * 2) / 2;
+            if (strlen($skor) > 1) {
+                $rating = array(
+                    'fill'  => floor($skor),
+                    'half'  => 1,
+                    'empty' => 5 - ceil($skor)
+                );
+            } else {
+                $rating = array(
+                    'fill'  => $skor,
+                    'half'  => 0,
+                    'empty' => 5 - $skor
+                );
+            }
+            $r['rating']            = $rating;
 		} else {
 			$r['direktori']			= 'Semua Produk';
 			$r['direktori_link']	= '/fproduk';
@@ -152,17 +225,17 @@ class ProdukModel extends ModelBase {
 		$type = 'produk';
 		if (empty($id)) {
 			$table	= 'produkutama';
-			$limit	= 12;
+			$limit	= 8;
 			$type	= 'fproduk';
 			$where 	= '';
 		} else {
 			$table	= 'produk';
-			$limit	= 5;
+			$limit	= 4;
 			$where	= "AND ID_DIREKTORI = '$id' ";
 		}
 		$r 		= array();
 		$utable	= strtoupper($table);
-		$run 	= $this->db->query("SELECT ID_{$utable}, NAMA_{$utable}, HARGA_{$utable}, INFO_{$utable}, FOTO_{$utable} FROM $table WHERE ID_{$utable} != '$pid' AND STATUS_{$utable} = '1' {$where}ORDER BY RAND() LIMIT 0, $limit", FALSE, FALSE);
+		$run 	= $this->db->query("SELECT a.ID_{$utable}, a.NAMA_{$utable}, a.HARGA_{$utable}, a.INFO_{$utable}, a.FOTO_{$utable}, b.NAMA_KATPRODUK FROM $table a, katproduk b WHERE a.ID_{$utable} != '$pid' AND a.ID_KATPRODUK = b.ID_KATPRODUK AND a.STATUS_{$utable} = '1' {$where}ORDER BY RAND() LIMIT 0, $limit", false, false);
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				if ($type == 'fproduk') {
@@ -180,7 +253,8 @@ class ProdukModel extends ModelBase {
 					'nama'	=> $val['NAMA_' . $utable],
 					'harga'	=> number_format($val['HARGA_' . $utable], 0, ',', '.'),
 					'foto'	=> $foto,
-					'info'	=> $info
+					'info'	=> $info,
+                    'kategori' => $val['NAMA_KATPRODUK']
 				);
 			}
 		}
@@ -287,6 +361,7 @@ class ProdukModel extends ModelBase {
 				$config['allowed_types']	= $type;
 				$config['encrypt_name']		= TRUE;
 				$config['overwrite']		= TRUE;
+                $config['max_size']		    = 1024 * 1024;
 				$iofiles->upload_config($config);
 				$iofiles->upload($field);
 				
@@ -408,23 +483,26 @@ class ProdukModel extends ModelBase {
 	}
 	
 	public function get_order_list($kode) {
-		$kode	= $this->db->escape_str($kode);
+		$status = '';
+        $kode	= $this->db->escape_str($kode);
 		$run	= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$kode'", TRUE);
 		if (empty($run)) return FALSE;
 		// update
 		$upd		= $this->db->query("UPDATE penjualan SET STATUS_PENJUALAN = '2' WHERE NOW() > AKHIR_PENJUALAN AND STATUS_PENJUALAN = '1'");
 		$r 			= array();
 		$idmember	= $run->ID_ANGGOTA;
-		$run	= $this->db->query("SELECT * FROM penjualan WHERE ID_ANGGOTA = '$idmember' AND STATUS_PENJUALAN NOT IN('2', '3')");
+		$run	= $this->db->query("SELECT * FROM penjualan WHERE ID_ANGGOTA = '$idmember' AND STATUS_PENJUALAN NOT IN('2', '3', '0')");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				$produk = array();
 				$harga	= 0;
 				$srun = $this->db->query("SELECT a.NAMA_PRODUKUTAMA, b.BIAYA_RINCIPENJUALAN FROM produkutama a, rincipenjualan b WHERE a.ID_PRODUKUTAMA = b.ID_PRODUKUTAMA AND b.ID_PENJUALAN = '{$val->ID_PENJUALAN}'");
-				foreach ($srun as $sval) {
-					$produk[] 	= $sval->NAMA_PRODUKUTAMA;
-					$harga		+= $sval->BIAYA_RINCIPENJUALAN;
-				}
+                if ( ! empty($srun)) {
+                    foreach ($srun as $sval) {
+                        $produk[] 	= $sval->NAMA_PRODUKUTAMA;
+                        $harga		+= $sval->BIAYA_RINCIPENJUALAN;
+                    }
+                }
 				$tanggal= array(
 					datedb_to_tanggal($val->TANGGAL_PENJUALAN, 'd/m/Y'),
 					datedb_to_tanggal($val->AKHIR_PENJUALAN, 'd/m/Y')
@@ -435,6 +513,7 @@ class ProdukModel extends ModelBase {
 					case '4': $status = 'dikonfirmasi'; break;
 					case '5': $status = 'diproses'; break;
 					case '6': $status = 'dikirim'; break;
+					case '7': $status = 'selesai'; break;
 				}
 				
 				$r[] = array(
@@ -503,9 +582,10 @@ class ProdukModel extends ModelBase {
 	public function confirm_order($kode) {
 		extract($this->prepare_post(array('id', 'pesan', 'bayar', 'rekening')));
 		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
-		$pesan	= $this->db->escape_str($pesan);
+		$pesan	= $this->db->escape_str(strip_tags($pesan));
 		$rekening= filter_var($rekening, FILTER_SANITIZE_NUMBER_INT);
 		$bayar	= filter_var($bayar, FILTER_SANITIZE_NUMBER_INT);
+        $bayar  = number_format($bayar, 0, ',', '.');
 		// cari rekening
 		$run	= $this->db->query("SELECT * FROM rekening WHERE ID_REKENING = '$rekening'", TRUE);
 		$rektext= $run->BANK_REKENING . ' / ' . $run->NOMOR_REKENING . ' / ' . $run->AN_REKENING;
@@ -529,7 +609,7 @@ class ProdukModel extends ModelBase {
 	
 	public function get_kategori_fproduk() {
 		$r 		= array();
-		$run	= $this->db->query("SELECT b.ID_KATPRODUK, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK GROUP BY a.ID_KATPRODUK");
+		$run	= $this->db->query("SELECT b.ID_KATPRODUK, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.STATUS_PRODUKUTAMA = '1' GROUP BY a.ID_KATPRODUK");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				$r[] = array(

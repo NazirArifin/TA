@@ -582,6 +582,22 @@ $app->post('/admin/transaksi/:type/:id', function($type, $id) use($app, $ctr) {
 
 // ----------------------------------------------------------------
 /**
+ * Method: DELETE
+ * Verb: transaksi/:type/:id
+ */
+$app->delete('/admin/transaksi/:type/:id', function($type, $id) use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'admintransaksi');
+	$r = $ctr->AdmintransaksiModel->delete($id);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
  * Method: GET
  * Verb: berita/:type
  */

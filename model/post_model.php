@@ -10,18 +10,23 @@ class PostModel extends ModelBase {
 	}
 	
 	public function get_post() {
-		extract($this->prepare_get(array('member', 'page', 'type')));
+		extract($this->prepare_get(array('member', 'page', 'type', 'query', 'kategori')));
 		if ( ! empty($type)) $type 	= ($type == 'jual' ? 1 : 2);
-		$member	= $this->db->escape_str($member);
-		$run	= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$member'", TRUE);
+		$member	    = $this->db->escape_str($member);
+		$run	    = $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$member'", TRUE);
 		if (empty($run)) return FALSE;
-		$id		= $run->ID_ANGGOTA;
-		$page	= filter_var($page, FILTER_SANITIZE_NUMBER_INT);
+		$id		    = $run->ID_ANGGOTA;
+		$page	    = filter_var($page, FILTER_SANITIZE_NUMBER_INT);
+        $query      = $this->db->escape_str($query);
+        $kategori   = intval($kategori);
 		if (empty($page)) $page = 0;
 		$where[]= "a.ID_ANGGOTA = '$id'";
 		$where[]= "a.STATUS_POSTANGGOTA != '0'";
 		$where[]= "a.ID_KATPRODUK = c.ID_KATPRODUK";
 		if ( ! empty($type)) $where[]= "a.TIPE_POSTANGGOTA = '$type'";
+        if ( ! empty($query)) $where[]= "(a.JUDUL_POSTANGGOTA LIKE '%{$query}%' OR a.ISI_POSTANGGOTA LIKE '%{$query}%')";
+        if ( ! empty($kategori)) $where[]= "a.ID_KATPRODUK = '$kategori'";
+        
 		$r 		= array();
 		$numdt	= 50;
 		// hitung halaman
@@ -92,7 +97,7 @@ class PostModel extends ModelBase {
 		if ($cpage < 0) $cpage = 0;
 		if ($cpage > $numpg - 1) $cpage = $numpg - 1;
 		$start		= $cpage * $numdt;
-		$run		= $this->db->query("SELECT a.*, d.NAMA_KATPRODUK, c.KODE_ANGGOTA, c.NAMA_ANGGOTA, c.VALID_ANGGOTA, COUNT(b.ID_KOMENTAR) AS KOMENTAR FROM postanggota a LEFT JOIN komentar b ON b.ID_POSTANGGOTA = a.ID_POSTANGGOTA, anggota c, katproduk d WHERE " . implode(" AND ", $where) . " GROUP BY a.ID_POSTANGGOTA ORDER BY a.TANGGAL_POSTANGGOTA DESC LIMIT $start, $numdt");
+		$run		= $this->db->query("SELECT a.*, d.ID_KATPRODUK, d.NAMA_KATPRODUK, c.KODE_ANGGOTA, c.NAMA_ANGGOTA, c.VALID_ANGGOTA, COUNT(b.ID_KOMENTAR) AS KOMENTAR FROM postanggota a LEFT JOIN komentar b ON b.ID_POSTANGGOTA = a.ID_POSTANGGOTA, anggota c, katproduk d WHERE " . implode(" AND ", $where) . " GROUP BY a.ID_POSTANGGOTA ORDER BY a.TANGGAL_POSTANGGOTA DESC LIMIT $start, $numdt");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				$isi 		= strip_tags($val->ISI_POSTANGGOTA);
@@ -108,6 +113,7 @@ class PostModel extends ModelBase {
 					'link'		=> '/' . ($type == 1 ? 'jual' : 'beli') . '/' . $val->ID_POSTANGGOTA . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->JUDUL_POSTANGGOTA)),
 					'id'		=> $val->ID_POSTANGGOTA,
 					'kategori'	=> $val->NAMA_KATPRODUK,
+                    'id_kategori'=> $val->ID_KATPRODUK,
 					'judul'		=> $val->JUDUL_POSTANGGOTA,
 					'tanggal'	=> datedb_to_tanggal($val->TANGGAL_POSTANGGOTA, 'd M Y H:i'),
 					'isi'		=> $ptisi,
@@ -138,7 +144,7 @@ class PostModel extends ModelBase {
 	
 	public function get_detail($type, $id, $nama) {
 		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
-		$run	= $this->db->query("SELECT a.*, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, c.ID_KATPRODUK, c.NAMA_KATPRODUK FROM postanggota a, anggota b, katproduk c WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND a.STATUS_POSTANGGOTA = '1' AND a.ID_POSTANGGOTA = '$id' AND a.ID_KATPRODUK = c.ID_KATPRODUK", TRUE);
+		$run	= $this->db->query("SELECT a.*, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA, c.ID_KATPRODUK, c.NAMA_KATPRODUK FROM postanggota a, anggota b, katproduk c WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND a.STATUS_POSTANGGOTA = '1' AND a.ID_POSTANGGOTA = '$id' AND a.ID_KATPRODUK = c.ID_KATPRODUK", TRUE);
 		if (empty($run)) return FALSE;
 		if ($nama != preg_replace('/[^a-z0-9]/', '-', strtolower($run->JUDUL_POSTANGGOTA))) return FALSE;
 		$r['type']		= ($type == 1 ? 'Jual' : 'Beli');
@@ -148,6 +154,7 @@ class PostModel extends ModelBase {
 		$r['judul']		= $run->JUDUL_POSTANGGOTA;
 		$r['poster_nama']= $run->NAMA_ANGGOTA;
 		$r['poster_kode']= $run->KODE_ANGGOTA;
+        $r['poster_valid'] = ($run->VALID_ANGGOTA == '1');
 		$r['poster_link']= '/anggota/' . $run->KODE_ANGGOTA;
 		$r['isi']		= nl2br($this->replace_spaces($run->ISI_POSTANGGOTA), FALSE);
 		$r['tanggal']	= datedb_to_tanggal($run->TANGGAL_POSTANGGOTA, 'd M Y H:i');

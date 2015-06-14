@@ -4,7 +4,7 @@
  */
 namespace Model;
 
-set_time_limit(0);
+//set_time_limit(0);
 
 class AdmintransaksiModel extends ModelBase {
 	public function __construct() {
@@ -52,7 +52,7 @@ class AdmintransaksiModel extends ModelBase {
 		$start	= $cpage * $numdt;
 		
 		$r		= array();
-		$run	= $this->db->query("SELECT a.ID_PENJUALAN, a.TANGGAL_PENJUALAN, a.STATUS_PENJUALAN, a.INFO_PENJUALAN, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA FROM penjualan a, anggota b WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND " . implode(" AND ", $where) . " ORDER BY " . implode(', ', $orderf) . " LIMIT $start, $numdt");
+		$run	= $this->db->query("SELECT a.ID_PENJUALAN, a.TANGGAL_PENJUALAN, a.STATUS_PENJUALAN, a.INFO_PENJUALAN, b.KODE_ANGGOTA, b.NAMA_ANGGOTA, b.VALID_ANGGOTA FROM penjualan a, anggota b WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND " . implode(" AND ", $where) . " AND a.STATUS_PENJUALAN != '0' ORDER BY " . implode(', ', $orderf) . " LIMIT $start, $numdt");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				switch ($val->STATUS_PENJUALAN) {
@@ -105,4 +105,12 @@ class AdmintransaksiModel extends ModelBase {
 		
 		return array( 'type' => TRUE );
 	}
+    
+    public function delete($id) {
+        // hapus di rincian penjualan
+        $id = floatval($id);
+        $run = $this->db->query("DELETE FROM rincipenjualan WHERE ID_PENJUALAN = '$id'");
+        $run = $this->db->query("UPDATE penjualan SET STATUS_PENJUALAN = '0' WHERE ID_PENJUALAN = '$id'");
+        return array( 'type' => TRUE );
+    }
 }

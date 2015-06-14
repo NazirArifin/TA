@@ -76,12 +76,14 @@ class FrontModel extends ModelBase {
 	 */
 	public function get_premium_direktori() {
 		$r 		= array();
-		$run 	= $this->db->query("SELECT a.ID_DIREKTORI, a.NAMA_DIREKTORI FROM direktori a, anggota b WHERE a.PEMILIK_DIREKTORI = b.ID_ANGGOTA AND b.STATUS_ANGGOTA = '1' ORDER BY RAND() LIMIT 0, 15");
+		$run 	= $this->db->query("SELECT a.ID_DIREKTORI, a.NAMA_DIREKTORI, a.FOTO_DIREKTORI, a.WEB_DIREKTORI FROM direktori a, anggota b WHERE a.PEMILIK_DIREKTORI = b.ID_ANGGOTA AND b.STATUS_ANGGOTA = '1' AND a.WEB_DIREKTORI != '' ORDER BY RAND() LIMIT 0, 6");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
-				$r[] = array(
-					'nama'	=> $val->NAMA_DIREKTORI,
-					'link'	=> '/direktori/' . $val->ID_DIREKTORI . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_DIREKTORI))
+				$foto = '/upload/direktori/' . (empty($val->FOTO_DIREKTORI) ? 'default.png' : str_replace('.', '_thumb.', $val->FOTO_DIREKTORI));
+                $r[] = array(
+					'nama'	    => $val->NAMA_DIREKTORI,
+					'link'	    => '/' . $val->WEB_DIREKTORI,
+                    'foto'      => $foto
 				);
 			}
 		}
@@ -128,7 +130,7 @@ class FrontModel extends ModelBase {
 	 */
 	public function get_direktori_produk() {
 		$r 		= array();
-		$run	= $this->db->query("SELECT a.ID_PRODUK, a.NAMA_PRODUK, a.FOTO_PRODUK, a.HARGA_PRODUK, a.INFO_PRODUK, b.NAMA_KATPRODUK, c.ID_DIREKTORI, c.NAMA_DIREKTORI FROM produk a, katproduk b, direktori c WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.ID_DIREKTORI = c.ID_DIREKTORI AND c.STATUS_DIREKTORI = '1' AND a.STATUS_PRODUK = '1' ORDER BY RAND() LIMIT 0, 4");
+		$run	= $this->db->query("SELECT a.ID_PRODUK, a.NAMA_PRODUK, a.FOTO_PRODUK, a.HARGA_PRODUK, a.INFO_PRODUK, b.NAMA_KATPRODUK, c.ID_DIREKTORI, c.NAMA_DIREKTORI, c.WEB_DIREKTORI FROM produk a, katproduk b, direktori c WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.ID_DIREKTORI = c.ID_DIREKTORI AND c.STATUS_DIREKTORI = '1' AND a.STATUS_PRODUK = '1' AND c.WEB_DIREKTORI != '' ORDER BY RAND() LIMIT 0, 4");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				$isi 		= strip_tags($val->INFO_PRODUK);
@@ -140,15 +142,33 @@ class FrontModel extends ModelBase {
 					$f 		= unserialize($val->FOTO_PRODUK);
 					$foto	= '/upload/produk/' . str_replace('.', '_thumb.', $f[0]);
 				}
-				$r[] = array(
+                // skor review produk
+                $srun       = $this->db->query("SELECT AVG(SKOR_REVIEWPRODUK) AS RATING FROM reviewproduk WHERE ID_PRODUK = '" . $val->ID_PRODUK . "'", true);
+                $skor       = floor($srun->RATING * 2) / 2;
+                if (strlen($skor) > 1) {
+                    $rating = array(
+                        'fill'  => floor($skor),
+                        'half'  => 1,
+                        'empty' => 5 - ceil($skor)
+                    );
+                } else {
+                    $rating = array(
+                        'fill'  => $skor,
+                        'half'  => 0,
+                        'empty' => 5 - $skor
+                    );
+                }
+                
+				$r[]        = array(
 					'nama'		=> $val->NAMA_PRODUK,
 					'link'		=> '/produk/' . $val->ID_PRODUK . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_PRODUK)),
 					'harga'		=> number_format($val->HARGA_PRODUK, 0, ',', '.') . ',-',
 					'info'		=> $ptisi,
 					'kategori'	=> $val->NAMA_KATPRODUK,
 					'direktori'	=> $val->NAMA_DIREKTORI,
-					'link_direktori' => '/direktori/' . $val->ID_DIREKTORI . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_DIREKTORI)),
-					'foto'		=> $foto
+					'link_direktori' => '/' . $val->WEB_DIREKTORI,
+					'foto'		=> $foto,
+                    'rating'    => $rating
 				);
 			}
 		}
@@ -161,7 +181,7 @@ class FrontModel extends ModelBase {
 	public function get_produk() {
 		// secara acak
 		$r 		= array();
-		$run 	= $this->db->query("SELECT a.*, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.STATUS_PRODUKUTAMA = '1' ORDER BY RAND() LIMIT 18");
+		$run 	= $this->db->query("SELECT a.*, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.STATUS_PRODUKUTAMA = '1' ORDER BY RAND() LIMIT 12");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				if (empty($val->FOTO_PRODUKUTAMA))
@@ -177,7 +197,8 @@ class FrontModel extends ModelBase {
 					'stok'	=> $val->STOK_PRODUKUTAMA,
 					'harga'	=> number_format($val->HARGA_PRODUKUTAMA, 0, ',', '.') . ',-',
 					'foto'	=> $foto,
-					'kategori'	=> $val->NAMA_KATPRODUK
+					'kategori'	=> $val->NAMA_KATPRODUK,
+                    'info'  => $val->INFO_PRODUKUTAMA
 				);
 			}
 		}
@@ -321,7 +342,7 @@ class FrontModel extends ModelBase {
 				$r['data'][] = array(
 					'link'		=> '/' . $type . '/' . datedb_to_tanggal($datedb, 'dmY') . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val['JUDUL_' . $utype])),
 					'judul'		=> $val['JUDUL_' . $utype],
-					'tanggal'	=> datedb_to_tanggal($datedb, 'd F Y'),
+					'tanggal'	=> datedb_to_tanggal($datedb, 'd F Y H:i'),
 					'foto'		=> '/upload/news/' . (empty($val['FOTO_' . $utype]) ? 'default.png' : $val['FOTO_' . $utype]),
 					'isi'		=> token_truncate(strip_tags($isi), 200) . '...'
 				);
@@ -361,15 +382,17 @@ class FrontModel extends ModelBase {
 		$kurir	= intval($kurir);
 		$berat	= str_replace(',', '.', $berat);
 		if (empty($kota)) return FALSE;
-		$run	= $this->db->query("SELECT BIAYA_BIAYAKURIR, LANJUTAN_BIAYAKURIR FROM biayakurir WHERE ID_KOTA = '$kota' AND ID_KURIR = '$kurir'", TRUE);
+		$run	= $this->db->query("SELECT a.BIAYA_BIAYAKURIR, a.LANJUTAN_BIAYAKURIR, b.NAMA_KOTA FROM biayakurir a, kota b WHERE a.ID_KOTA = '$kota' AND a.ID_KURIR = '$kurir' AND a.ID_KOTA = b.ID_KOTA", TRUE);
 		if ( ! empty($run)) {
 			// hitung biaya berdasarkan berat
 			$berat 	= ceil(floatval($berat));
 			$lanjut = ($berat > 1 ? $berat - 1 : 0);
 			$biaya 	= $run->BIAYA_BIAYAKURIR + ($lanjut * $run->LANJUTAN_BIAYAKURIR);
+            $cod    = (strtolower(trim($run->NAMA_KOTA)) == 'pamekasan'); 
 		} else {
-			$biaya = 0;
+			$biaya  = 0;
+            $cod   = false;
 		}
-		return array('type' => TRUE, 'biaya' => $biaya);
+		return array('type' => TRUE, 'biaya' => $biaya, 'cod' => $cod);
 	}
 }

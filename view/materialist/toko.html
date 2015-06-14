@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
+<head>
+<meta charset="UTF-8">
+<title>MADURA.BZ &mdash; {{nama}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% include 'pre-page.html' %}
+
+</head>
+<body>
+	
+	{% if param.query or param.kategori %}
+	<script>
+$(document).ready(function() {
+	$("html, body").animate({ scrollTop: $('#data-product').offset().top }, "slow");
+});
+	</script>
+	{% endif %}
+	
+	{% include 'header.html' %}
+	
+	<div class="section grey lighten-5 z-depth-1">
+		<div class="container">
+			<div class="row no-pad-bot">
+				<div class="col m2 hide-on-small-only">
+					<p class="center-align" style="margin:0;">
+						<img src="{{foto}}" alt="" class="materialboxed responsive-img z-depth-1">
+					</p>
+				</div>
+				<div class="col m10">
+					<div class="row no-pad-bot">
+						<div class="s12">
+							<h4 class="yellow-text text-darken-4 light-text" style="margin:0 0 1rem 0">{{nama|upper}}</h4>
+							<p>
+								<a href="/direktori/{{direktori_link}}" class="btn light-blue"><i class="mdi-maps-place left"></i>INFO</a>
+							</p>
+							<hr>
+							<div class="row no-pad-bot">
+								<div class="col m6">
+									<p class="" style="padding-left:2rem;">
+										<i class="fa fa-fw fa-map-marker"></i> <strong>{{kota}}</strong> &nbsp; &nbsp; 
+										<span class="grey-text"><i class="fa fa-fw fa-tag"></i> {{direktori_kategori}}</span>
+									</p>
+								</div>
+								<div class="col m6">
+									<!--
+									<p class="right-align" style="margin:7px">
+										<button class="btn-flat red-text text-darken-2 tooltipped" data-tooltip="sukai"><i class="mdi-action-favorite left"></i></button>
+									</p>
+									-->
+								</div>
+							</div>
+							<hr>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="col s6">
+							<blockquote>{{info}}</blockquote>
+						</div>
+						<div class="col s6">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="section grey lighten-3" id="data-product">
+		<div class="container">
+			<div class="row grey lighten-5 z-depth-1">
+				<div class="col s12">
+					<ul class="tabs">
+						<li class="tab col s6"><a class="active" href="#test1"><i class="fa fa-fw fa-gift"></i> Produk</a></li>
+						<!--
+						<li class="tab col s6"><a href="#test2"><i class="fa fa-fw fa-thumbs-up"></i> Review Produk</a></li>
+						-->
+					</ul>
+				</div>
+				<div id="test1" class="col s12">
+					<form action="{{url}}">
+					<div class="row no-pad-bot">
+						<div class="col s6">
+							<div class="row no-pad-bot">
+								<div class="col s8 input-field">
+									<i class="mdi-editor-mode-edit prefix grey-text"></i>
+									<input type="text" name="query" id="toko-query" placeholder="Cari Produk" value="{{param.query}}">
+									<label for="toko-query" class="active">Cari Produk</label>
+								</div>
+								<div class="col s2 input-field">
+									<button class="btn light-blue darken-1" type="submit" style="height:45px;" id="submit-btn"><i class="mdi-action-search"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="col s6">
+							<div class="row no-pad-bot">
+								<div class="col s12 input-field">
+									<i class="grey-text mdi-content-sort prefix"></i>
+									<select name="order" id="toko-order" class="select" value="{{param.order}}" onchange="$('#submit-btn').click()" style="">
+										<option value="nama"{% if param.order == 'nama' %} selected{% endif %}>Nama</option>
+										<option value="harga"{% if param.order == 'harga' %} selected{% endif %}>Harga</option>
+										<option value="rating"{% if param.order == 'rating' %} selected{% endif %}>Rating</option>
+									</select>
+									<input type="hidden" name="kategori" value="{{param.kategori}}">
+									<label for="toko-order" class="active">Urut Berdasarkan</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					</form>
+					<div class="row">
+						<div class="col s4 m2">
+							<div class="collection" style="font-size:0.87rem;">
+								<a href="?{{link}}&kategori=" class="collection-item light-blue-text text-darken-1"><strong>SEMUA KATEGORI</strong></a>
+								
+								{% for c in kategori %}
+								{% if param.kategori == c.id %}
+								<a href="" class="collection-item grey-text text-lighten-3" disabled>{{c.nama}}</a>
+								{% else %}
+								<a href="?{{link}}&kategori={{c.id}}" class="collection-item">{{c.nama}}</a>
+								{% endif %}
+								{% endfor %}
+							</div>
+							<p class="center-align"><a href="/katalog/{{id}}" class="btn-flat tooltipped grey-text" data-tooltip="unduh katalog"><i class="mdi-action-assignment"></i></a></p>
+						</div>
+						<div class="col s8 m10">
+							<div class="row no-pad-bot product">
+								{% for c in produk %}
+								<div class="col m3 s4">
+									<div class="card">
+										<div class="card-image waves-effect waves-block waves-light">
+											<img src="{{c.foto}}" alt="produk" class="activator">
+										</div>
+										<div class="card-content">
+											<div class="rating left">
+												{% if c.rating.fill %}
+												{% for i in 1..c.rating.fill %}
+												<i class="fa fa-star yellow-text text-darken-4"></i>
+												{% endfor %}
+												{% endif %}
+												{% if c.rating.half %}
+												<i class="fa fa-star-half-empty yellow-text text-darken-4"></i>
+												{% endif %}
+												{% for i in 1..c.rating.empty %}
+												<i class="fa fa-star-o yellow-text text-darken-4"></i>
+												{% endfor %}
+											</div>
+											<a href="" class="activator right"><i class="mdi-action-info-outline"></i></a>
+											<div style="clear:both"></div>
+											<h4 class="truncate tooltipped" data-tooltip="{{c.nama}}" style="font-size: 1rem;margin:0"><a href="{{c.link}}">{{c.nama}}</a></h4>
+										</div>
+										<div class="card-action row">
+											<div class="col s6 grey-text truncate tooltipped" data-tooltip="{{c.kategori}}">{{c.kategori}}</div>
+											<div class="col s6"><strong class="right">Rp. {{c.harga}}</strong></div>
+										</div>
+										<div class="card-reveal">
+											<span class="card-title grey-text text-darken-4">{{c.nama}} <i class="mdi-navigation-close right"></i></span>
+											<p>{{c.info}}</p>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+							</div>
+							
+							<ul class="pagination pagination-sm" style="margin: 30px 0;">
+								<li{% if cpage == 0 %} class="disabled"{% endif %}><a href="?{{link}}&cpage=0"><i class="mdi-navigation-chevron-left"></i></a></li>
+								{% for i in 0..(numpage - 1) %}
+								<li{% if cpage == loop.index0 %} class="active"{% endif %}><a href="?{{link}}&cpage={{loop.index0}}">{{loop.index}}</a></li>
+								{% endfor %}
+								<li{% if cpage == (numpage - 1) %} class="disabled"{% endif %}><a href="?{{link}}&cpage={{numpage - 1}}"><i class="mdi-navigation-chevron-right"></i></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				
+				<!--
+				<div id="test2" class="col s12">
+					.
+				</div>
+				-->
+			</div>
+		</div>
+	</div>
+	
+	{% include 'footer.html' %}
+	
+	{% include 'post-page.html' %}
+
+</body>
+</html>

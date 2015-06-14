@@ -100,7 +100,7 @@ class DirektoriModel extends ModelBase {
 		if ($cpage > $numpg - 1) $cpage = $numpg - 1;
 		// cari data
 		$start		= $cpage * $numdt;
-		$run 		= $this->db->query("SELECT a.ID_DIREKTORI, a.NAMA_DIREKTORI, a.ALAMAT_DIREKTORI, a.TELEPON_DIREKTORI, a.INFO_DIREKTORI, a.FOTO_DIREKTORI, b.NAMA_KATDIR, c.NAMA_KOTA FROM direktori a, katdir b, kota c WHERE " . implode(" AND ", $where) . " ORDER BY a.NAMA_DIREKTORI LIMIT $start, $numdt");
+		$run 		= $this->db->query("SELECT a.ID_DIREKTORI, a.NAMA_DIREKTORI, a.ALAMAT_DIREKTORI, a.TELEPON_DIREKTORI, a.INFO_DIREKTORI, a.FOTO_DIREKTORI, a.PEMILIK_DIREKTORI, a.WEB_DIREKTORI, b.ID_KATDIR, b.NAMA_KATDIR, c.NAMA_KOTA FROM direktori a, katdir b, kota c WHERE " . implode(" AND ", $where) . " ORDER BY a.NAMA_DIREKTORI LIMIT $start, $numdt");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				$alamat = json_decode($val->ALAMAT_DIREKTORI);
@@ -109,16 +109,30 @@ class DirektoriModel extends ModelBase {
 				else $alamat = $alamat[0];
 				if ( ! empty($telepon[1])) $telepon = implode('<br>', $telepon);
 				else $telepon = $telepon[0];
+                
+                // cari pemilik
+                $pemilik = array();
+                if ( ! empty($val->PEMILIK_DIREKTORI)) {
+                    $srun = $this->db->query("SELECT NAMA_ANGGOTA, KODE_ANGGOTA, VALID_ANGGOTA FROM anggota WHERE ID_ANGGOTA = '" . $val->PEMILIK_DIREKTORI . "'", true);
+                    $pemilik = array(
+                        'link'  => '/anggota/' . $srun->KODE_ANGGOTA,
+                        'nama'  => $srun->NAMA_ANGGOTA,
+                        'valid' => ($srun->VALID_ANGGOTA == '1')
+                    );
+                }
 				
 				$r['data'][] = array(
 					'link'		=> '/direktori/' . $val->ID_DIREKTORI . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_DIREKTORI)),
 					'nama'		=> $val->NAMA_DIREKTORI,
 					'kategori'	=> $val->NAMA_KATDIR,
+                    'kategori_id' => $val->ID_KATDIR,
 					'info'		=> $val->INFO_DIREKTORI,
 					'kota'		=> $val->NAMA_KOTA,
 					'foto'		=> '/upload/direktori/' . (empty($val->FOTO_DIREKTORI) ? 'default.png' : str_replace('.', '_thumb.', $val->FOTO_DIREKTORI)),
 					'alamat'	=> $alamat,
-					'telepon'	=> $telepon
+					'telepon'	=> $telepon,
+                    'pemilik'   => ( ! empty($pemilik) ? $pemilik : ''),
+                    'web'       => $val->WEB_DIREKTORI
 				);
 			}
 		}
@@ -137,7 +151,7 @@ class DirektoriModel extends ModelBase {
 	public function get_detail($id, $nama) {
 		$r 		= array();
 		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
-		$run	= $this->db->query("SELECT a.*, b.NAMA_KATDIR, c.NAMA_KOTA FROM direktori a, katdir b, kota c WHERE a.ID_KATDIR = b.ID_KATDIR AND a.ID_KOTA = c.ID_KOTA AND a.ID_DIREKTORI = '$id' AND STATUS_DIREKTORI = '1'", TRUE);
+		$run	= $this->db->query("SELECT a.*, b.ID_KATDIR, b.NAMA_KATDIR, c.NAMA_KOTA FROM direktori a, katdir b, kota c WHERE a.ID_KATDIR = b.ID_KATDIR AND a.ID_KOTA = c.ID_KOTA AND a.ID_DIREKTORI = '$id' AND STATUS_DIREKTORI = '1'", TRUE);
 		if (empty($run)) return FALSE;
 		if ($nama != preg_replace('/[^a-z0-9]/', '-', strtolower($run->NAMA_DIREKTORI))) return FALSE;
 		
@@ -154,10 +168,17 @@ class DirektoriModel extends ModelBase {
 			$anggota	= FALSE;
 			$pemilik	= $run->PEMILIK_DIREKTORI;
 		}
+       
+        $website        = '';
+        if ( ! empty($run->WEB_DIREKTORI)) {
+            $website    = '/' . $run->WEB_DIREKTORI;
+        }
+        
 		
 		$r['id']		= $run->ID_DIREKTORI;
 		$r['nama']		= $run->NAMA_DIREKTORI;
 		$r['kategori']	= $run->NAMA_KATDIR;
+        $r['id_kategori']= $run->ID_KATDIR;
 		$r['kota']		= $run->NAMA_KOTA;
 		$r['email']		= $run->EMAIL_DIREKTORI;
 		$r['alamat']	= json_decode($run->ALAMAT_DIREKTORI);
@@ -168,7 +189,7 @@ class DirektoriModel extends ModelBase {
 		$r['link_angg']	= $link_angg;
 		$r['koordinat']	= json_decode($run->KOORDINAT_DIREKTORI);
 		$r['info']		= $run->INFO_DIREKTORI;
-		$r['website']	= json_decode($run->WEB_DIREKTORI);
+		$r['website']	= $website;
 		$r['chat']		= json_decode($run->CHAT_DIREKTORI);
 		$r['socmed']	= json_decode($run->SOCMED_DIREKTORI);
 		$r['foto']		= '/upload/direktori/' . (empty($run->FOTO_DIREKTORI) ? 'default.png' : $run->FOTO_DIREKTORI);
@@ -266,19 +287,22 @@ class DirektoriModel extends ModelBase {
 				$config['allowed_types']	= 'jpeg|jpg|png';
 				$config['encrypt_name']		= TRUE;
 				$config['overwrite']		= TRUE;
+				$config['max_size']		    = 1024 * 1024;
 				$iofiles->upload_config($config);
 				$iofiles->upload('file');
 				
 				// buat thumbnail
 				$filename 					= $iofiles->upload_get_param('file_name');
 				$filepath					= 'upload/direktori/' . $filename;
-				$config 					= array();
+				
+                
+                $config 					= array();
 				$filethumb					= str_replace('.', '_thumb.', $filepath);
 				$config['source_image']		= $filepath;
 				$config['new_image']		= $filethumb;
 				$config['maintain_ratio']	= TRUE;
-				$config['width']			= 120;
-				$config['height']			= 120;
+				$config['width']			= 200;
+				$config['height']			= 200;
 				$iofiles->image_config($config);
 				$iofiles->image_resize();
 				
@@ -291,4 +315,13 @@ class DirektoriModel extends ModelBase {
 		if ($ubahnama)	$r['data']	= $nama;
 		return $r;
 	}
+    
+    public function validate_subdomain($state) {
+        extract($this->prepare_get(array('subdomain')));
+        $subdomain = preg_replace('/[^a-z0-9\.]/', '', strtolower($subdomain));
+        $run    = $this->db->query("SELECT COUNT(ID_DIREKTORI) AS HASIL FROM direktori WHERE WEB_DIREKTORI = '$subdomain'", true);
+        return array(
+            'type' => true, 'valid' => ($run->HASIL == 0), 'accept' => $subdomain
+        );
+    }
 }
