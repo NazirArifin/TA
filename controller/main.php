@@ -25,7 +25,7 @@ $app->get('/', function() use($app, $ctr) {
 	$message 	= '';
 	if (isset($_GET['pesan'])) {
 		switch ($_GET['pesan']):
-			case 1: $message = 'Akun tidak dapat ditemukan. Daftar sekarang juga!'; break;
+			case 1: $message = 'Akun tidak dapat ditemukan.'; break;
 		endswitch;
 	}
 	
@@ -110,6 +110,72 @@ $app->get('/daftar', function() use($app, $ctr) {
 
 // ----------------------------------------------------------------
 /**
+ * Method: POST
+ * Verb: daftar 
+ */
+$app->options('/daftar', function() use($app) { $app->status(200); $app->stop(); });
+$app->post('/daftar', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	// include phpmailer
+	$ctr->load('file', 'lib/PHPMailer/PHPMailerAutoload.php');
+	$r = $ctr->MainModel->member_save(new PHPMailer);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: fpass
+ */
+$app->options('/fpass', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/fpass', function() use($app, $ctr) {
+	$ctr->load('view', 'forget-pass.html', array());
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: fpass
+ */
+$app->post('/fpass', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	// include phpmailer
+	$ctr->load('file', 'lib/PHPMailer/PHPMailerAutoload.php');
+	$r = $ctr->MainModel->member_fpass(new PHPMailer);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: login 
+ */
+$app->options('/login', function() use($app) { $app->status(200); $app->stop(); });
+$app->post('/login', function() use($app, $ctr) {
+	$ctr->load('helper', 'controller');
+	$ctr->load('file', 'lib/JWT.php');
+	$ctr->load('model', 'main');
+	$r = $ctr->MainModel->member_authenticate();
+	if ($r['type']) {
+		save_token($r['data']['token'], $r['data']['expired']);
+		redirect_home();
+	} else redirect_index(1);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: logout 
+ */
+$app->options('/logout', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/logout', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	delete_token($ctr);
+	redirect_index();
+});
+
+// ----------------------------------------------------------------
+/**
  * Method: GET
  * Verb: katalog/:type
  */
@@ -146,49 +212,6 @@ $app->get('/katalog/:type', function($type) use($app, $ctr) {
 	} catch(HTML2PDF_exception $e) {
 		echo $e; exit;
 	}
-});
-
-// ----------------------------------------------------------------
-/**
- * Method: POST
- * Verb: daftar 
- */
-$app->options('/daftar', function() use($app) { $app->status(200); $app->stop(); });
-$app->post('/daftar', function() use($app, $ctr) {
-	$ctr->load('model', 'main');
-	// include phpmailer
-	$ctr->load('file', 'lib/PHPMailer/PHPMailerAutoload.php');
-	$r = $ctr->MainModel->member_save(new PHPMailer);
-	json_output($app, $r);
-});
-
-// ----------------------------------------------------------------
-/**
- * Method: POST
- * Verb: login 
- */
-$app->options('/login', function() use($app) { $app->status(200); $app->stop(); });
-$app->post('/login', function() use($app, $ctr) {
-	$ctr->load('helper', 'controller');
-	$ctr->load('file', 'lib/JWT.php');
-	$ctr->load('model', 'main');
-	$r = $ctr->MainModel->member_authenticate();
-	if ($r['type']) {
-		save_token($r['data']['token'], $r['data']['expired']);
-		redirect_home();
-	} else redirect_index(1);
-});
-
-// ----------------------------------------------------------------
-/**
- * Method: GET
- * Verb: logout 
- */
-$app->options('/logout', function() use($app) { $app->status(200); $app->stop(); });
-$app->get('/logout', function() use($app, $ctr) {
-	$ctr->load('model', 'main');
-	delete_token($ctr);
-	redirect_index();
 });
 
 // ----------------------------------------------------------------
@@ -983,16 +1006,6 @@ $app->get('/tos', function() use($app, $ctr) {
 $app->options('/help', function() use($app) { $app->status(200); $app->stop(); });
 $app->get('/help', function() use($app, $ctr) {
 	$ctr->load('view', 'help.html', array());
-});
-
-// ----------------------------------------------------------------
-/**
- * Method: GET
- * Verb: fpass
- */
-$app->options('/fpass', function() use($app) { $app->status(200); $app->stop(); });
-$app->get('/fpass', function() use($app, $ctr) {
-	$ctr->load('view', 'forget-pass.html', array());
 });
 
 // ----------------------------------------------------------------

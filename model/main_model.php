@@ -657,5 +657,50 @@ class MainModel extends ModelBase {
 		
 		return array( 'type' => TRUE);
 	}
+    
+    /** lupa password */
+    public function member_fpass($mail) {
+        extract($this->prepare_post(array('email')));
+		$email	= $this->db->escape_str($email);
+		if ( ! filter_var($email, FILTER_VALIDATE_EMAIL)) return array('type' => FALSE);
+		
+		// periksa email
+		$run	= $this->db->query("SELECT ID_ANGGOTA, NAMA_ANGGOTA FROM anggota WHERE EMAIL_ANGGOTA = '$email'", TRUE);
+		if (empty($run)) return array('type' => FALSE);
+		$id     = $run->ID_ANGGOTA;
+        $nama   = $run->NAMA_ANGGOTA;
+        
+		// generate password
+		$pass	= $this->member_password(10);
+		$upd    = $this->db->query("UPDATE anggota SET PASSWORD_ANGGOTA = '" . crypt($pass, $this->salt) . "' WHERE ID_ANGGOTA = '$id'");
+		
+		// kirim email
+		$pesanHTML 			= 'Password akun Anda telah berhasil diubah. Berikut ini adalah password baru Anda:<br><strong>Email: ' . $email . '<br>Password: ' . $pass . '</strong><br>Kami sangat mengharapkan keaktifan Anda dalam menggunakan situs kami. Terima kasih<br><br>Administrator';
+		$pesanPlain 		= 'Password akun Anda telah berhasil diubah. Berikut ini adalah password baru Anda:
+		Email: ' . $email . '
+		Password: ' . $pass . '
+		Kami sangat mengharapkan keaktifan Anda dalam menggunakan situs kami. Terima kasih
+		
+		Administrator';
+		$subject			= 'Password Baru';
+		$mail->isSMTP();
+		$mail->From 		= 'admin@madura.bz';
+		$mail->FromName		= 'MADURA.BZ';
+		$mail->Subject		= $subject;
+		$mail->Body			= $pesanHTML;
+		$mail->AltBody		= wordwrap($pesanPlain, 70);
+		$mail->addAddress($email, $nama);
+		$mail->addReplyTo('noreply@madura.bz', 'Jangan dibalas');
+		$mail->isHTML(true);
+		if ( ! @$mail->send()) {
+			$headers		= 'From: admin@madura.bz' . "\r\n" .
+				'Reply-To: noreply@madura.bz' . "\r\n" . 
+				'X-Mailer: PHP/' . phpversion();
+			@mail($email, $subject, wordwrap($pesanPlain, 70), $headers);
+		}
+		return array(
+			'type'		=> TRUE
+		);
+    }
 }
 

@@ -59,6 +59,11 @@ app.controller('LoginCtrl', function($scope) {
 	};
 });
 
+app.controller('FpassCtrl', function($scope) {
+	$scope.submitted = false;
+	$scope.email = '';
+});
+
 app.controller('AnggotaCtrl', function($scope, $http, notify) {
 	var you = window.you,
 		me = window.me;

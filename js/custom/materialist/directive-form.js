@@ -40,6 +40,31 @@ app.directive('saveRegister', ['$http', 'notify', function($http, notify) {
 	};
 }]);
 
+/* lupa password */
+app.directive('saveFpass', ['$http', function($http) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(e) {
+				if (angular.isUndefined($scope.email) || $scope.email.length == 0) {
+					$('#fpass-email').addClass('invalid');
+					return Materialize.toast('Alamat email tidak valid', 4000);
+				}
+				elm.html('<i class="fa fa-refresh fa-spin"></i> MEMPROSES DATA...').prop('disabled', true);
+				$http.post('/fpass', { email: $scope.email }).
+				success(function(d) {
+					elm.html('<i class="mdi-action-done left"></i> Daftar Sekarang').prop('disabled', false);
+					if (d.type) {
+						$scope.submitted = true;
+					} else {
+						Materialize.toast('Email tidak dikenali atau belum terdaftar &nbsp; &mdash; &nbsp; <a href="/daftar" class="yellow-text">DAFTAR</a>', 4000);
+					}
+				});
+			});
+		}
+	};
+}]);
+
 /* update profil */
 app.directive('saveProfil', ['$http', 'notify', function($http, notify) {
 	return {

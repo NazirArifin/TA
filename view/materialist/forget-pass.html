@@ -12,7 +12,46 @@
 
 	{% include 'header.html' %}
 	
-	
+	<div class="section white z-depth-1">
+		<div class="container" data-ng-controller="FpassCtrl" data-ng-cloak>
+			<div class="row">
+				<h4 class="center-align red-text text-darken-2 light-text">Lupa Password</h4>
+				
+				<div class="col s12 m10 offset-m1 green lighten-1 z-depth-1" data-ng-show="submitted">
+					<h1 class="center-align white-text"><i class="mdi-action-restore"></i></h1>
+					<p class="center-align white-text">Permintaan perubahan password Anda telah disimpan. Sebuah email berisi password baru akan dikirimkan ke alamat email yang Anda berikan dan silakan Masuk menggunakan password baru tersebut.<br><br><strong><i class="fa fa-smile-o fa-fw"></i> Terima kasih telah menggunakan layanan kami.</strong></p>
+					<p>&nbsp;</p>
+				</div>
+				
+				<div class="col s12 m5 offset-m1" data-ng-hide="submitted">
+					<div class="row">
+						<div class="col s12">
+							<p class="orange darken-4 white-text smaller z-depth-1" style="margin:0; padding:20px;">Gunakan alamat email yang Anda gunakan <strong>saat mendaftar</strong> dan kami akan mengirimkan password baru pada alamat email tersebut.</p>
+						</div>
+					</div>
+					<div class="row">
+						<form novalidate class="col s12">
+							<div class="row no-pad-bot">
+								<div class="col input-field s12 m10 offset-m1">
+									<i class="mdi-communication-email prefix"></i>
+									<input type="email" id="fpass-email" class="input-control" placeholder="" data-ng-model="email" required>
+									<label for="login-email" class="active">Masukkan Email</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col input-field s12 m10 offset-m1">
+									<button type="button" class="right btn green darken-4" save-fpass><i class="mdi-action-done left"></i> KIRIMKAN</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="col m5 hide-on-small-only grey lighten-5" data-ng-hide="submitted">
+					&nbsp;
+				</div>
+			</div>
+		</div>
+	</div>
 	
 	{% include 'footer.html' %}
 	
