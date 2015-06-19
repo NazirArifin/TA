@@ -459,10 +459,11 @@ class MainModel extends ModelBase {
 	}
 	
 	public function member_save($mail) {
-		extract($this->prepare_post(array('email', 'nama', 'telepon')));
+		extract($this->prepare_post(array('email', 'nama', 'telepon', 'alamat')));
 		$email	= $this->db->escape_str($email);
 		$nama	= $this->db->escape_str($nama);
 		$telp	= $this->db->escape_str($telepon);
+        if ( ! empty($alamat)) $valid = FALSE;
 		if ( ! filter_var($email, FILTER_VALIDATE_EMAIL)) $valid = FALSE;
 		if (strlen($nama) < 3) $valid = FALSE;
 		if ( ! preg_match('/\+62\-[0-9]{4,20}/', $telp)) $valid = FALSE;

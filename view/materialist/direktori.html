@@ -12,6 +12,41 @@
 	
 	{% include 'header.html' %}
 	
+	<div class="directory section white z-depth-1">
+		<div class="container">
+			<div class="row no-pad-bot">
+				<ul class="pagination center-align hide-on-small-only">
+					{% for c in direktori %}
+					<li{% if not c.h %} class="disabled"{% endif %}><a href=""{% if c.h %} data-ng-click="loadDirektoriList('{{c.a}}')" class="tooltipped" data-position="top" data-delay="0" data-tooltip="Lihat direktori {{c.a}}"{% endif %}>{{c.a}}</a></li>
+					{% endfor %}
+				</ul>
+				
+				<ul class="pagination hide-on-med-and-up">
+					{% for c in direktori %}
+					{% if c.h %}<li><a href="/direktori/{{c.a}}" class="tooltipped" data-tooltip="Lihat direktori {{c.a}}">{{c.a}}</a></li>{% endif %}
+					{% endfor %}
+				</ul>
+			</div>
+			<div class="row no-pad-bot">
+				{% verbatim %}
+				<div class="col m10 offset-m1" data-ng-show="direktoriList.length > 0" data-ng-cloak>
+					<table class="striped">
+						<tbody>
+							<tr data-ng-repeat="c in direktoriList">
+								<td data-ng-repeat="d in c">
+									<a data-ng-href="/direktori/{{d.link}}">
+										<strong data-ng-show="d.nama.length > 0">&bull; {{d.nama}}</strong>
+									</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				{% endverbatim %}
+			</div>
+		</div>
+	</div>
+	
 	<div class="section grey lighten-4 z-depth-2">
 		<div class="container">
 			<div class="row">

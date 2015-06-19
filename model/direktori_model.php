@@ -67,7 +67,7 @@ class DirektoriModel extends ModelBase {
 		if ( ! empty($nama)) {
 			$nama		= $this->db->escape_str(strip_tags($nama));
 			$r['param']['nama']	= stripslashes($nama);
-			$where[] 	= "a.NAMA_DIREKTORI LIKE '%{$nama}%'";
+			$where[] 	= "(a.NAMA_DIREKTORI LIKE '%{$nama}%' OR a.INFO_DIREKTORI LIKE '%{$nama}%')";
 		}
 		if ( ! empty($alamat)) {
 			$alamat		= $this->db->escape_str(strip_tags($alamat));

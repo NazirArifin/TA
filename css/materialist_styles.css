@@ -123,6 +123,10 @@ nav a {
 	z-index: 5000;
 }
 
+.isin {
+	display: none;
+}
+
 .header-mdbz h2 {
 	font-size: 28px;
 	line-height: 30px;
