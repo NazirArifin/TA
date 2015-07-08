@@ -11,7 +11,7 @@
 
 	{% include 'header.html' %}
 	
-	<div class="section grey lighten-5 z-depth-2">
+	<div class="section white z-depth-2">
 		<div class="container">
 			<div class="row" data-ng-controller="HomeProdukCtrl" data-ng-cloak>
 				<div class="col s12">
@@ -44,7 +44,7 @@
 										<a class="btn-floating waves-effect waves-light red tooltipped waves-effect waves-light" data-tooltip="tambah produk" data-ng-click="addProduk()" style="margin-right: 10px;"><i class="mdi-content-add"></i></a>
 										
 										<!--{{namaDirektori|uppercase}}-->
-										<a href="/home/direktori" class="btn light-blue darken-1 right tooltipped waves-effect waves-light" data-tooltip="ubah data profil direktori"><i class="mdi-maps-place"></i></a>
+										<!--<a href="/home/direktori" class="btn light-blue darken-1 right tooltipped waves-effect waves-light" data-tooltip="ubah data profil direktori"><i class="mdi-maps-place"></i></a>-->
 										<a href="" class="grey-text right tooltipped" data-tooltip="batalkan" data-ng-click="clear()"><i class="mdi-content-reply"></i></a>
 									</h4>
 									<div class="grey lighten-3" data-ng-show="produkList.length == 0">
@@ -114,10 +114,9 @@
 								</div>
 							
 								<div class="col s12 grey lighten-4" data-ng-show="editing">
-									<h5 style="margin-bottom:20px" class="light-text">
-										<a class="btn-floating waves-effect waves-light grey tooltipped" data-tooltip="batalkan" data-ng-click="cancel()"><i class="mdi-content-clear"></i></a>
+									<h5 style="margin-bottom:20px" class="light-text center-align">
+										<a class="btn-floating waves-effect waves-light grey tooltipped left" data-tooltip="batalkan" data-ng-click="cancel()"><i class="mdi-content-clear"></i></a>
 										TAMBAH / EDIT PRODUK
-										
 									</h5>
 									<br>
 									<div class="row">
@@ -179,7 +178,7 @@
 											</div>
 											<div class="row">
 												<div class="input-field col s10 offset-m1 pad">
-													<button class="btn-large light-blue darken-1" save-produk><i class="mdi-action-done left"></i> SIMPAN PRODUK</button> 
+													<button class="btn light-blue darken-1" save-produk><i class="mdi-action-done left"></i> SIMPAN PRODUK</button> 
 													<a href="" class="btn-flat" cancel-form>BATALKAN</a>
 												</div>
 											</div>

@@ -25,8 +25,9 @@
 		<div class="container">
 			<div class="row">
 				<div class="col m10 offset-m1">
-					<h5 class="center-align yellow-text text-darken-3 light-text">Aturan Layanan</h5>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos assumenda tempora ipsa voluptatem tempore repellat est. Voluptatem harum a nostrum vitae laudantium perferendis consequatur inventore at alias itaque sed voluptatibus.</p>
+					{% autoescape false %}
+					{{tos}}
+					{% endautoescape %}
 				</div>
 			</div>
 		</div>

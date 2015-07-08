@@ -35,9 +35,9 @@
 					</div>
 				</li>-->
 				<li class="dropdown hidden-xs">
-					<!--<a class="btn dropdown-toggle" data-toggle="dropdown">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" data-ng-click="setTerbaca('info')">
 						<i class="fa fa-warning"></i>
-						<span class="count">8</span>
+						<span class="count" data-ng-show="info.baru > 0">{{info.baru}}</span>
 					</a>
 					<ul class="dropdown-menu notifications-list">
 						<li class="pointer">
@@ -45,23 +45,23 @@
 								<div class="arrow"></div>
 							</div>
 						</li>
-						<li class="item-header">
-							Anda memiliki 6 pemberitahuan baru
+						<li class="item-header" data-ng-show="info.baru > 0">
+							Anda memiliki {{info.baru}} pemberitahuan baru
 						</li>
-						<li class="item">
-							<a href="#">
-								<i class="fa fa-comment"></i>
-								<span class="content">New comment on ‘Awesome P...</span>
+						<li data-ng-repeat="c in info.item" class="item" data-ng-class="$index == 0 ? 'first-item' : ''">
+							<a href="#/info">
+								<i class="fa fa-user-plus" data-ng-show="c.type == '1'"></i>
+								<i class="fa fa-money" data-ng-show="c.type == '2'"></i>
+								<i class="fa fa-thumbs-down" data-ng-show="c.type == '3'"></i>
+								<i class="fa fa-compass" data-ng-show="c.type == '4'"></i>
+								<span class="content">{{c.isi}}</span>
 								<span class="time">
-									<i class="fa fa-clock-o"></i>
-									13 min.
+									<i class="fa fa-clock-o"></i>{{c.waktu}}
 								</span>
 							</a>
 						</li>
-						<li class="item-footer">
-							<a href="#">Lihat semua pemberitahuan</a>
-						</li>
-					</ul>-->
+						<li class="item-footer" data-ng-show="info.item.length > 0"><a href="#/info">Lihat semua pemberitahuan</a></li>
+					</ul>
 				</li>
 				<li class="dropdown hidden-xs">
 					<a class="btn dropdown-toggle" data-toggle="dropdown" data-ng-click="setTerbaca()">

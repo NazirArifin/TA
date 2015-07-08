@@ -11,15 +11,17 @@
 
 	{% include 'header.html' %}
 	
-	<div class="section grey lighten-5 z-depth-2">
+	<div class="section white z-depth-2">
 		<div class="container">
 			<div class="row" data-ng-controller="HomeDirektoriCtrl" data-ng-cloak>
 				<div class="col s12">
 					<h4 class="light-text yellow-text text-darken-3">
-						Data Direktori
+						Data Toko
 					</h4>
 					<hr>
 					<br>
+					
+					{% if direktori %}
 					<div class="row no-pad-bot">
 						<div class="col s4 m3">
 							<ul class="collection">
@@ -51,9 +53,9 @@
 								
 								<div class="col s12" data-ng-show="activeDirektori.length != 0">
 									<h4 class="light-text">
-										<a href="" class="grey-text tooltipped" data-tooltip="batalkan" data-ng-click="cancel()"><i class="mdi-content-reply"></i></a>
 										{{namaDirektori|uppercase}}
-										<a href="/home/produk" class="btn red darken-1 right tooltipped waves-effect waves-light" data-tooltip="atur produk toko"><i class="mdi-action-wallet-giftcard"></i></a>
+										<a href="" class="grey-text tooltipped right" data-tooltip="batalkan" data-ng-click="cancel()"><i class="mdi-content-reply"></i></a>
+										<!--<a href="/home/produk" class="btn red darken-1 right tooltipped waves-effect waves-light" data-tooltip="atur produk toko"><i class="mdi-action-wallet-giftcard"></i></a>-->
 									</h4>
 									<div class="row" style="">
 										<form role="form" class="col s12 grey lighten-4">
@@ -250,6 +252,197 @@
 						</div>
 						{% endverbatim %}
 					</div>
+					
+					{% else %}
+						{% if direktori_inprocess %}
+					<div class="row no-pad-bot">
+						<div class="col m12">
+							<p class="center-align light-blue darken-1 white-text z-depth-1" style="padding:20px 10px;margin-bottom:0px;"><strong>Permintaan Anda sedang diproses dan divalidasi</strong><br>Harap tunggu beberapa saat sebelum MADURA.BZ memutuskan apakah permintaan Anda diterima atau tidak. Terima kasih telah menggunakan layanan kami :)</p>
+						</div>
+					</div>
+						{% else %}
+					<div class="row no-pad-bot">
+						<div class="col m12">
+							<p class="center-align light-blue darken-1 white-text z-depth-1" style="padding:20px 10px;margin-bottom:0px;"><strong>Terima kasih telah mengupgrade keanggotaan Anda</strong>, dan sekarang Anda bisa memiliki toko online yang dapat Anda gunakan untuk mempromosikan semua produk yang Anda miliki bersama kami.</p>
+							<p class="smaller grey-text text-darken-2 grey lighten-4 z-depth-1" style="padding:15px 10px;margin-top:0px;">
+								&bull; Jika Anda merasa bahwa ada data direktori di MADURA.BZ yang merupakan perusahaan Anda maka Anda dapat memilih <a href="" data-ng-click="setNewDirektori(1)">Dari Direktori.</a> (Anda harus menunggu MADURA.BZ memvalidasi hak kepemilikan Anda atas direktori tersebut)<br>
+								&bull; Jika perusahaan Anda tidak terdapat di data direktori maka Anda dapat mem<a href="" data-ng-click="setNewDirektori(2)">Buat Toko Baru</a> yang otomatis menjadi direktori dan toko online Anda
+							</p>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="col s12 m3">
+							<ul class="collection">
+								<a href="" data-ng-click="setNewDirektori(1)" class="collection-item" data-ng-class="newDirektori == 1 ? 'active' : ''"><i class="fa fa-angle-right"></i> Dari Direktori</a>
+								<a href="" data-ng-click="setNewDirektori(2)" class="collection-item" data-ng-class="newDirektori == 2 ? 'active' : ''"><i class="fa fa-angle-right"></i> Buat Toko Baru</a>
+							</ul>
+						</div>
+						<div class="col m9">
+							<p class="center-align" data-ng-show="newDirektori == 0"><strong>Pilih menu di panel sebelah kiri untuk mulai membuat toko online Anda</strong></p>
+							<p class="center-align">
+								<img src="/img/fn.png" alt="lock and gear">
+							</p>
+							
+							<div class="row" data-ng-show="newDirektori == 1" style="margin-top:15px;">
+								<div class="col s12">
+									<div class="row">
+										<div class="col s12">
+											<h5 class="light-text center-align">Dari Direktori</h5>
+											<hr>
+										</div>
+									</div>
+									<div class="row no-pad-bot">
+										<form action="/direktori/new" role="form" method="post" class="col s12" enctype="multipart/form-data">
+											<div class="row">
+												<div class="input-field col m12 pad">
+													<select name="direktori" id="ndirektori" style="width: 100%" class="browser-default" data-ng-model="ndir.direktori" select2 required data-ng-change="loadDetail()">
+														<option value="">-- cari direktori --</option>
+														{% for c in edirektori %}
+														<option value="{{c.id}}">{{c.nama}}</option>
+														{% endfor %}
+													</select>
+													<label for="ndirektori" class="active">Cari Direktori Anda</label>
+												</div>
+											</div>
+											{% verbatim %}
+											<div class="row grey lighten-4" data-ng-hide="detailDirektori.length == 0">
+												<div class="col s12 m10 offset-m1">
+													<table class="smaller condensed table bordered">
+														<tbody>
+															<tr>
+																<td colspan="2" class="center-align">
+																	<img data-ng-src="{{detailDirektori.foto}}" class="z-depth-1" alt="">
+																</td>
+															</tr>
+															<tr>
+																<td><strong>Nama Direktori</strong></td>
+																<td>: <a data-ng-href="{{detailDirektori.link}}" target="_blank">{{detailDirektori.nama}}</a></td>
+															</tr>
+															<tr>
+																<td><strong>Kategori</strong></td>
+																<td>: {{detailDirektori.kategori}}</td>
+															</tr>
+															<tr>
+																<td><strong>Informasi</strong></td>
+																<td>: {{detailDirektori.info}}</td>
+															</tr>
+														</tbody>
+													</table>
+													<br>
+												</div>
+											</div>
+											{% endverbatim %}
+											<div class="row no-pad-bot">
+												<div class="file-field input-field col s12 pad">
+													<input type="text" name="" id="" placeholder="file jpg, jpeg, png < 1MB" class="file-path validate" disabled>
+													<div class="btn green darken-1" style="left:10px;">
+														<span>Foto</span>
+														<input type="file" name="file" id="file" accept=".png,.jpg,.jpeg" simple-file-input>
+													</div>
+													<label for="file" class="active">Bukti Kepemilikan (TDP / SIUP / Akta Pendirian)</label>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col input-field s12" style="margin-top:0">
+													<input type="checkbox" id="post-agree1" name="agree1" data-ng-model="ndir.check1"> <label for="post-agree1" class="label-text">Dengan ini saya menyatakan direktori tersebut benar-benar adalah hak milik saya sebagaimana yang tertera pada bukti yang saya berikan.</label>
+												</div>
+											</div>
+											<div class="row">
+												<div class="input-field col s12 pad">
+													<button class="btn light-blue darken-1" save-new-direktori="1"><i class="mdi-action-done left"></i> KIRIM</button> <a href="" class="btn-flat" data-ng-click="newDirektori = 0">BATALKAN</a>
+												</div>
+											</div>
+											<div class="row">
+												<p class="red-text text-darken-2" style="font-size:0.7rem;font-weight:bold"><em>* Harap tunggu hingga MADURA.BZ memvalidasi hak kepemilikan Anda</em></p>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+							<div class="row" data-ng-show="newDirektori == 2" style="margin-top:15px">
+								<div class="col s12">
+									<div class="row">
+										<div class="col s12">
+											<h5 class="light-text center-align">Buat Toko Baru</h5>
+										</div>
+									</div>
+									<div class="row no-pad-bot">
+										<p class="grey smaller white-text" style="padding: 20px 10px; margin-bottom:30px;">Data toko ini otomatis juga akan menjadi data direktori perusahaan Anda. Begitu toko online Anda kami proses, Anda dapat menambahkan detail informasi toko sewaktu-waktu.</p>
+										<form action="/direktori/new" role="form" method="post" class="col s12" enctype="multipart/form-data">
+											<div class="row">
+												<div class="input-field col m8 pad">
+													<i class="prefix mdi-maps-layers grey-text"></i>
+													<select name="kategori" id="nkategori" class="browser-default" required style="margin-left:3rem">
+														<option value="">-- pilih kategori --</option>
+														{% verbatim %}
+														<option value="{{c.id}}" data-ng-repeat="c in kategori">{{c.nama}}</option>
+														{% endverbatim %}
+													</select>
+													<label for="kategori" class="active">Kategori Toko</label>
+												</div>
+											</div>
+											<div class="row">
+												<div class="input-field col m8 pad">
+													<i class="prefix mdi-action-label grey-text"></i>
+													<input type="text" name="nama" id="nnama" class="form-control" maxlength="80" length="80" data-ng-model="ndir.nama" required>
+													<label for="nnama" class="active">Nama Toko</label>
+												</div>
+											</div>
+											<div class="row">
+												<div class="input-field col m12 pad">
+													<i class="prefix mdi-action-room grey-text"></i>
+													<input type="text" name="alamat" id="nalamat" class="form-control" maxlength="120" length="120" data-ng-model="ndir.alamat" required>
+													<label for="nalamat" class="active">Alamat Toko</label>
+												</div>
+											</div>
+											<div class="row">
+												<div class="input-field col m4 pad">
+													<i class="prefix mdi-communication-call grey-text"></i>
+													<input type="text" name="telepon" id="ntelepon" class="form-control" placeholder="+62-___________" maxlength="15" length="15" masked-input="+62-999999999?99" data-ng-model="ndir.telepon" required>
+													<label for="ntelepon">Telepon</label>
+												</div>
+												<div class="input-field col m4 offset-m1 pad">
+													<i class="prefix mdi-maps-directions-subway grey-text"></i>
+													<select name="kota" id="nkota form-control" class="browser-default" data-ng-model="ndir.kota" required style="margin-left:3rem">
+														<option value="">-- pilih kota --</option>
+														{% for c in kota %}
+														<option value="{{c.id}}">{{c.nama}}</option>
+														{% endfor %}
+													</select>
+													<label for="nkota" class="active">Kota Asal</label>
+												</div>
+											</div>
+											<div class="row no-pad-bot">
+												<div class="file-field input-field col m12 pad">
+													<input type="text" name="" id="" placeholder="file jpg, jpeg, png, maksimal 1 MB" class="file-path validate" disabled>
+													<div class="btn green darken-1" style="left:10px;">
+														<span>Foto</span>
+														<input type="file" name="file" id="file" accept=".png,.jpg,.jpeg" simple-file-input>
+													</div>
+													<label for="file" class="active">Bukti Kepemilikan (TDP / SIUP / Akta Pendirian)</label>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col input-field s12" style="margin-top:0">
+													<input type="checkbox" id="post-agree2" name="post.agree2" data-ng-model="ndir.check2"> <label for="post-agree2" class="label-text">Dengan ini saya menyatakan bahwa toko yang saya buat ini benar-benar adalah hak milik saya sebagaimana yang tertera pada bukti yang saya berikan serta tidak melanggar <a href="/tos">Peraturan dan Kesepakatan</a> yang ada.</label>
+												</div>
+											</div>
+											<div class="row">
+												<div class="input-field col s12 pad">
+													<button class="btn light-blue darken-1" save-new-direktori="2"><i class="mdi-action-done left"></i> SIMPAN DATA</button> <a href="" class="btn-flat" data-ng-click="newDirektori = 0">BATALKAN</a>
+												</div>
+											</div>
+											<div class="row">
+												<p class="red-text text-darken-2" style="font-size:0.7rem;"><em>* Harap tunggu hingga MADURA.BZ memproses toko online Anda</em></p>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+						{% endif %}
+					{% endif %}
 				</div>
 			</div>
 		</div>

@@ -210,6 +210,75 @@ $app->get('/admin/pesan/data', function() use($app, $ctr) {
 // ----------------------------------------------------------------
 /**
  * Method: GET
+ * Verb: info
+ */
+$app->options('/admin/info', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/info', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminmain');
+	$ctr->load('helper', 'date');
+	$ctr->load('helper', 'string');
+	$r = $ctr->AdminmainModel->show_info();
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: info
+ */
+$app->post('/admin/info', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminmain');
+	$r = $ctr->AdminmainModel->save_info();
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: info/data
+ */
+$app->options('/admin/info/data', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/admin/info/data', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) halt403($app);
+	$ctr->load('model', 'adminmain');
+	$ctr->load('helper', 'date');
+	$r = $ctr->AdminmainModel->show_info_data();
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: DELETE
+ * Verb: info/:Id
+ */
+$app->options('/admin/info/:id', function() use($app) { $app->status(200); $app->stop(); });
+$app->delete('/admin/info/:id', function($id) use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'adminmain');
+	$r = $ctr->AdminmainModel->delete_info($id);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+})->conditions(array('id' => '[0-9]+'));
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
  * Verb: data
  */
 $app->options('/admin/data', function() use($app) { $app->status(200); $app->stop(); });
@@ -427,6 +496,23 @@ $app->delete('/admin/direktori/:id', function($id) use($app, $ctr) {
 	
 	$ctr->load('model', 'admindirektori');
 	$r = $ctr->AdmindirektoriModel->delete($id);
+	if ($r === FALSE) return halt401($app);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: admin/newdirektori
+ */
+$app->options('/admin/newdirektori', function() use($app) { $app->status(200); $app->stop(); });
+$app->post('/admin/newdirektori', function() use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	
+	$ctr->load('model', 'admindirektori');
+	$r = $ctr->AdmindirektoriModel->save_new_direktori();
 	if ($r === FALSE) return halt401($app);
 	json_output($app, $r);
 });
@@ -838,3 +924,28 @@ $app->delete('/admin/backup/:file', function($file) use($app, $ctr) {
 	@unlink('backup/' . $file);
 	json_output($app, array('type' => true));
 })->conditions(array('file' => '[0-9]+\.sql'));
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: tos/help
+ */
+$app->get('/admin/:type', function($type) use($app, $ctr) {
+	$cont = @file_get_contents('model/' . $type . '.shtml');
+	json_output($app, array('type' => true, $type => $cont));
+})->conditions(array('type' => '(tos|help)'));
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: tos/help
+ */
+$app->post('/admin/:type', function($type) use($app, $ctr) {
+	$ctr->load('model', 'main');
+	$token = validate_token($ctr);
+	if ($token === FALSE) return halt403($app);
+	$ctr->load('file', 'lib/IOFiles.php');
+	$ctr->load('model', 'adminmain');
+	$r = $ctr->AdminmainModel->save_to_file($type, new IOFiles());
+	json_output($app, array('type' => true));
+})->conditions(array('type' => '(tos|help)'));

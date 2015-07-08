@@ -10,7 +10,9 @@ config(function($httpProvider, $locationProvider, cfpLoadingBarProvider) {
 	}];
 }).
 run(['$rootScope', '$location', function($rootScope, $location) {
-	
+	$rootScope.$on('$routeChangeSuccess', function(newRoute, oldRoute) {
+		if($location.hash()) $anchorScroll();  
+	});
 }]).
 factory('notify', function() {
 	function animate(layout, effect, message, type, close) {

@@ -188,9 +188,13 @@ app.directive('checkSubdomainSaved', ['$http', 'notify', function($http, notify)
 					} else {
 						$scope.direktori.web = d.accept;
 						elm.removeClass('invalid');
+						notify.slideTop.info('Nama subdomain tersedia, Anda dapat menggunakan nama ini');
 					}
 				});
-			} else elm.addClass('invalid');
+			} else {
+				elm.addClass('invalid');
+				notify.slideTop.error('Nama subdomain minimal 3 karakter');
+			}
 		});
 	};
 }]);
@@ -341,6 +345,13 @@ app.directive('showModal', ['$http', 'notify', function($http, notify) {
 				showModal();
 			});
 		}
+		
+		// upgrade keanggotaan
+		if (attrs.target == 'modal-6') {
+			$(el).on('click', function(e) {
+				showModal();
+			});
+		}
 	};
 }]);
 
@@ -366,6 +377,18 @@ app.directive('joyride', function() {
 			});
 		}
 	}
+});
+
+/* baca tos saat pendaftaran */
+app.directive('tosRead', function() {
+	return function($scope, elm, attrs) {
+		elm.bind('scroll', function() {
+			if ($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
+				$scope.readTos = true;
+				console.log('tos terbaca');
+			}
+		});
+	};
 });
 
 /* Hapus testimoni */

@@ -108,10 +108,10 @@ app.controller('MainCtrl', function($rootScope, $scope, $location, $localStorage
 	};
 	
 	/**
-	 * load pesan per 1 detik
+	 * load pesan per 5 detik
 	 */
 	$scope.pesan = { item: [], baru: 0 };
-	var count;
+	var count, hitung;
 	var loadMessages = function() {
 		if ($scope.myDetails === false) return;
 		$http.get($scope.server + '/pesan?view=newest', { ignoreLoadingBar: true }).
@@ -126,10 +126,6 @@ app.controller('MainCtrl', function($rootScope, $scope, $location, $localStorage
 			loadMessages();
 		}, 5000);
 	}; $scope.callLoadMessages();
-	$scope.$on('$destroy', function() {
-		$interval.cancel(count);
-		count = undefined;
-	});
 	$scope.setTerbaca = function() {
 		var id = [];
 		for (var i = 0; i < $scope.pesan.item.length; i++) { 
@@ -139,4 +135,39 @@ app.controller('MainCtrl', function($rootScope, $scope, $location, $localStorage
 		$http.post($scope.server + '/pesan', { status: 2, ids: id.join(',') }, { ignoreLoadingBar: true }).
 		success(function(d) { loadMessages(); });
 	};
+	
+	/**
+	 * load pemberitahun per 5 detik
+	 */
+	$scope.info = { item:[], baru: 0 };
+	var loadInfo = function() {
+		if ($scope.myDetails === false) return;
+		$http.get($scope.server + '/info?view=newest', { ignoreLoadingBar: true }).
+		success(function(d) {
+			$scope.info.item = d.item;
+			$scope.info.baru = d.baru;
+		});
+	};
+	$scope.callLoadInfo = function() {
+		if (angular.isDefined(hitung)) return;
+		hitung = $interval(function() {
+			loadInfo();
+		}, 5000);
+	}; $scope.callLoadInfo();
+	$scope.setTerbaca = function() {
+		var id = [];
+		for (var i = 0; i < $scope.info.item.length; i++) {
+			if ($scope.info.item[i].status == 'baru')
+				id.push($scope.info.item[i].id);
+		}
+		$http.post($scope.server + '/info', { status: 2, ids: id.join(',') }, { ignoreLoadingBar: true }).
+		success(function(d) { loadInfo(); });
+	};
+	
+	$scope.$on('$destroy', function() {
+		$interval.cancel(count);
+		count = undefined;
+		$interval.cancel(hitung);
+		hitung = undefined;
+	});
 });

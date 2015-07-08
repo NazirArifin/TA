@@ -483,3 +483,27 @@ app.directive('simpanTips', ['$http', 'notify', function($http, notify) {
 		}
 	};
 }]);
+
+/** tos */
+app.directive('simpanTos', ['$http', function($http) {
+	return function($scope, elm, attrs) {
+		elm.on('click', function(e) {
+			$http.post($scope.server + '/tos', { tos: $scope.tos }).
+			success(function(d) {
+				alertify.success('Data berhasil disimpan :)');
+			});
+		});
+	};
+}]);
+
+/** tos */
+app.directive('simpanHelp', ['$http', function($http) {
+	return function($scope, elm, attrs) {
+		elm.on('click', function(e) {
+			$http.post($scope.server + '/help', { help: $scope.help }).
+			success(function(d) {
+				alertify.success('Data berhasil disimpan :)');
+			});
+		});
+	};
+}]);

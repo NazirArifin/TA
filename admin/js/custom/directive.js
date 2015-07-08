@@ -362,14 +362,42 @@ app.directive('cancelForm', function() {
 });
 
 /**
+ * Delete All
+ */
+app.directive('deleteAllButton', ['$http', function($http) {
+	return function($scope, elm, attrs) {
+		elm.on('click', function(e) {
+			var ids = [];
+			var data = $scope[attrs.deleteAllButton];
+			for (var i = 0; i < data.length; i++) {
+				if (data[i].check) ids.push(data[i].id);
+			}
+			if (ids.length == 0) return;
+			
+			bootbox.setDefaults({ locale: "id" });
+			bootbox.confirm('<h3 class="text-danger"><i class="fa fa-question-circle fa-lg pull-left"></i> Apakah Anda yakin?</h3><p><strong>Data yang sudah dihapus kemungkinan tidak dapat dikembalikan lagi dan dapat menghapus data lain yang berhubungan dengannya.</strong></p>', function(r) {
+				if (r) {
+					var url = $scope.server + '/' + attrs.type;
+					$http.post(url, { ids: ids.join(','), status: 0 })
+					.success(function(d) {
+						if (attrs.load) $scope.loadData(attrs.load);
+						else $scope.loadData(); 
+					});
+				}
+			});
+		});
+	};
+}]);
+
+/**
  * Delete button
  */
 app.directive('deleteButton', ['$http', function($http) {
 	return function($scope, elm, attrs) {
 		elm.on('click', function(e) {
 			e.preventDefault();
-				bootbox.setDefaults({ locale: "id" });
-				bootbox.confirm('<h3 class="text-danger"><i class="fa fa-question-circle fa-lg pull-left"></i> Apakah Anda yakin?</h3><p><strong>Data yang sudah dihapus kemungkinan tidak dapat dikembalikan lagi dan dapat menghapus data lain yang berhubungan dengannya.</strong></p>', function(r) {
+			bootbox.setDefaults({ locale: "id" });
+			bootbox.confirm('<h3 class="text-danger"><i class="fa fa-question-circle fa-lg pull-left"></i> Apakah Anda yakin?</h3><p><strong>Data yang sudah dihapus kemungkinan tidak dapat dikembalikan lagi dan dapat menghapus data lain yang berhubungan dengannya.</strong></p>', function(r) {
 				if (r) {
 					var url = $scope.server + '/' + attrs.type;
 					if (attrs.deleteButton.match(/[^0-9]/)) url += attrs.deleteButton;

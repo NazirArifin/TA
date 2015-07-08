@@ -21,6 +21,7 @@ app.directive('saveRegister', ['$http', 'notify', function($http, notify) {
 				}
 				if (valid) {
 					if ( ! $scope.user.agree) return notify.slideTop.info('Anda harus menyetujui peraturan layanan di MADURA.BZ');
+					if ( ! $scope.readTos) return notify.slideTop.info('Anda harus membaca peraturan layanan di sisi kanan form!');
 				} else {
 					if ( ! valid) return notify.slideTop.error('Input Tidak Lengkap, Ulangi Bagian Bertanda Kesalahan');
 				}
@@ -31,7 +32,6 @@ app.directive('saveRegister', ['$http', 'notify', function($http, notify) {
 					elm.html('<i class="mdi-action-done left"></i> Daftar Sekarang').prop('disabled', false);
 					if (d.type) {
 						$scope.registered = true;
-						$scope.password = d.password;
 						notify.slideTop.info('Selamat! Anda berhasil terdaftar');
 					}
 				});
@@ -605,6 +605,54 @@ app.directive('saveKonfirmasi', ['$http', 'notify', function($http, notify) {
 					$('#modal-4').removeClass('md-show');
 					notify.slideTop.warning('Konfirmasi pembayaran berhasil tersimpan. <strong>Harap tunggu beberapa waktu untuk Administrator melakukan pengecekan</strong>. Begitu pembayaran valid maka status Pemesanan Anda akan berubah');
 				});
+			});
+		}
+	};
+}]);
+
+/** simpan direktori baru */
+app.directive('saveNewDirektori', ['notify', function(notify) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(e) {
+				e.preventDefault();
+				if (attrs.saveNewDirektori == 1) {
+					if ($scope.ndir.direktori == '' || angular.isUndefined($scope.ndir.direktori)) {
+						return Materialize.toast('Anda belum memilih direktori', 4000);
+					}
+					if ($scope.file == null) {
+						return Materialize.toast('Anda harus melampirkan bukti kepemilikan direktori', 4000);
+					}
+					if ( ! $scope.ndir.check1) {
+						return notify.slideTop.info('Anda harus menyutujui kesepakatan yang terdapat pada formulir ini');
+					}
+				}
+				if (attrs.saveNewDirektori == 2) {
+					var pass = true;
+					if ($scope.ndir.nama.length < 3) {
+						pass = false; $('#nnama').addClass('invalid');
+					}
+					if ($scope.ndir.alamat.length < 8) {
+						pass = false; $('#nalamat').addClass('invalid');
+					}
+					if ($scope.ndir.telepon.length < 10) {
+						pass = false; $('#ntelepon').addClass('invalid');
+					}
+					if ($scope.ndir.kota.length < 1 || angular.isUndefined($scope.ndir.kota)) {
+						pass = false; $('#nkota').addClass('invalid');
+					}
+					if ( ! pass) {
+						return notify.slideTop.error('Input tidak lengkap, perhatikan isian bertanda kesalahan');
+					} else { $('form-control').removeClass('invalid'); }
+					if ($scope.file == null) {
+						return Materialize.toast('Anda harus melampirkan bukti kepemilikan direktori', 4000);
+					}
+					if ( ! $scope.ndir.check2) {
+						return notify.slideTop.info('Anda harus menyutujui kesepakatan yang terdapat pada formulir ini');
+					}
+				}
+				elm.closest('form').submit();
 			});
 		}
 	};

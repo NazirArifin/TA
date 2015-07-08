@@ -582,4 +582,136 @@ class AdminmainModel extends ModelBase {
 		$iofiles->write($filename, $return, 'wb');
 		return array( 'type' => true );
 	}
+	
+	/**
+	 * Simpan tos dan help
+	 */
+	public function save_to_file($type, $iofiles) {
+		extract($this->prepare_post(array($type)));
+		$data = $$type;
+		$iofiles->write('model/' . $type . '.shtml', $data, 'wb');
+	}
+	
+	/**
+	 * show info
+	 */
+	public function show_info() {
+		$r 		= array();
+		$cari 	= $this->db->query("SELECT COUNT(ID_PEMBERITAHUAN) AS HASIL FROM pemberitahuan WHERE STATUS_PEMBERITAHUAN = '1'", true);
+		$baru	= $cari->HASIL;
+		$limit 	= ( ! empty($baru) ? $baru : 7);
+		$cari	= $this->db->query("SELECT * FROM pemberitahuan WHERE STATUS_PEMBERITAHUAN != '0' ORDER BY TANGGAL_PEMBERITAHUAN DESC LIMIT 0, $limit");
+		if ( ! empty($cari)) {
+			foreach ($cari as $val) {
+				$waktu = round((time() - datedb_to_tanggal($val->TANGGAL_PEMBERITAHUAN, 'U')) / 60 );
+				$swaktu = $waktu . ' menit';
+				if ($waktu >= 60) $swaktu = floor($waktu / 60) . ' jam ' . ($waktu % 60) . ' menit';
+				if ($waktu > (24 * 60)) $swaktu = datedb_to_tanggal($val->TANGGAL_PEMBERITAHUAN, 'd M Y H:i');
+				
+				$isi = strip_tags($val->ISI_PEMBERITAHUAN);
+				$r[] = array(
+					'id'	=> $val->ID_PEMBERITAHUAN,
+					'isi'	=> (strlen($isi) > 55 ? token_truncate($isi, 55) . '...' : $isi),
+					'waktu'	=> $swaktu,
+					'type' 	=> $val->TIPE_PEMBERITAHUAN,
+					'status'=> ($val->STATUS_PEMBERITAHUAN == '1' ? 'baru' : 'terbaca')
+				);
+			}
+		}
+		
+		return array(
+			'item' => $r, 'baru' => $baru
+		);
+	}
+	
+	/**
+	 * update info
+	 */
+	public function save_info() {
+		extract($this->prepare_post(array('status', 'ids')));
+		// set status
+		if ($status == '0') {
+			$id		= explode(',', $ids);
+			foreach ($id as $key => $val) $id[$key]	= "'$val'";
+			$id		= implode(',', $id);
+			$upd	= $this->db->query("UPDATE pemberitahuan SET STATUS_PEMBERITAHUAN = '0' WHERE ID_PEMBERITAHUAN IN($id)");
+			return array( 'type' => TRUE );
+		}
+		
+		if ( ! empty($status)) {
+			if ($status != 2) return;
+			$id		= explode(',', $ids);
+			foreach ($id as $key => $val) $id[$key]	= "'$val'";
+			$id		= implode(',', $id);
+			$upd	= $this->db->query("UPDATE pemberitahuan SET STATUS_PEMBERITAHUAN = '2' WHERE ID_PEMBERITAHUAN IN($id)");
+			return array( 'type' => TRUE );
+		}
+	}
+	
+	/**
+	 * tampilkan data pemberitahuan
+	 */
+	public function show_info_data() {
+		$r = array();
+		extract($this->prepare_get(array('cpage', 'numpage', 'date', 'jenis', 'numdt', 'order', 'sort')));
+		$cpage 	= intval($cpage);
+		$date	= tanggal_to_datedb($date);
+		$jenis	= intval($jenis);
+		$numdt	= intval($numdt);
+		$order 	= $this->db->escape_str($order);
+		$sort	= ($sort == 'asc' ? 'ASC' : 'DESC');
+		
+		// where
+		$where 	= array();
+		$where[] = "STATUS_PEMBERITAHUAN != '0'";
+		if ( ! empty($date)) {
+			$where[] = "DATE(TANGGAL_PEMBERITAHUAN) = '$date'";
+		}
+		if ( ! empty($jenis)) {
+			$where[] = "TIPE_PEMBERITAHUAN = '$jenis'";
+		}
+		
+		// order
+		$order = ($order == 'type' ? 'TIPE_PEMBERITAHUAN' : 'TANGGAL_PEMBERITAHUAN');
+		$start = $cpage * $numdt;
+		
+		// jumlah halaman
+		$run	= $this->db->query("SELECT COUNT(ID_PEMBERITAHUAN) AS HASIL FROM pemberitahuan WHERE " . implode(" AND ", $where), true);
+		$numpg	= ceil($run->HASIL / $numdt);
+		
+		// data sebenarnya
+		$run	= $this->db->query("SELECT * FROM pemberitahuan WHERE " . implode(" AND ", $where) . " ORDER BY $order $sort LIMIT $start, $numdt");
+		if ( ! empty($run)) {
+			foreach ($run as $val) {
+				$data = '';
+				if ($val->TIPE_PEMBERITAHUAN == '4') {
+					list($isi, $id) = explode(' !====! ', $val->ISI_PEMBERITAHUAN);
+					$scari = $this->db->query("SELECT COUNT(ID_PROSESDIREKTORI) AS HASIL FROM prosesdirektori WHERE ID_PROSESDIREKTORI = '$id'", true);
+					if ( ! empty($scari->HASIL)) $data = $id;
+				} else {
+					$isi = $val->ISI_PEMBERITAHUAN;
+				}
+				$r[] = array(
+					'check'	=> false,
+					'id'	=> $val->ID_PEMBERITAHUAN,
+					'tipe'	=> $val->TIPE_PEMBERITAHUAN,
+					'isi'	=> $isi,
+					'tanggal'=> datedb_to_tanggal($val->TANGGAL_PEMBERITAHUAN, 'd/m/Y H:i'),
+					'data'	=> $data
+				);
+			}
+		}
+		
+		return array(
+			'info' => $r, 'type' => true, 'numpage' => $numpg
+		);
+	}
+	
+	/**
+	 * delete pemberitahuan
+	 */
+	public function delete_info($id) {
+		$run = $this->db->query("UPDATE pemberitahuan SET STATUS_PEMBERITAHUAN = '0' WHERE ID_PEMBERITAHUAN = '$id'");
+		return array('type' => true);
+	}
 }

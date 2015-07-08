@@ -1,0 +1,98 @@
+<div class="row">
+	<div class="col-lg-12">
+		<div class="row">
+			<div class="col-lg-12">
+				<ol class="breadcrumb">
+					<li><a href="#/home">Beranda</a></li>
+					<li class="active"><span>Pemberitahuan</span></li>
+				</ol>
+				<h1>Pemberitahuan</h1>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="main-box clearfix">
+					<header class="main-box-header clearfix">
+						<div class="col-xs-4 form-inline pagenum">
+							<label for="show-tipe">
+								<select name="show-tipe" id="show-tipe" class="form-control" data-ng-model="page.jenis" data-ng-change="loadData()">
+									<option value="">Semua Jenis</option>
+									<option value="1">Pendaftaran Anggota</option>
+									<option value="2">Konfirmasi Pemesanan</option>
+									<option value="3">Aduan Kiriman Anggota</option>
+									<option value="4">Info Direktori Baru</option>
+								</select>
+							</label>
+						</div>
+						<div class="filter-block pull-right">
+							<div class="form-group pull-left">
+								<input type="text" data-ng-model="page.date" name="cari2" id="cari2" class="form-control" placeholder="dd/mm/yyyy" date-picker style="width: 140px;" data-ng-change="loadData()">
+								<i class="fa fa-calendar search-icon"></i>
+							</div>
+						</div>
+					</header>
+					<div class="main-box-body clearfix">
+						<div class="table-responsive">
+							<table class="table table-condensed dataTable">
+								<thead>
+									<tr>
+										<th>
+											<input type="checkbox" name="" id="" data-ng-model="check" data-ng-click="checkAll()">
+										</th>
+										<th data-ng-class="sortingIcon('type')" data-ng-click="sortOrder('type')">Jenis</th>
+										<th data-ng-class="sortingIcon('date')" data-ng-click="sortOrder('date')">Tanggal</th>
+										<th>Pemberitahuan</th>
+										<th>
+											<a href="" delete-all-button="infoList" data-type="info" data-ng-show="check" class="text-danger tooltips" title="hapus terpilih">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+											</a>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="c in infoList">
+										<td style="vertical-align: top">
+											<input type="checkbox" name="" id="" data-ng-model="c.check">
+										</td>
+										<td style="vertical-align: top">
+											<i class="fa fa-fw fa-user-plus" data-ng-show="c.tipe == '1'"></i>
+											<i class="fa fa-fw fa-money" data-ng-show="c.tipe == '2'"></i>
+											<i class="fa fa-fw fa-thumbs-down" data-ng-show="c.tipe == '3'"></i>
+											<i class="fa fa-fw fa-compass" data-ng-show="c.tipe == '4'"></i>
+										</td>
+										<td style="vertical-align: top">{{c.tanggal}}</td>
+										<td style="width:70%" data-ng-bind-html="c.isi">{{c.isi}}</td>
+										<td style="vertical-align: top">
+											<a href="" class="table-link success tooltips" title="setujui direktori" data-ng-click="setApprove(c.data)" data-ng-show="c.tipe == '4' && c.data != ''">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-check fa-stack-1x fa-inverse"></i></span>
+											</a>
+											<a href="" class="table-link danger tooltips" title="tolak direktori" data-ng-click="setReject(c.data)" data-ng-show="c.tipe == '4' && c.data != ''">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-ban fa-stack-1x fa-inverse"></i></span>
+											</a>
+											
+											<a href="" delete-button="{{c.id}}" data-type="info" class="table-link danger">
+												<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-trash-o fa-stack-1x fa-inverse"></i></span>
+											</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<ul class="pagination pagination-sm pull-right">
+								<li data-ng-class="{ disabled: page.cpage == 0 }">
+									<a href="" data-ng-click="prevPage()"><i class="fa fa-chevron-left"></i></a>
+								</li>
+								<li data-ng-repeat="n in range(page.numpage)" data-ng-class="{ active: n == page.cpage }">
+									<a href="" data-ng-click="setPage()" data-ng-bind="n + 1">1</a>
+								</li>
+								<li data-ng-class="{ disabled: page.cpage == page.numpage - 1 }">
+									<a href="" data-ng-click="nextPage()"><i class="fa fa-chevron-right"></i></a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

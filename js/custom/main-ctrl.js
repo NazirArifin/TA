@@ -51,12 +51,19 @@ app.controller('MainCtrl', function($rootScope, $scope, $location, $http, notify
 	$scope.file = null;
 });
 
-app.controller('LoginCtrl', function($scope) {
+app.controller('LoginCtrl', function($scope, $http) {
 	$scope.registered = false;
-	$scope.password = '';
 	$scope.user = {
 		email: '', nama: '', telepon: '', agree: false
 	};
+	// load tos
+	$scope.tos = '';
+	$scope.readTos = false;
+	$scope.loadTos = function() {
+		$http.get('/tos/draft').success(function(d) {
+			$scope.tos = d.tos;
+		});
+	}; $scope.loadTos();
 });
 
 app.controller('FpassCtrl', function($scope) {
@@ -196,6 +203,26 @@ app.controller('HomePostCtrl', function($scope, $http, notify) {
 
 /** untuk halaman home direktori **/
 app.controller('HomeDirektoriCtrl', function($scope, $http, notify) {
+	$scope.newDirektori = 0;
+	$scope.setNewDirektori = function(d) { $scope.newDirektori = d; };
+	$scope.ndir = {};
+	$scope.resetNewDirektori = function() {
+		$scope.ndir = {
+			direktori: '', kategori: '', nama: '', alamat: '', telepon: '', kota: '', check1: false, check2: false
+		};
+		$scope.detailDirektori = [];
+	}; $scope.resetNewDirektori();
+	$scope.detailDirektori = [];
+	$scope.loadDetail = function() {
+		if ($scope.ndir.direktori == '' || angular.isUndefined($scope.ndir.direktori)) {
+			$scope.detailDirektori = [];
+			return;
+		}
+		$http.get('/direktori/' + $scope.ndir.direktori + '?type=data').success(function(d) {
+			$scope.detailDirektori = d.data;
+		});
+	};
+	
 	$scope.activeDirektori = '';
 	$scope.namaDirektori = '';
 	$scope.setActiveDirektori = function(id, nama) {
@@ -272,6 +299,7 @@ app.controller('HomeProdukCtrl', function($scope, $http, notify) {
 	$scope.numpage = 0;
 	$scope.query = '';
 	$scope.categories = '';
+	$scope.maxUpload = 5;
 	
 	$scope.loadData = function() {
 		var param = {

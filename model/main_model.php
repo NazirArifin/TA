@@ -477,6 +477,9 @@ class MainModel extends ModelBase {
 		$pass	= $this->member_password(10);
 		$ins	= $this->db->query("INSERT INTO anggota VALUES(0, '$kode', '$email', '" . crypt($pass, $this->salt) . "', '$nama', '', '$telepon', '', '', '0', NOW(), '1', '1')");
 		
+		// simpan di pemberitahuan
+		$ins 	= $this->db->query("INSERT INTO pemberitahuan VALUES(0, '1', 'Pendaftaran Anggota Baru dengan alamat email: " . $email . " dan password: " . $pass ." telah dilakukan dengan menggunakan IP: " . $_SERVER['REMOTE_ADDR'] . "', NOW(), '1')");
+		
 		// kirim email
 		$pesanHTML 			= 'Selamat datang di situs MADURA.BZ, situs direktori bisnis dan jual beli di Madura. Mulai saat ini Anda dapat menggunakan fasilitas yang ada di situs kami menggunakan akun:<br><strong>Email: ' . $email . '<br>Password: ' . $pass . '</strong><br>Kami sangat mengharapkan keaktifan Anda dalam menggunakan situs kami. Terima kasih<br><br>Administrator';
 		$pesanPlain 		= 'Selamat datang di situs MADURA.BZ, situs direktori bisnis dan jual beli di Madura. Mulai saat ini Anda dapat menggunakan fasilitas yang ada di situs kami menggunakan akun:
@@ -493,7 +496,7 @@ class MainModel extends ModelBase {
 		$mail->Body			= $pesanHTML;
 		$mail->AltBody		= wordwrap($pesanPlain, 70);
 		$mail->addAddress($email, $nama);
-		$mail->addReplyTo('noreply@madura.bz', 'Jangan dibalas');
+		$mail->addReplyTo('noreply@madura.bz', 'MADURA.BZ');
 		$mail->isHTML(true);
 		if ( ! @$mail->send()) {
 			$headers		= 'From: admin@madura.bz' . "\r\n" .
@@ -502,8 +505,7 @@ class MainModel extends ModelBase {
 			@mail($email, $subject, wordwrap($pesanPlain, 70), $headers);
 		}
 		return array(
-			'type'		=> TRUE,
-			'password'	=> $pass
+			'type'		=> TRUE
 		);
 	}
 	
@@ -587,12 +589,13 @@ class MainModel extends ModelBase {
 		$r['data']['member_me']		= ($kode == $cari->KODE_ANGGOTA);
 		
 		// apakah memiliki direktori
-		$cari		= $this->db->query("SELECT ID_DIREKTORI FROM direktori WHERE PEMILIK_DIREKTORI = '{$token['id']}'");
+		$cari		= $this->db->query("SELECT ID_DIREKTORI FROM direktori WHERE PEMILIK_DIREKTORI = '{$token['id']}' AND STATUS_DIREKTORI = '1'");
         if ( ! empty($cari)) {
             $dirs = array();
             foreach ($cari as $val) { $dirs[] = floatval($val->ID_DIREKTORI); }
         }
 		$r['data']['member_direktori'] 	= ( ! isset($dirs) ? FALSE : $dirs);
+
 		// apakah memiliki order
 		$cari 		= $this->db->query("SELECT COUNT(ID_PENJUALAN) AS HASIL FROM penjualan WHERE ID_ANGGOTA = '{$token['id']}' AND STATUS_PENJUALAN NOT IN('2', '3')", TRUE);
 		$r['data']['member_order']		= $cari->HASIL > 0;

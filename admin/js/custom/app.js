@@ -16,6 +16,10 @@ config(function($routeProvider, $httpProvider, $locationProvider, cfpLoadingBarP
 		templateUrl: 'html/home.html', 
 		controller: 'PesanCtrl' 
 	})
+	.when('/info', { 
+		templateUrl: 'html/home.html', 
+		controller: 'InfoCtrl' 
+	})
 	.when('/produk', { 
 		templateUrl: 'html/home.html', 
 		controller: 'ProdukCtrl' 

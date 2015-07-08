@@ -31,8 +31,14 @@
 					<input type="hidden" name="type" value="{{param.type}}">
 				</form>
 				<div class="col s8 offset-m2">
-					<a href="/direktori?type=advanced" class="right"><i class="fa fa-search-plus"></i> PENCARIAN LANJUT</a>
+					<a href="/produk" class="left grey-text text-darken-2">
+						<span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-gift fa-stack-1x fa-inverse"></i></span> CARI PRODUK
+					</a>
+					<a href="/direktori?type=advanced" class="right"><i class="fa fa-fw fa-search-plus"></i> PENCARIAN LANJUT</a>
 				</div>
+			</div>
+			<div class="row">
+				
 			</div>
 			{% else %}
 			<div class="row">
@@ -74,7 +80,7 @@
 					<div class="row">
 						<div class="col s12 m8 offset-m2">
 							<input type="hidden" name="type" value="{{param.type}}">
-							<button class="btn light-blue darken-1 waves-effect waves-light" type="submit"><i class="fa fa-search fa-fw"></i> CARI</button>
+							<button class="btn light-blue darken-1 waves-effect waves-light left" type="submit"><i class="fa fa-search fa-fw"></i> CARI</button>
 							<a href="/direktori" class="right"><i class="fa fa-search-minus"></i> PENCARIAN SEDERHANA</a>
 						</div>
 					</div>

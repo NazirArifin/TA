@@ -249,6 +249,15 @@ $app->get('/home/:type', function($type) use($app, $ctr) {
 			$r = $ctr->DirektoriModel->get_direktori_list($member['member_kode']);
 			if ($r === FALSE) halt403($app);
 			$member['direktori'] = $r;
+			// apakah ada direktori dalam proses
+			$r = $ctr->DirektoriModel->get_inprocess_direktori($member['member_kode']);
+			$member['direktori_inprocess'] = $r;
+			// cari direktori tanpa pemilik
+			$r = $ctr->DirektoriModel->get_direktori_list('', true);
+			$member['edirektori'] = $r;
+			// kota
+			$r = $ctr->MainModel->get_data_table('kota_direktori');
+			$member['kota'] = $r['kota_direktori'];
 			break;
 		case 'invoice':
 			// cari data invoice
@@ -380,13 +389,23 @@ $app->get('/direktori/:alpha', function($alpha) use($app, $ctr) {
 		if (preg_match('/[A-Z]/', $alpha)) $r = $ctr->DirektoriModel->get_list($alpha);
 		json_output($app, $r);
 	}
-	
 	if (is_numeric($alpha)) {
 		if ( ! cek_token($ctr)) halt403($app);
-		$ctr->load('helper', 'string');
-		$ctr->load('model', 'produk');
-		$produk = $ctr->ProdukModel->get_produk($alpha);
-		json_output($app, $produk);
+		
+		// cari data
+		if (isset($_GET['type'])) {
+			if ($_GET['type'] == 'data') {
+				$ctr->load('model', 'direktori');
+				$r = $ctr->DirektoriModel->get_data($alpha);
+				json_output($app, $r);
+			}
+		} else {
+			// cari produk
+			$ctr->load('helper', 'string');
+			$ctr->load('model', 'produk');
+			$produk = $ctr->ProdukModel->get_produk($alpha);
+			json_output($app, $produk);
+		}
 	}
 });
 
@@ -425,7 +444,7 @@ $app->get('/direktori', function() use($app, $ctr) {
 // ----------------------------------------------------------------
 /**
  * Method: POST
- * Verb: direktori
+ * Verb: direktori/:id
  */
 $app->options('/direktori/:id', function() use($app) { $app->status(200); $app->stop(); });
 $app->post('/direktori/:id', function($id) use($app, $ctr) {
@@ -435,6 +454,22 @@ $app->post('/direktori/:id', function($id) use($app, $ctr) {
 	$member = $ctr->MainModel->member_me($_COOKIE['token']);
 	$r = $ctr->DirektoriModel->save_direktori($id, new IOFiles(), $member['data']['member_kode']);
 	if ($r !== FALSE) json_output($app, $r);
+})->conditions(array('id' => '[0-9]+'));
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: direktori/news
+ */
+$app->options('/direktori/new', function() use($app) { $app->status(200); $app->stop(); });
+$app->post('/direktori/new', function() use($app, $ctr) {
+	if ( ! cek_token($ctr)) halt403($app);
+	$ctr->load('model', 'direktori');
+	$ctr->load('file', 'lib/IOFiles.php');
+	$member = $ctr->MainModel->member_me($_COOKIE['token']);
+	$r = $ctr->DirektoriModel->new_direktori($member['data'], new IOFiles());
+	header('Location: /home/direktori?status=' . ($r === FALSE ? 0 : 1));
+	exit;
 });
 
 // ----------------------------------------------------------------
@@ -742,7 +777,7 @@ $app->get('/fproduk', function() use($app, $ctr) {
 	$ctr->load('model', 'main');
 	$produk['kategori'] = $ctr->ProdukModel->get_kategori_fproduk();
     $produk['page'] = 'produk';
-	$ctr->load('view', 'produk-search.html', $produk);
+	$ctr->load('view', 'fproduk-search.html', $produk);
 });
 
 // ----------------------------------------------------------------
@@ -800,6 +835,29 @@ $app->post('/order/:id', function($id) use($app, $ctr) {
 	if ($id == 'konfirmasi') $r = $ctr->ProdukModel->confirm_order($member['data']['member_kode']);
 	if (is_numeric($id)) $r = $ctr->ProdukModel->save_order($member['data']['member_kode'], $id);
 	if ($r !== FALSE) json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: produk
+ */
+$app->options('/produk', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/produk', function() use($app, $ctr) {
+	$ctr->load('helper', 'string');
+	$ctr->load('model', 'produk');
+	$produk = $ctr->ProdukModel->get_all_post2();
+	// cek token
+	if (cek_token($ctr)) {
+		$member	= $ctr->MainModel->member_me($_COOKIE['token']);
+		$produk['authenticate'] = TRUE;
+		foreach ($member['data'] as $key => $val)
+			$produk[$key] = $val;
+	}
+	$ctr->load('model', 'main');
+	$produk['kategori'] = $ctr->ProdukModel->get_kategori_produk();
+    $produk['page'] = 'direktori';
+	$ctr->load('view', 'produk-search.html', $produk);
 });
 
 // ----------------------------------------------------------------
@@ -995,7 +1053,9 @@ $app->get('/invoice/:id', function($id) use($app, $ctr) {
  */
 $app->options('/tos', function() use($app) { $app->status(200); $app->stop(); });
 $app->get('/tos', function() use($app, $ctr) {
-	$ctr->load('view', 'tos.html', array());
+	$r = array();
+	$r['tos'] = file_get_contents('model/tos.shtml');
+	$ctr->load('view', 'tos.html', $r);
 });
 
 // ----------------------------------------------------------------
@@ -1005,7 +1065,9 @@ $app->get('/tos', function() use($app, $ctr) {
  */
 $app->options('/help', function() use($app) { $app->status(200); $app->stop(); });
 $app->get('/help', function() use($app, $ctr) {
-	$ctr->load('view', 'help.html', array());
+	$r = array();
+	$r['help'] = file_get_contents('model/help.shtml');
+	$ctr->load('view', 'help.html', $r);
 });
 
 // ----------------------------------------------------------------
@@ -1020,7 +1082,10 @@ $app->get('/:nama', function($nama) use($app, $ctr) {
 	
     $ctr->load('model', 'anggota');
     $toko   = $ctr->AnggotaModel->get_data($nama);
-    if ($toko === FALSE) halt404($app);
+    if ($toko === FALSE) {
+		$ctr->load('view', '404.html', array());
+		$app->stop();
+    }
     
 	// cek token
 	if (cek_token($ctr)) {
@@ -1031,3 +1096,32 @@ $app->get('/:nama', function($nama) use($app, $ctr) {
 	}
     $ctr->load('view', 'toko.html', $toko);
 })->conditions(array('nama' => '[a-z0-9\.]+'));
+
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: /tos/draft
+ */
+$app->options('/tos/draft', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/tos/draft', function() use($app, $ctr) {
+	$cont = @file_get_contents('model/tos.shtml');
+	json_output($app, array(
+		'type' => true, 'tos' => $cont
+	));
+});
+
+
+$app->options('/coba/tanggal', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/coba/tanggal', function() use($app, $ctr) {
+	$ctr->load('helper', 'date');
+	$tanggalmulai = '2015-07-08 00:00:00';
+	echo datedb_to_tanggal($tanggalmulai, 'd/m/Y l');
+	$sekarang = datedb_to_tanggal($tanggalmulai, 'U');
+	echo '<br>' . $sekarang;
+	$besok = $sekarang + (24 * 60 * 60);
+	echo '<br>' . $besok;
+	$besokdb = date('Y-m-d H:i:s', $besok);
+	echo '<br>' . $besokdb;
+	echo '<br>' . datedb_to_tanggal($besokdb, 'd/m/Y l');
+	
+});

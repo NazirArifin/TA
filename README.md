@@ -8,16 +8,19 @@ admin
 anggota
 1	Aktif
 2	Nonaktif
+3	Pending
 0	Dihapus
 
 direktori
 1	Aktif
 2	Nonaktif
+3	Baru
 0	Dihapus
 
 pemberitahuan
 1	Belum terbaca
 2 	Terbaca
+3	Dihapus
 
 pesan
 1	Belum terbaca
@@ -78,6 +81,11 @@ admin
 1	Super Administrator
 2	Administrator
 
+pemberitahuan
+1	Pendaftaran anggota baru
+2	Konfirmasi Pemesanan
+3	Aduan Posting Anggota
+4 	Informasi Direktori Baru dari Anggota
 
 TEMPLATE
 

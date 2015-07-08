@@ -439,13 +439,21 @@ class PostModel extends ModelBase {
 		extract($this->prepare_post(array('post', 'reason')));
 		$post		= filter_var($post, FILTER_SANITIZE_NUMBER_FLOAT);
 		$reason		= $this->db->escape_str($reason);
-		$run		= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '" . $member['member_kode'] . "'", true);
+		$run		= $this->db->query("SELECT ID_ANGGOTA, NAMA_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '" . $member['member_kode'] . "'", true);
 		$idmember	= $run->ID_ANGGOTA;
+		$namamember = $run->NAMA_ANGGOTA;
 		// masukkan ke aduan jika belum ada
 		$run		= $this->db->query("SELECT COUNT(ID_ADUANPOST) AS HASIL FROM aduanpost WHERE ID_ANGGOTA = '$idmember' AND ID_POSTANGGOTA = '$post'", true);
 		$data		= '';
 		if ($run->HASIL == 0) {
+			// cari data posting
+			$run 	= $this->db->query("SELECT JUDUL_POSTANGGOTA, TIPE_POSTANGGOTA FROM postanggota WHERE ID_POSTANGGOTA = '$post'", true);
+			$judul 	= $run->JUDUL_POSTANGGOTA;
+			$link	= '/' . ($run->TIPE_POSTANGGOTA == '1' ? 'jual' : 'beli') . '/' . $post . '/' . preg_replace('/[^a-z0-9]/', '', strtolower($judul));
+			
 			$ins	= $this->db->query("INSERT INTO aduanpost VALUES(0, '$post', '$idmember', '$reason', NOW(), '1')");
+			// simpan di pemberitahuan
+			$ins	= $this->db->query("INSERT INTO pemberitahuan VALUES(0, '3', 'Aduan kiriman Anggota oleh: <a href=\"/anggota/" . $member['member_kode'] ."\">" . $namamember ."</a> untuk kiriman <a href=\"" . $link . "\">" . $judul . "</a> dengan alasan: " . $reason . "', NOW(), '1')");
 		} else {
 			$data 	= 'Anda sudah memasukkan aduan pada kiriman ini';
 		}

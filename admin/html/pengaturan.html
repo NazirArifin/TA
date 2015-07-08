@@ -145,10 +145,10 @@
 								<div class="tab-pane fade" id="tab-situs">
 									<div class="container">
 										<div class="row">
-											<div class="col-lg-8">
+											<div class="col-lg-12">
 												<div class="panel panel-info">
 													<div class="panel-heading">
-														<a href="" class="btn btn-xs btn-success pull-right tooltips" title="backup database" data-ng-click="createBackup()"><i class="fa fa-server"></i> BACK UP</a>
+														<a href="" class="btn btn-xs btn-success pull-right tooltips" title="backup database" data-ng-click="createBackup()"><i class="fa fa-fw fa-server"></i> BACK UP</a>
 														<strong>&nbsp; Back up Database<br>&nbsp;</strong>
 													</div>
 													<table class="table table-condensed table-striped table-hover">
@@ -180,8 +180,8 @@
 													</table>
 												</div>
 											</div>
+											<!--
 											<div class="col-lg-4">
-												<!--
 												<div class="panel panel-info">
 													<div class="panel-heading">
 														<strong>&nbsp; Restore Database</strong>
@@ -197,7 +197,29 @@
 														</p>
 													</div>
 												</div>
-												-->
+											</div>
+											-->
+										</div>
+										<div class="row">
+											<div class="col-lg-12">
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<a href="" class="btn btn-xs btn-success pull-right tooltips" title="simpan tos" simpan-tos><i class="fa fa-fw fa-save"></i> SIMPAN</a>
+														<strong>Aturan Layanan dan Kesepakatan Pengguna<br>&nbsp;</strong>
+													</div>
+													<div id="isi" summernote height="300" focus ng-model="tos"></div>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-lg-12">
+												<div class="panel panel-info">
+													<div class="panel-heading">
+														<a href="" class="btn btn-xs btn-success pull-right tooltips" title="simpan bantuan" simpan-help><i class="fa fa-fw fa-save"></i> SIMPAN</a>
+														<strong>Bantuan dan FAQ<br>&nbsp;</strong>
+													</div>
+													<div id="isi" summernote height="300" focus ng-model="help"></div>
+												</div>
 											</div>
 										</div>
 									</div>

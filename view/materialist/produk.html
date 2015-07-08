@@ -70,7 +70,7 @@
 							<h5 class="green-text text-darken-3">Rp. {{harga}},-</h5>
 							<p class="grey lighten-3 red-text text-darken-4" style="padding:10px;font-weight:400;font-size:0.87rem">{{info}}</p>
 							{% endautoescape %}
-							<p style="margin-top:30px" class="smaller"><a href="{{direktori_link}}" class="grey-text"><i class="mdi-maps-store-mall-directory"></i> {{direktori|upper}}</a></p>
+							<p style="margin-top:30px" class="smaller"><a href="{{direktori_link}}"><i class="mdi-maps-store-mall-directory"></i> {{direktori|upper}}</a></p>
 						</div>
 					</div>
 					<div class="row">
@@ -221,7 +221,7 @@
 								</div>
 								<div class="card-content">
 									<p>
-										<a href="" class="truncate">{{c.nama}}</a>
+										<a href="{{c.link}}" class="truncate">{{c.nama}}</a>
 										<a href="" class="activator">
 											<i class="mdi-action-info-outline right"></i>
 										</a>

@@ -235,4 +235,42 @@ class AdmindirektoriModel extends ModelBase {
 			'type' => TRUE
 		);
 	}
+	
+	public function save_new_direktori() {
+		extract($this->prepare_post(array('id', 'status')));
+		$id = intval($id);
+		$status = intval($status);
+		$cari = $this->db->query("SELECT * FROM prosesdirektori WHERE ID_PROSESDIREKTORI = '$id'", true);
+		if (empty($cari)) return array('type' => false);
+		$direktori = $cari->ID_DIREKTORI;
+		$anggota = $cari->ID_ANGGOTA;
+		$foto = $cari->FOTO_PROSESDIREKTORI;
+		
+		// disetujui
+		if ($status == 1) {
+			if (empty($foto)) {
+				// ubah status direktori
+				$upd = $this->db->query("UPDATE direktori SET STATUS_DIREKTORI = '1' WHERE ID_DIREKTORI = '$direktori'");
+			} else {
+				// set pemilik di direktori
+				$upd = $this->db->query("UPDATE direktori SET PEMILIK_DIREKTORI = '$anggota' WHERE ID_DIREKTORI = '$direktori'");
+			}
+			// hapus prosesdirektori
+			$del = $this->db->query("DELETE FROM prosesdirektori WHERE ID_PROSESDIREKTORI = '$id'");
+		}
+		
+		// ditolak
+		if ($status == 0) {
+			if (empty($foto)) {
+				// ubah status direktori jadi 0
+				$upd = $this->db->query("UPDATE direktori SET STATUS_DIREKTORI = '0' WHERE ID_DIREKTORI = '$direktori'");
+			} else {
+				// hapus foto
+				@unlink('upload/direktori/' . $foto);
+			}
+			// hapus prosesdirektori
+			$del = $this->db->query("DELETE FROM prosesdirektori WHERE ID_PROSESDIREKTORI = '$id'");
+		}
+		return array('type' => true);
+	}
 }

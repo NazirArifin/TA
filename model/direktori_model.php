@@ -33,8 +33,23 @@ class DirektoriModel extends ModelBase {
 		);
 	}
 	
-	public function get_direktori_list($kode) {
+	public function get_direktori_list($kode, $fstore = false) {
 		$r 		= array();
+		
+		// jika cari direktori bukan toko
+		if ($fstore) {
+			$run = $this->db->query("SELECT ID_DIREKTORI, NAMA_DIREKTORI FROM direktori WHERE PEMILIK_DIREKTORI = '' AND STATUS_DIREKTORI = '1' ORDER BY NAMA_DIREKTORI");
+			if ( ! empty($run)) {
+				foreach ($run as $val) {
+					$r[] = array(
+						'id'	=> $val->ID_DIREKTORI,
+						'nama'	=> str_replace(array("'", '"'), '`', $val->NAMA_DIREKTORI)
+					);
+				}
+			}
+			return $r;
+		}
+		
 		// cari id
 		$kode	= $this->db->escape_str($kode);
 		$run	= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$kode'", TRUE);
@@ -173,7 +188,6 @@ class DirektoriModel extends ModelBase {
         if ( ! empty($run->WEB_DIREKTORI)) {
             $website    = '/' . $run->WEB_DIREKTORI;
         }
-        
 		
 		$r['id']		= $run->ID_DIREKTORI;
 		$r['nama']		= $run->NAMA_DIREKTORI;
@@ -319,9 +333,128 @@ class DirektoriModel extends ModelBase {
     public function validate_subdomain($state) {
         extract($this->prepare_get(array('subdomain')));
         $subdomain = preg_replace('/[^a-z0-9\.]/', '', strtolower($subdomain));
+        
+        // periksa di reserved word
+        $resword    = array(
+            'admin', 'administrator', 'member', 'anggota', 'madura.bz', 'data', 'ongkir', 'pesan', 'daftar', 'katalog', 'logout', 'home', 'email', 'berita', 'info', 'direktori', 'testimoni', 'post', 'kiriman', 'review', 'fproduk', 'order', 'produk', 'jual', 'beli', 'komentar', 'invoice', 'tos', 'help', 'bantuan', 'fpass', 'fuck', 'anjing', 'sex', 'seks'
+        );
+        if (in_array($subdomain, $resword)) {
+            return array(
+                'type' => true, 'valid' => false, 'accept' => $subdomain
+            );
+        }
+        
         $run    = $this->db->query("SELECT COUNT(ID_DIREKTORI) AS HASIL FROM direktori WHERE WEB_DIREKTORI = '$subdomain'", true);
         return array(
             'type' => true, 'valid' => ($run->HASIL == 0), 'accept' => $subdomain
         );
     }
+	
+	public function get_data($id) {
+		$id		= filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+		$run	= $this->db->query("SELECT a.ID_DIREKTORI, a.NAMA_DIREKTORI, a.INFO_DIREKTORI, a.FOTO_DIREKTORI, b.NAMA_KATDIR FROM direktori a, katdir b WHERE a.ID_KATDIR = b.ID_KATDIR AND a.ID_DIREKTORI = '$id'", true);
+		if (empty($run)) return array('type' => true, 'data' => array());
+		$foto = '/upload/direktori/' . str_replace('.', '_thumb.', $run->FOTO_DIREKTORI);
+		return array(
+			'type' => true,
+			'data' => array(
+				'nama' => $run->NAMA_DIREKTORI,
+				'info' => $run->INFO_DIREKTORI,
+				'kategori' => $run->NAMA_KATDIR,
+				'link' => '/direktori/' . $run->ID_DIREKTORI . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($run->NAMA_DIREKTORI)),
+				'foto' => $foto
+			)
+		);
+	}
+	
+	public function new_direktori($member, $iofiles) {
+		extract($this->prepare_post(array('direktori', 'kategori', 'nama', 'alamat', 'telepon', 'kota')));
+		$cari = $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '{$member['member_kode']}'", true);
+		$idanggota = $cari->ID_ANGGOTA;
+		
+		// apapun tipenya jika sudah ada di proses direktori maka batalkan
+		$cari = $this->db->query("SELECT COUNT(ID_PROSESDIREKTORI) AS HASIL FROM prosesdirektori WHERE ID_ANGGOTA = '$idanggota'", true);
+		if ($cari->HASIL > 0) return false;
+		
+		// tipe 1
+		if ( ! empty($direktori)) {
+			$direktori = filter_var($direktori, FILTER_SANITIZE_NUMBER_INT);
+			// data direktori
+			$cari = $this->db->query("SELECT a.NAMA_DIREKTORI, a.ALAMAT_DIREKTORI, a.TELEPON_DIREKTORI, b.NAMA_KOTA FROM direktori a, kota b WHERE a.ID_KOTA = b.ID_KOTA AND a.ID_DIREKTORI = '$direktori'", true);
+			$namadirektori = $cari->NAMA_DIREKTORI;
+			$alamatdirektori = json_decode($cari->ALAMAT_DIREKTORI);
+			$telepondirektori = json_decode($cari->TELEPON_DIREKTORI);
+			$kota = $cari->NAMA_KOTA;
+			$linkdirektori = '/direktori/' . $direktori . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($cari->NAMA_DIREKTORI));
+			
+			// masukkan ke proses direktori
+			$ins = $this->db->query("INSERT INTO prosesdirektori VALUES(0, '$direktori', '$idanggota', '')");
+			$id = $this->db->get_insert_id();
+			
+			if (isset($_FILES['file'])) {
+				$config['upload_path']		= 'upload/direktori/';
+				$config['allowed_types']	= 'jpeg|jpg|png';
+				$config['encrypt_name']		= TRUE;
+				$config['overwrite']		= false;
+				$config['max_size']		    = 1024 * 1024;
+				$iofiles->upload_config($config);
+				$iofiles->upload('file');
+				$filename 					= $iofiles->upload_get_param('file_name');
+				$upd = $this->db->query("UPDATE prosesdirektori SET FOTO_PROSESDIREKTORI = '$filename' WHERE ID_PROSESDIREKTORI = '$id'");
+			}
+			
+			// pesan pemberitahuan
+			$pesan = "Anggota dengan nama <a href=\"/anggota/" . $member['member_kode'] . "\" target=\"_blank\">" . $member['member_nama'] . "</a> telah mengakui sebuah direktori:<br>Nama: <a href=\"$linkdirektori\" target=\"_blank\">$namadirektori</a><br>Alamat: $alamatdirektori[0] &mdash; $kota<br>Telepon: $telepondirektori[0]<br>Foto Bukti: <a href=\"/upload/direktori/$filename\" target=\"_blank\">$filename</a> !====! $id";
+			$ins = $this->db->query("INSERT INTO pemberitahuan VALUES(0, '4', '$pesan', NOW(), '1')");
+		}
+		
+		// tipe 2
+		if ( ! empty($nama)) {
+			// insert ke direktori dengan status 3 (baru)
+			// cari id anggota
+			$nama = $this->db->escape_str(strip_tags($nama));
+			$kategori = intval($kategori);
+			$alamat = $this->db->escape_str($alamat);
+			$telepon = $this->db->escape_str($telepon);
+			$kota = intval($kota);
+			
+			$cari = $this->db->query("SELECT NAMA_KOTA FROM kota WHERE ID_KOTA = '$kota'", true);
+			$namakota = $cari->NAMA_KOTA;
+			
+			$koordinat 	= '["",""]';
+			$stelepon 	= '["' . $telepon . '",""]';
+			$salamat 	= '["' . $alamat . '",""]';
+			$chat 		= '{"wa":"","bbm":"","line":"","wechat":""}';
+			$socmed 	= '{"fb":"","twitter":"","gplus":"","ig":""}';
+			$ins 		= $this->db->query("INSERT INTO direktori VALUES(0, '$kategori', '$kota', '$nama', '', '', '$salamat', '$stelepon', '$idanggota', '$koordinat', '', '', '$chat', '$socmed', '3')");
+			$id 		= $this->db->get_insert_id();
+			
+			if (isset($_FILES['file'])) {
+				$config['upload_path']		= 'upload/direktori/';
+				$config['allowed_types']	= 'jpeg|jpg|png';
+				$config['encrypt_name']		= TRUE;
+				$config['overwrite']		= false;
+				$config['max_size']		    = 1024 * 1024;
+				$iofiles->upload_config($config);
+				$iofiles->upload('file');
+				$filename 					= $iofiles->upload_get_param('file_name');
+				$upd = $this->db->query("UPDATE direktori SET FOTO_DIREKTORI = '$filename' WHERE ID_DIREKTORI = '$id'");
+			}
+			
+			// masukkan ke proses direktori
+			$ins = $this->db->query("INSERT INTO prosesdirektori VALUES(0, '$id', '$idanggota', '')");
+			$idproses = $this->db->get_insert_id();
+			
+			// masukkan ke pemberitahuan
+			$pesan = "Anggota dengan nama <a href=\"/anggota/" . $member['member_kode'] . "\" target=\"_blank\">" . $member['member_nama'] . "</a> telah mendaftarkan direktori baru dengan rincian:<br>Nama Direktori: $nama<br>Alamat: $alamat &mdash; $namakota<br>Telepon: $telepon<br>Foto Bukti: <a href=\"/upload/direktori/$filename\" target=\"_blank\">$filename</a> !====! $idproses";
+			$ins = $this->db->query("INSERT INTO pemberitahuan VALUES(0, '4', '$pesan', NOW(), '1')");
+		}
+		
+		return true;
+	}
+	
+	public function get_inprocess_direktori($kode) {
+		$cari = $this->db->query("SELECT COUNT(a.ID_PROSESDIREKTORI) AS HASIL FROM prosesdirektori a, anggota b WHERE a.ID_ANGGOTA = b.ID_ANGGOTA AND b.KODE_ANGGOTA = '$kode'", true);
+		return ($cari->HASIL > 0);
+	}
 }

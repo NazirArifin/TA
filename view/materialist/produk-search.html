@@ -2,7 +2,7 @@
 <html lang="en" data-ng-app="mdbz" data-ng-controller="MainCtrl" id="mdbz">
 <head>
 <meta charset="UTF-8">
-<title>MADURA.BZ &mdash; Data Produk</title>
+<title>MADURA.BZ &mdash; Pencarian Produk</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 {% include 'pre-page.html' %}
@@ -15,150 +15,98 @@
 	<div class="section white z-depth-1">
 		<div class="container">
 			<div class="row no-pad-bot">
-				<div class="col m4 hide-on-small-only">
-					<h4 class="light-text yellow-text text-darken-3">ETALASE PRODUK</h4>
+				<div class="col s12">
+					<h4 class="yellow-text light-text text-darken-4"><i class="mdi-action-redeem left"></i>Produk Toko</h4>
 				</div>
-				<div class="col m8">
+			</div>
+			<div class="row no-pad-bot">
+				<form action="/produk">
+				<div class="col s12 m7">
 					<div class="row no-pad-bot">
-						<form action="/fproduk" class="col s10 right">
-							<div class="row no-pad-bot">
-								<div class="input-field col s5">
-									<input type="text" name="query" id="query" class="form-control" value="{{param.query}}">
-									<label for="query">Pencarian</label>
-								</div>
-								<div class="input-field col s5">
-									<select name="kategori" id="kategori" class="select browser-default" value="{{param.kategori}}">
-										<option value="">-- kategori --</option>
-										{% for c in kategori %}
-										<option value="{{c.id}}"{% if param.kategori == c.id %} selected{% endif %}>{{c.nama}}</option>
-										{% endfor %}
-									</select>
-									<label for="kategori"></label>
-								</div>
-								<div class="input-field col s2">
-									<button class="btn light-blue darken-1 waves-effect waves-light" type="submit" style="height:43px"><i class="fa fa-search"></i></button>
-								</div>
-							</div>
-						</form>
+						<div class="input-field col s5">
+							<input type="text" name="query" id="query" class="form-control" value="{{param.query}}">
+							<label for="query">Pencarian</label>
+						</div>
+						<div class="input-field col s5">
+							<select name="kategori" id="kategori" class="select browser-default" value="{{param.kategori}}">
+								<option value="">-- kategori --</option>
+								{% for c in kategori %}
+								<option value="{{c.id}}"{% if param.kategori == c.id %} selected{% endif %}>{{c.nama}}</option>
+								{% endfor %}
+							</select>
+							<label for="kategori"></label>
+						</div>
+						<div class="input-field col s2">
+							<button class="btn light-blue darken-1 waves-effect waves-light" type="submit" style="height:43px"><i class="fa fa-search"></i></button>
+						</div>
 					</div>
 				</div>
+				<div class="col s12 m5">
+					<div class="row no-pad-bot">
+						<div class="input-field col s12 m8 offset-m4">
+							<i class="mdi-content-sort prefix grey-text"></i>
+							<select name="order" id="order" class="select" value="{{param.order}}">
+								<option value="1"{% if param.order == 1 %} selected{% endif %}>Terbaru</option>
+								<option value="2"{% if param.order == 2 %} selected{% endif %}>Nama Produk</option>
+								<option value="3"{% if param.order == 3 %} selected{% endif %}>Termurah</option>
+								<option value="4"{% if param.order == 4 %} selected{% endif %}>Termahal</option>
+							</select>
+							<label for="order"></label>
+						</div>
+					</div>
+				</div>
+				</form>
 			</div>
 		</div>
 	</div>
 	
-	<div class="section product grey lighten-4">
+	<div class="section store grey lighten-4">
 		<div class="container">
-			<div class="row">
-				<div class="col s4 m2">
-					<div class="collection" style="font-size:0.87rem;">
-						{% if param.kategori %}
-						<a href="/fproduk" class="collection-item light-blue-text text-darken-1"><strong>SEMUA KATEGORI</strong></a>
-						{% endif %}
-						
-						{% for c in kategori %}
-						{% if param.kategori == c.id %}
-						<a href="" class="collection-item grey-text text-lighten-3" disabled>{{c.nama}}</a>
-						{% else %}
-						<a href="/fproduk?kategori={{c.id}}" class="collection-item">{{c.nama}}</a>
-						{% endif %}
+			<div class="row store-list">
+				<div class="col s12">
+					<div class="row no-pad-bot">
+						{% for c in produk %}
+							<div class="col m3 s4">
+								<div class="card card2 z-depth-1">
+									<div class="card-image">
+										<img src="{{c.foto}}" alt="">
+										<span class="card-title"><a href="{{c.link_direktori}}" class="white-text"><strong>{{c.direktori}}</strong></a></span>
+									</div>
+									<div class="card-content">
+										<div class="rating">
+											{% if c.rating.fill %}
+											{% for i in 1..c.rating.fill %}
+											<i class="fa fa-star yellow-text text-darken-4"></i>
+											{% endfor %}
+											{% endif %}
+											{% if c.rating.half %}
+											<i class="fa fa-star-half-empty yellow-text text-darken-4"></i>
+											{% endif %}
+											{% for i in 1..c.rating.empty %}
+											<i class="fa fa-star-o yellow-text text-darken-4"></i>
+											{% endfor %}
+										</div>
+										<h4 class="truncate tooltipped" data-tooltip="{{c.nama}}"><a href="{{c.link}}">{{c.nama}}</a></h4>
+									</div>
+									<div class="card-action row">
+										<div class="col s6 grey-text truncate"><span class="tooltipped" data-tooltip="{{c.kategori}}">{{c.kategori}}</span></div>
+										<div class="col s6 truncate"><strong class="right tooltipped" data-tooltip="{{c.harga}}">Rp. {{c.harga}}</strong></div>
+									</div>
+								</div>
+							</div>
 						{% endfor %}
 					</div>
-					<p class="center-align"><a href="/katalog/fproduk" class="btn-flat tooltipped grey-text" data-tooltip="unduh katalog"><i class="mdi-action-assignment"></i></a></p>
-				</div>
-				<div class="col s8 m10">
-					{% if param.kategori %}
-						{% for d in kategori %}
-						{% if d.id == param.kategori %}
-						<div class="row no-pad-bot">
-							<div class="col s12">
-								<h5 class="yellow-text text-darken-3 light-text">{{d.nama}}</h5><hr>
-								<div class="row no-pad-bot" style="margin-top:1rem;">
-									{% for c in produk %}
-									{% if c.kategori == d.nama %}
-									<div class="col product-item m3 s12">
-										<div class="card">
-											<div class="card-image waves-effect waves-block waves-light">
-												<img src="{{c.foto}}" alt="" class="activator">
-											</div>
-											<div class="card-content">
-												<p class="stok">
-													{% if c.stok > 0 %}<span class="green-text text-darken-1">TERSEDIA</span>{% else %}<span class="red-text text-darken-1">TERJUAL</span>{% endif %}
-													<a href="" class="activator"><i class="mdi-action-info-outline right"></i></a>
-												</p>
-												<p>
-													<a href="{{c.link}}" class="truncate">{{c.nama}}</a>
-													{% if c.stok > 0 %}
-													<a class="btn-floating waves-effect waves-light red darken-2 right tooltipped" data-tooltip="masukkan keranjang" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})"><i class="mdi-action-add-shopping-cart"></i></a>
-													{% endif %}
-												</p>
-											</div>
-											<div class="card-action row">
-												<div class="col s6 grey-text truncate tooltipped" data-tooltip="{{c.kategori}}">{{c.kategori}}</div>
-												<div class="col s6 right-align truncate"><strong>Rp. {{c.harga}}</strong></div>
-											</div>
-											<div class="card-reveal">
-												<span class="card-title grey-text text-darken-4 truncate">{{c.nama}} <i class="mdi-navigation-close right"></i></span>
-												<p>{{c.info}}</p>
-											</div>
-										</div>
-									</div>
-									{% endif %}
-									{% endfor %}
-								</div>
-							</div>
-						</div>	
-						{% endif %}
-						{% endfor %}
-					{% else %}
-						{% for d in kategori %}
-						<div class="row no-pad-bot">
-							<div class="col s12">
-								<h5 class="yellow-text text-darken-3 light-text">{{d.nama}}</h5><hr>
-								<div class="row no-pad-bot" style="margin-top:1rem;">
-									{% for c in produk %}
-									{% if c.kategori == d.nama %}
-									<div class="col product-item m3 s12">
-										<div class="card">
-											<div class="card-image waves-effect waves-block waves-light">
-												<img src="{{c.foto}}" alt="" class="activator">
-											</div>
-											<div class="card-content">
-												<p class="stok">
-													{% if c.stok > 0 %}<span class="green-text text-darken-1">TERSEDIA</span>{% else %}<span class="red-text text-darken-1">TERJUAL</span>{% endif %}
-													<a href="" class="activator"><i class="mdi-action-info-outline right"></i></a>
-												</p>
-												<p>
-													<a href="{{c.link}}" class="truncate">{{c.nama}}</a>
-													{% if c.stok > 0 %}
-													<a class="btn-floating waves-effect waves-light red darken-2 right tooltipped" data-tooltip="masukkan keranjang" data-ng-click="addItem({{c.id}})" data-ng-hide="itemTaken({{c.id}})"><i class="mdi-action-add-shopping-cart"></i></a>
-													{% endif %}
-												</p>
-											</div>
-											<div class="card-action row">
-												<div class="col s6 grey-text truncate tooltipped" data-tooltip="{{c.kategori}}">{{c.kategori}}</div>
-												<div class="col s6 right-align truncate"><strong>Rp. {{c.harga}}</strong></div>
-											</div>
-											<div class="card-reveal">
-												<span class="card-title grey-text text-darken-4 truncate">{{c.nama}} <i class="mdi-navigation-close right"></i></span>
-												<p>{{c.info}}</p>
-											</div>
-										</div>
-									</div>
-									{% endif %}
-									{% endfor %}
-								</div>
-							</div>
+					<div class="row no-pad-bot">
+						<div class="col s12">
+							<ul class="pagination pagination-sm" style="margin: 30px 0;">
+								<li{% if cpage == 0 %} class="disabled"{% endif %}><a href="?{{link}}&cpage=0"><i class="mdi-navigation-chevron-left"></i></a></li>
+								{% for i in 0..(numpage - 1) %}
+								<li{% if cpage == loop.index0 %} class="active"{% endif %}><a href="?{{link}}&cpage={{loop.index0}}">{{loop.index}}</a></li>
+								{% endfor %}
+								<li{% if cpage == (numpage - 1) %} class="disabled"{% endif %}><a href="?{{link}}&cpage={{numpage - 1}}"><i class="mdi-navigation-chevron-right"></i></a></li>
+							</ul>
 						</div>
-						{% endfor %}
-					{% endif %}
-					
-					<ul class="pagination pagination-sm" style="margin: 30px 0;">
-						<li{% if cpage == 0 %} class="disabled"{% endif %}><a href="/fproduk?{{link}}&cpage=0"><i class="mdi-navigation-chevron-left"></i></a></li>
-						{% for i in 0..(numpage - 1) %}
-						<li{% if cpage == loop.index0 %} class="active"{% endif %}><a href="/fproduk?{{link}}&cpage={{loop.index0}}">{{loop.index}}</a></li>
-						{% endfor %}
-						<li{% if cpage == (numpage - 1) %} class="disabled"{% endif %}><a href="/fproduk?{{link}}&cpage={{numpage - 1}}"><i class="mdi-navigation-chevron-right"></i></a></li>
-					</ul>
+					</div>
 				</div>
 			</div>
 		</div>

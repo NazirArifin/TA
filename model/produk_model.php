@@ -171,6 +171,110 @@ class ProdukModel extends ModelBase {
 		return $r;
 	}
 	
+	public function get_all_post2() {
+		extract($this->prepare_get(array('cpage', 'query', 'kategori', 'order')));
+		$cpage 		= intval($cpage);
+		if (empty($cpage)) $cpage = 0;
+		$query		= $this->db->escape_str($query);
+		$kategori	= intval($kategori);
+		$order		= intval($order);
+		$r 			= array();
+		$where		= array();
+		
+		if ( ! empty($query)) {
+			$query		= $this->db->escape_str(strip_tags($query));
+			$where[]	= "(a.NAMA_PRODUK LIKE '%{$query}%' OR a.INFO_PRODUK LIKE '%{$query}%')";
+			$r['param']['query'] = stripslashes($query);
+		} else $r['param']['query'] = '';
+		
+		if ( ! empty($kategori)) {
+			$where[]	= "a.ID_KATPRODUK = '$kategori'";
+			$r['param']['kategori'] = $kategori;
+		} else $r['param']['kategori'] = '';
+		
+		switch ($order) {
+			case 1:
+				$urut = "a.ID_PRODUK DESC"; $r['param']['order'] = 1;
+				break;
+			case 2: 
+				$urut = "a.NAMA_PRODUK"; $r['param']['order'] = 2;
+				break;
+			case 3: 
+				$urut = "a.HARGA_PRODUK ASC"; $r['param']['order'] = 3;
+				break;
+			case 4: 
+				$urut = "a.HARGA_PRODUK DESC"; $r['param']['order'] = 4;
+				break;
+			default: 
+				$urut = "a.ID_PRODUK DESC"; $r['param']['order'] = 1;
+		}
+		
+		$where[]	= "a.STATUS_PRODUK = '1'";
+		$where[]	= "a.ID_KATPRODUK = b.ID_KATPRODUK";
+		
+		// jumlah halaman
+		$numdt		= 24;
+		$r['produk']= array();
+		$run		= $this->db->query("SELECT COUNT(a.ID_PRODUK) AS HASIL FROM produk a, katproduk b WHERE " . implode(" AND ", $where), TRUE);
+		
+		$numpg		= ceil($run->HASIL / $numdt);
+		if ($numpg == 0) $numpg = 1;
+		if ($cpage < 0) $cpage = 0;
+		if ($cpage > $numpg - 1) $cpage = $numpg - 1;
+		$start		= $cpage * $numdt;
+		
+		$run	= $this->db->query("SELECT a.ID_PRODUK, a.NAMA_PRODUK, a.FOTO_PRODUK, a.HARGA_PRODUK, a.INFO_PRODUK, b.NAMA_KATPRODUK, c.ID_DIREKTORI, c.NAMA_DIREKTORI, c.WEB_DIREKTORI FROM produk a, katproduk b, direktori c WHERE a.ID_DIREKTORI = c.ID_DIREKTORI AND c.STATUS_DIREKTORI = '1' AND c.WEB_DIREKTORI != '' AND " . implode(" AND ", $where) . " ORDER BY $urut LIMIT $start, $numdt");
+		
+		
+		
+		if ( ! empty($run)) {
+			foreach ($run as $val) {
+				$isi 		= strip_tags($val->INFO_PRODUK);
+				$ptisi		= token_truncate($isi, 150);
+				if (strlen($isi) > 150) $ptisi .= '...';
+				if (empty($val->FOTO_PRODUK))
+					$foto 	= '/upload/produk/default.png';
+				else {
+					$f 		= unserialize($val->FOTO_PRODUK);
+					$foto	= '/upload/produk/' . str_replace('.', '_thumb.', $f[0]);
+				}
+                // skor review produk
+                $srun       = $this->db->query("SELECT AVG(SKOR_REVIEWPRODUK) AS RATING FROM reviewproduk WHERE ID_PRODUK = '" . $val->ID_PRODUK . "'", true);
+                $skor       = floor($srun->RATING * 2) / 2;
+                if (strlen($skor) > 1) {
+                    $rating = array(
+                        'fill'  => floor($skor),
+                        'half'  => 1,
+                        'empty' => 5 - ceil($skor)
+                    );
+                } else {
+                    $rating = array(
+                        'fill'  => $skor,
+                        'half'  => 0,
+                        'empty' => 5 - $skor
+                    );
+                }
+                
+				$r['produk'][]        = array(
+					'nama'		=> $val->NAMA_PRODUK,
+					'link'		=> '/produk/' . $val->ID_PRODUK . '/' . preg_replace('/[^a-z0-9]/', '-', strtolower($val->NAMA_PRODUK)),
+					'harga'		=> number_format($val->HARGA_PRODUK, 0, ',', '.') . ',-',
+					'info'		=> $ptisi,
+					'kategori'	=> $val->NAMA_KATPRODUK,
+					'direktori'	=> $val->NAMA_DIREKTORI,
+					'link_direktori' => '/' . $val->WEB_DIREKTORI,
+					'foto'		=> $foto,
+                    'rating'    => $rating
+				);
+			}
+		}
+		
+		$r['numpage'] 	= $numpg;
+		$r['cpage']		= $cpage;
+		$r['link']		= preg_replace('/&cpage=[0-9]+/', '', http_build_query($r['param']));
+		return $r;
+	}
+	
 	public function get_detail($id, $nama = '', $feat = FALSE) {
 		$r 		= array();
 		$table	= ($feat ? 'produkutama' : 'produk');
@@ -592,24 +696,28 @@ class ProdukModel extends ModelBase {
 		// update info
 		$text 	= "KONFIRMASI PEMBAYARAN\r\n<br>REKENING: $rektext\r\n<br>BAYAR: Rp. $bayar,-\r\n<br>PESAN: $pesan";
 		$run	= $this->db->query("UPDATE penjualan SET INFO_PENJUALAN = '$text' WHERE ID_PENJUALAN = '$id'");
-		/*
-		$run	= $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$kode'", TRUE);
-		if (empty($run)) return FALSE;
-		$idmember	= $run->ID_ANGGOTA;
-		$main	= '(-_____-)KONFIRMASI PEMBAYARAN UNTUK PEMESANAN DENGAN ID: ' . $id . "\r\n";
-		$main  .= $pesan;
-		// cari admin
-		$run	= $this->db->query("SELECT ID_ADMIN FROM admin WHERE STATUS_ADMIN = '1'");
-		foreach ($run as $val) $values[] = "(0, '$idmember', '" . $val->ID_ADMIN . "', NOW(), '$main', '1', '5')";
-		// insert
-		$run 	= $this->db->query("INSERT INTO pesan VALUES" . implode(', ', $values));
-		*/
+		// insert ke pemberitahuan
+		$ins	= $this->db->query("INSERT INTO pemberitahuan VALUES(0, '2', '$text', NOW(), '1')");
 		return array('type' => TRUE);
 	}
 	
 	public function get_kategori_fproduk() {
 		$r 		= array();
 		$run	= $this->db->query("SELECT b.ID_KATPRODUK, b.NAMA_KATPRODUK FROM produkutama a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.STATUS_PRODUKUTAMA = '1' GROUP BY a.ID_KATPRODUK");
+		if ( ! empty($run)) {
+			foreach ($run as $val) {
+				$r[] = array(
+					'nama'	=> $val->NAMA_KATPRODUK,
+					'id'	=> $val->ID_KATPRODUK
+				);
+			}
+		}
+		return $r;
+	}
+	
+	public function get_kategori_produk() {
+		$r		= array();
+		$run	= $this->db->query("SELECT b.ID_KATPRODUK, b.NAMA_KATPRODUK FROM produk a, katproduk b WHERE a.ID_KATPRODUK = b.ID_KATPRODUK AND a.STATUS_PRODUK = '1' GROUP BY a.ID_KATPRODUK");
 		if ( ! empty($run)) {
 			foreach ($run as $val) {
 				$r[] = array(

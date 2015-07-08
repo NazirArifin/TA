@@ -39,6 +39,9 @@ app.controller('PengaturanCtrl', function($scope, $location, $http, notify) {
 		});
 	};
 	
+	$scope.tos = '';
+	$scope.help = '';
+	
 	$scope.loadData = function(t) {
 		var all = false;
 		if (angular.isUndefined(t)) {
@@ -89,6 +92,20 @@ app.controller('PengaturanCtrl', function($scope, $location, $http, notify) {
 			$http.get($scope.server + '/backup').
 			success(function(d) {
 				$scope.backup = d.backup;
+			});
+		}
+		// load tos
+		if (all || t == 'tos') {
+			$http.get($scope.server + '/tos').
+			success(function(d) {
+				$scope.tos = d.tos;
+			});
+		}
+		// load help
+		if (all || t == 'help') {
+			$http.get($scope.server + '/help').
+			success(function(d) {
+				$scope.help = d.help;
 			});
 		}
 	}; $scope.loadData();
