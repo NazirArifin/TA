@@ -226,9 +226,13 @@ $app->get('/home', function() use($app, $ctr) {
 	$member	= $r['data'];
 	$member['authenticate'] = TRUE;
 	$member['path'] = ' ';
+	// data rekening
+	$r 		= $ctr->MainModel->get_data_table('rekening');
+	$member['rekening'] = $r['rekening'];
 	$ctr->load('model', 'front');
 	$member['tips'] = $ctr->FrontModel->get_tips();
     $member['page'] = 'home';
+	$member['tanggal'] = date('d/m/Y');
 	$ctr->load('view', 'home.html', $member);
 });
 // ----------------------------------------------------------------
@@ -1110,18 +1114,17 @@ $app->get('/tos/draft', function() use($app, $ctr) {
 	));
 });
 
-
-$app->options('/coba/tanggal', function() use($app) { $app->status(200); $app->stop(); });
-$app->get('/coba/tanggal', function() use($app, $ctr) {
+// ----------------------------------------------------------------
+/**
+ * Method: GET
+ * Verb: /upgrade
+ */
+$app->options('/upgrade', function() use($app) { $app->status(200); $app->stop(); });
+$app->post('/upgrade', function() use($app, $ctr) {
+	if ( ! cek_token($ctr)) halt403($app);
 	$ctr->load('helper', 'date');
-	$tanggalmulai = '2015-07-08 00:00:00';
-	echo datedb_to_tanggal($tanggalmulai, 'd/m/Y l');
-	$sekarang = datedb_to_tanggal($tanggalmulai, 'U');
-	echo '<br>' . $sekarang;
-	$besok = $sekarang + (24 * 60 * 60);
-	echo '<br>' . $besok;
-	$besokdb = date('Y-m-d H:i:s', $besok);
-	echo '<br>' . $besokdb;
-	echo '<br>' . datedb_to_tanggal($besokdb, 'd/m/Y l');
-	
+	$ctr->load('model', 'anggota');
+	$member	= $ctr->MainModel->member_me($_COOKIE['token']);
+	$r = $ctr->AnggotaModel->upgrade_member($member['data']['member_kode']);
+	json_output($app, $r);
 });

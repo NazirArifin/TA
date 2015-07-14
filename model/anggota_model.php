@@ -183,4 +183,32 @@ class AnggotaModel extends ModelBase {
         $r['link']      = implode('&', $link);
         return $r;
     }
+	
+	public function upgrade_member($kode) {
+		extract($this->prepare_post(array('tanggal', 'jumlah', 'rekening', 'nomor', 'info')));
+		$tanggaldb = tanggal_to_datedb($tanggal);
+		$cjumlah = preg_replace('/[^0-9]/', '', $jumlah);
+		$rekening = intval($rekening);
+		$nomor = $this->db->escape_str(strip_tags($nomor));
+		$info = $this->db->escape_str(strip_tags($info));
+		
+		// rekening
+		$cari = $this->db->query("SELECT * FROM rekening WHERE ID_REKENING = '$rekening'", true);
+		$nrekening = $cari->NOMOR_REKENING;
+		$arekening = $cari->AN_REKENING;
+		$brekening = $cari->BANK_REKENING;
+		
+		// cari nama anggota
+		$cari = $this->db->query("SELECT NAMA_ANGGOTA, EMAIL_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$kode'", true);
+		$nama = $cari->NAMA_ANGGOTA;
+		$email = $cari->EMAIL_ANGGOTA;
+		
+		// masukkan di pemberitahuan
+		$pesan = "Anggota <a href=\"/anggota/$kode\" target=\"_blank\">$nama</a> dengan email: $email telah melakukan konfirmasi transfer upgrade keanggotaan dengan keterangan:<br>Rekening: $brekening - $nrekening - $arekening<br>Tanggal Transfer: $tanggal &nbsp; &nbsp; Jumlah: Rp. $jumlah<br>Nomor Transaksi: $nomor<br>Keterangan: $info";
+		$ins = $this->db->query("INSERT INTO pemberitahuan VALUES(0, '5', '$pesan', NOW(), '1')");
+		
+		return array(
+			'type' => true
+		);
+	}
 }

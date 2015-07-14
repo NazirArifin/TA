@@ -100,6 +100,13 @@ app.directive('muter', function() {
 	};
 });
 
+/* datepicker */
+app.directive('datepicker', function() {
+	return function($scope, elm, attrs) {
+		datepickr('#' + attrs.id, { dateFormat: 'd/m/Y' });
+	};
+});
+
 /* scroller  */
 app.directive('productScroller', function() {
 	return function($scope, elm, attrs) {

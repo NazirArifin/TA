@@ -19,6 +19,7 @@
 								<select name="show-tipe" id="show-tipe" class="form-control" data-ng-model="page.jenis" data-ng-change="loadData()">
 									<option value="">Semua Jenis</option>
 									<option value="1">Pendaftaran Anggota</option>
+									<option value="5">Upgrade Anggota</option>
 									<option value="2">Konfirmasi Pemesanan</option>
 									<option value="3">Aduan Kiriman Anggota</option>
 									<option value="4">Info Direktori Baru</option>
@@ -60,6 +61,7 @@
 											<i class="fa fa-fw fa-money" data-ng-show="c.tipe == '2'"></i>
 											<i class="fa fa-fw fa-thumbs-down" data-ng-show="c.tipe == '3'"></i>
 											<i class="fa fa-fw fa-compass" data-ng-show="c.tipe == '4'"></i>
+											<i class="fa fa-fw fa-star" data-ng-show="c.tipe == '5'"></i>
 										</td>
 										<td style="vertical-align: top">{{c.tanggal}}</td>
 										<td style="width:70%" data-ng-bind-html="c.isi">{{c.isi}}</td>

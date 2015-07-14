@@ -267,16 +267,71 @@
 <!-- modal untuk mengupgrade keanggotaan -->
 <div class="md-modal md-effect-11" id="modal-6">
 	<div class="md-content">
-		<div class="modal-content" style="min-height: 304px">
+		<div class="modal-content">
 			<div class="row grey lighten-4 z-depth-1">
 				<div class="col s10 offset-s1">
 					<h4 class="light-text">Upgrade Keanggotaan</h4>
-					<p class="smaller">test</p>
+					<table class="striped smaller">
+						<thead>
+							<tr>
+								<th>Jenis Keanggotaan</th>
+								<th>Biaya</th>
+								<th>Berlaku</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Premium</td>
+								<td><del class="red-text text-darken-3">Rp. 300.000,-</del> Rp. 150.000,-</td>
+								<td>selamanya</td>
+							</tr>
+						</tbody>
+					</table>
+					<hr>
+					<h5 class="light-text">Pembayaran</h5>
+					<p><strong>Dengan ini saya menyatakan bahwa saya telah mengirimkan biaya upgrade anggota sebagaimana rincian berikut:</strong></p>
+					<form action="/upgrade" class="col s12">
+						<div class="row no-pad-bot">
+							<div class="col s12 m4 offset-m1 input-field">
+								<input type="text" name="tanggal" id="ut-tanggal" value="" datepicker>
+								<label for="ut-tanggal" class="active">Tanggal Transfer</label>
+							</div>
+							<div class="col s12 m5 offset-m1 input-field">
+								<input type="text" name="jumlah" id="ut-jumlah" price-input>
+								<label for="ut-jumlah" class="active">Sejumlah (Rp)</label>
+							</div>
+						</div>
+						<div class="row no-pad-bot">
+							<div class="col s12 m10 offset-m1 input-field pad">
+								<select name="rekening" id="ut-rekening" class="browser-default">
+									{% for c in rekening %}
+									<option value="{{c.id}}">{{c.bank}} - {{c.nomor}} - {{c.an}}</option>
+									{% endfor %}
+								</select>
+								<label for="ut-rekening" class="active">Rekening (Bank - Nomor - AN)</label>
+							</div>
+						</div>
+						<div class="row no-pad-bot">
+							<div class="col s12 m10 offset-m1 input-field">
+								<input type="text" name="nomor" id="ut-nomor">
+								<label for="ut-nomor">Nomor Transaksi</label>
+							</div>
+						</div>
+						<div class="row no-pad-bot">
+							<div class="col s12 m10 offset-m1 input-field">
+								<input type="text" name="info" id="ut-info" length="120" maxlength="120">
+								<label for="ut-info">Keterangan (Opsional)</label>
+							</div>
+						</div>
+					</form>
+					<br>
+					<p class="smaller grey-text text-darken-2"><em>* Harap tunggu beberapa saat hingga MADURA.BZ melalukan verifikasi atas pembayaran yang Anda lakukan. Begitu terverifikasi Anda akan melihat menu Pengaturan Toko di menu utama.</em></p>
+					<p>&nbsp;</p>
 				</div>
 			</div>
 		</div>
 		<div class="modal-footer grey lighten-1">
-			<button class="grey lighten-1 btn-flat right waves-effect waves-light" save-upgrade-membership><i class="left mdi-content-send"></i> KIRIM</button> 
+			<button class="grey lighten-1 btn-flat right waves-effect waves-light" save-upgrade><i class="left mdi-content-send"></i> KIRIM</button> 
 			<button class="btn-flat grey lighten-1 white-text md-close waves-effect waves-light">BATAL</button>
 		</div>
 	</div>

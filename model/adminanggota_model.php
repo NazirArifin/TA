@@ -38,6 +38,13 @@ class AdminanggotaModel extends ModelBase {
 				$kolom		= 'EMAIL_ANGGOTA';
 				$where[] 	= "$kolom LIKE '%{$query}%'";
 			}
+		} else {
+			if ($order == 'nama') {
+				$kolom = 'NAMA_ANGGOTA';
+			}
+			if ($order == 'email') {
+				$kolom = 'EMAIL_ANGGOTA';
+			}
 		}
 		if ( ! empty($date)) {
 			$kolom		= 'DAFTAR_ANGGOTA';

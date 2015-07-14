@@ -86,6 +86,7 @@ pemberitahuan
 2	Konfirmasi Pemesanan
 3	Aduan Posting Anggota
 4 	Informasi Direktori Baru dari Anggota
+5	Konfirmasi Upgrade Anggota
 
 TEMPLATE
 

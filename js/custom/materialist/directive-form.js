@@ -610,6 +610,35 @@ app.directive('saveKonfirmasi', ['$http', 'notify', function($http, notify) {
 	};
 }]);
 
+/** simpan upgrade anggota */
+app.directive('saveUpgrade', ['$http', 'notify', function($http, notify) {
+	return {
+		restrict: 'CA',
+		link: function($scope, elm, attrs) {
+			elm.on('click', function(e) {
+				var $modal = $('#modal-6'),
+					$tanggal = $('#ut-tanggal'),
+					$jumlah = $('#ut-jumlah'),
+					$rekening = $('#ut-rekening'),
+					$nomor = $('#ut-nomor'),
+					$info = $('#ut-info');
+				if ($tanggal.val().length == 0) return Materialize.toast('Anda belum memilih tanggal transfer', 4000);
+				if ($jumlah.val().length < 6) return Materialize.toast('Anda belum mengisi jumlah transfer', 4000);
+				$http.post('/upgrade', {
+					tanggal: $tanggal.val(), jumlah: $jumlah.val(), rekening: $rekening.val(), nomor: $nomor.val(), info: $info.val()
+				}).success(function(d) {
+					$modal.removeClass('md-show');
+					$tanggal.val('');
+					$jumlah.val('');
+					$nomor.val('');
+					$info.val('');
+					notify.slideTop.info('Konfirmasi pembayaran berhasil tersimpan. <strong>Harap tunggu beberapa waktu untuk Administrator melakukan pengecekan</strong>. Begitu pembayaran valid maka menu pengaturan toko akan muncul di menu utama');
+				});
+			});
+		}
+	};
+}]);
+
 /** simpan direktori baru */
 app.directive('saveNewDirektori', ['notify', function(notify) {
 	return {
