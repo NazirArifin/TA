@@ -13,24 +13,17 @@
 	{% include 'header.html' %}
 	
 	<div class="section white form-login z-depth-1">
+		{% if konfirmasi %}
 		<div class="container">
-			<div class="row content" data-ng-controller="LoginCtrl">
-				<h4 class="center-align green-text text-darken-4 light-text">Pendaftaran</h4>
+			<div class="row content">
+				<h4 class="center-align green-text text-darken-4 light-text">Konfirmasi</h4>
 				
-				<div class="col s12 m10 offset-m1" data-ng-show="registered" data-ng-cloak>
+				<div class="col s12 m10 offset-m1">
 					<div class="row">
 						<div class="col s12">
-							<h5 class="green-text text-darken-4"><i class="fa fa-check-circle"></i> Pendaftaran Berhasil</h5>
-							
-							<div class="green z-depth-1">
-								<p style="padding: 10px" class="light-text white-text">Anda berhasil terdaftar di situs web MADURA.BZ dan siap menggunakan layanan yang ada pada situs web ini. Sebuah email yang berisi password telah kami kirimkan ke alamat email Anda berikan. <strong>Silakan login menggunakan alamat email dan gunakan password tersebut.</strong> Terima kasih :)</p>
-								
-								<!--
-								{% verbatim %}
-								<p class="center-align"><strong style="font-size:2rem; padding: 10px 20px;" class="grey lighten-4">{{password}}</strong></p>
-								{% endverbatim %}
-								-->
-								
+							<h5 class="text-darken-4">Proses Konfirmasi Berhasil Dilakukan</h5>
+							<div class="grey z-depth-1">
+								<p style="padding: 10px" class="light-text white-text">Anda berhasil melakukan konfirmasi pendaftaran di situs web MADURA.BZ.</p>
 								<p style="padding: 10px"><em><small class="white-text">* segera ganti password Anda setelah masuk ke sistem</small></em></p>
 							</div>
 							
@@ -57,6 +50,31 @@
 										</div>
 									</div>
 								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% else %}
+		<div class="container">
+			<div class="row content" data-ng-controller="LoginCtrl">
+				<h4 class="center-align green-text text-darken-4 light-text">Pendaftaran</h4>
+				
+				<div class="col s12 m10 offset-m1" data-ng-show="registered" data-ng-cloak>
+					<div class="row">
+						<div class="col s12">
+							<h5 class="green-text text-darken-4"><i class="fa fa-check-circle"></i> Pendaftaran Berhasil</h5>
+							
+							<div class="green z-depth-1">
+								<!--<p style="padding: 10px" class="light-text white-text">Anda berhasil terdaftar di situs web MADURA.BZ dan siap menggunakan layanan yang ada pada situs web ini. Sebuah email yang berisi password telah kami kirimkan ke alamat email Anda berikan. <strong>Silakan login menggunakan alamat email dan gunakan password tersebut.</strong> Terima kasih :)</p>-->
+								<p style="padding: 10px" class="light-text white-text">Anda berhasil terdaftar di situs web MADURA.BZ dan siap menggunakan layanan yang ada pada situs web ini. Sebuah email yang berisi password dan tautan konfirmasi telah kami kirimkan ke alamat email Anda berikan. <strong>Silakan klik link konfirmasi yang ada pada email tersebut.</strong> Terima kasih :)</p>
+								
+								<!--
+								{% verbatim %}
+								<p class="center-align"><strong style="font-size:2rem; padding: 10px 20px;" class="grey lighten-4">{{password}}</strong></p>
+								{% endverbatim %}
+								-->
 							</div>
 						</div>
 					</div>
@@ -121,6 +139,7 @@
 				</div>
 			</div>
 		</div>
+		{% endif %}
 	</div>
 	
 	{% include 'footer.html' %}

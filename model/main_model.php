@@ -475,22 +475,33 @@ class MainModel extends ModelBase {
 		$kode 	= preg_replace('/[^a-z0-9]/', '', uniqid('mdbz'));
 		// generate password
 		$pass	= $this->member_password(10);
-		$ins	= $this->db->query("INSERT INTO anggota VALUES(0, '$kode', '$email', '" . crypt($pass, $this->salt) . "', '$nama', '', '$telepon', '', '', '0', NOW(), '1', '1')");
+		$cpass 	= crypt($pass, $this->salt);
+		$ins	= $this->db->query("INSERT INTO anggota VALUES(0, '$kode', '$email', '$cpass', '$nama', '', '$telepon', '', '', '0', NOW(), '1', '3')");
 		
 		// simpan di pemberitahuan
 		$ins 	= $this->db->query("INSERT INTO pemberitahuan VALUES(0, '1', 'Pendaftaran Anggota Baru dengan alamat email: " . $email . " dan password: " . $pass ." telah dilakukan dengan menggunakan IP: " . $_SERVER['REMOTE_ADDR'] . "', NOW(), '1')");
+		$hosturl = 'http://madura.bz/konfirmasi/' . $kode . '/' . $pass;
 		
 		// kirim email
-		$pesanHTML 			= 'Selamat datang di situs MADURA.BZ, situs direktori bisnis dan jual beli di Madura. Mulai saat ini Anda dapat menggunakan fasilitas yang ada di situs kami menggunakan akun:<br><strong>Email: ' . $email . '<br>Password: ' . $pass . '</strong><br>Kami sangat mengharapkan keaktifan Anda dalam menggunakan situs kami. Terima kasih<br><br>Administrator';
+		$pesanHTML 			= 'Selamat datang di situs MADURA.BZ, situs direktori bisnis dan jual beli di Madura. Mulai saat ini Anda dapat menggunakan fasilitas yang ada di situs kami menggunakan akun:<br><strong>Email: ' . $email . '<br>Password: ' . $pass . '</strong><br>Klik link berikut ini untuk melakukan konfirmasi: <a href="' . $hosturl . '">' . $hosturl . '</a><br><br>Kami sangat mengharapkan keaktifan Anda dalam menggunakan situs kami. Terima kasih<br><br>Administrator';
 		$pesanPlain 		= 'Selamat datang di situs MADURA.BZ, situs direktori bisnis dan jual beli di Madura. Mulai saat ini Anda dapat menggunakan fasilitas yang ada di situs kami menggunakan akun:
-		Email: ' . $email . '
-		Password: ' . $pass . '
-		Kami sangat mengharapkan keaktifan Anda dalam menggunakan situs kami. Terima kasih
-		
-		Administrator';
+Email: ' . $email . '
+Password: ' . $pass . '
+Klik link berikut ini untuk melakukan konfirmasi: ' . $hosturl . '
+
+Kami sangat mengharapkan keaktifan Anda dalam menggunakan situs kami. Terima kasih
+
+Administrator';
 		$subject			= 'Selamat. Anda terdaftar di MADURA.BZ';
-		$mail->isSMTP();
-		$mail->From 		= 'admin@madura.bz';
+		$mail->isSMTP();		
+		$mail->Host = 'r1-singapore.webserversystems.com';
+		$mail->SMTPAuth = true;
+		$mail->Username = 'noreply@madura.bz';
+		$mail->Password = 'n0r3ply';
+		$mail->SMTPSecure = 'tls';
+		$mail->Port = 465;
+		
+		$mail->From 		= 'noreply@madura.bz';
 		$mail->FromName		= 'MADURA.BZ';
 		$mail->Subject		= $subject;
 		$mail->Body			= $pesanHTML;
@@ -499,7 +510,7 @@ class MainModel extends ModelBase {
 		$mail->addReplyTo('noreply@madura.bz', 'MADURA.BZ');
 		$mail->isHTML(true);
 		if ( ! @$mail->send()) {
-			$headers		= 'From: admin@madura.bz' . "\r\n" .
+			$headers		= 'From: noreply@madura.bz' . "\r\n" .
 				'Reply-To: noreply@madura.bz' . "\r\n" . 
 				'X-Mailer: PHP/' . phpversion();
 			@mail($email, $subject, wordwrap($pesanPlain, 70), $headers);
@@ -507,6 +518,21 @@ class MainModel extends ModelBase {
 		return array(
 			'type'		=> TRUE
 		);
+	}
+	
+	/**
+	 * KOnfirmasi member
+	 */
+	public function member_confirm($kode, $password) {
+		// cek kode anggota, password
+		$cpass 	= crypt($password, $this->salt);
+		$kode	= $this->db->escape_str($kode);
+		$cari = $this->db->query("SELECT COUNT(ID_ANGGOTA) AS HASIL FROM anggota WHERE PASSWORD_ANGGOTA = '$cpass' AND KODE_ANGGOTA = '$kode' AND STATUS_ANGGOTA = '3'", true);
+		if ($cari->HASIL == 1) {
+			$upd = $this->db->query("UPDATE anggota SET STATUS_ANGGOTA = '1' WHERE KODE_ANGGOTA = '$kode'");
+			return true;
+		}
+		return false;
 	}
 	
 	/**

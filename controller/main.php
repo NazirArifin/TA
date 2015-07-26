@@ -110,6 +110,24 @@ $app->get('/daftar', function() use($app, $ctr) {
 
 // ----------------------------------------------------------------
 /**
+ * Method: GET
+ * Verb: konfirmasi/kode/password 
+ */
+$app->options('/konfirmasi/:kode/:password', function() use($app) { $app->status(200); $app->stop(); });
+$app->get('/konfirmasi/:kode/:password', function($kode, $password) use($app, $ctr) {
+	$ctr->load('model', 'main');
+	if (cek_token($ctr)) redirect_home();
+	$r = $ctr->MainModel->member_confirm($kode, $password);
+	if ( ! $r) redirect_home();
+	$ctr->load('view', 'pendaftaran.html', array(
+		'registering'	=> true,
+		'konfirmasi' => true,
+		'status' => $r
+	));
+});
+
+// ----------------------------------------------------------------
+/**
  * Method: POST
  * Verb: daftar 
  */
