@@ -392,7 +392,6 @@ app.directive('tosRead', function() {
 		elm.bind('scroll', function() {
 			if ($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
 				$scope.readTos = true;
-				console.log('tos terbaca');
 			}
 		});
 	};

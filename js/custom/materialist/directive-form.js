@@ -21,7 +21,9 @@ app.directive('saveRegister', ['$http', 'notify', function($http, notify) {
 				}
 				if (valid) {
 					if ( ! $scope.user.agree) return notify.slideTop.info('Anda harus menyetujui peraturan layanan di MADURA.BZ');
-					if ( ! $scope.readTos) return notify.slideTop.info('Anda harus membaca peraturan layanan di sisi kanan form!');
+					if ($('#tos-read').is(':visible')) {
+						if ( ! $scope.readTos) return notify.slideTop.info('Anda harus membaca peraturan layanan di sisi kanan form!');
+					}
 				} else {
 					if ( ! valid) return notify.slideTop.error('Input Tidak Lengkap, Ulangi Bagian Bertanda Kesalahan');
 				}
