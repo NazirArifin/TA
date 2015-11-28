@@ -1,0 +1,29 @@
+{
+  "name": "maduradotbz",
+  "version": "1.3.0",
+  "description": "situs madura.bz",
+  "main": "index.php",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NazirArifin/TwistAngular.git"
+  },
+  "keywords": [
+    "maduradotbz"
+  ],
+  "author": "Mohammad Nazir Arifin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NazirArifin/TwistAngular/issues"
+  },
+  "homepage": "https://github.com/NazirArifin/TwistAngular#readme",
+  "devDependencies": {
+    "gulp": "latest",
+	  "gulp-util": "latest",
+	  "gulp-sourcemaps": "latest",
+	  "gulp-concat": "latest",
+	  "gulp-uglify": "latest",
+	  "gulp-minify-css": "latest",
+	  "gulp-sass": "latest",
+	  "gulp-autoprefixer": "latest"
+  }
+}

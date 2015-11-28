@@ -448,24 +448,3 @@ app.directive('deleteData', ['$http', 'notify', function($http, notify) {
 		});
 	};
 }]);
-
-app.directive('feedbackBtn', function() {
-	return function($scope, elm, attrs) {
-		elm.hover(function() {
-			elm.removeClass('z-depth-2').addClass('z-depth-1');
-		}, function() {
-			elm.removeClass('z-depth-1').addClass('z-depth-2');
-		}).on('click', function(e) {
-			var $target = $('#modal-35');
-			$target.addClass('md-show').find('.btn-default').on('click', function() {
-				$target.removeClass('md-show');
-			});
-			$('.md-overlay, .md-close').on('click', function() {
-				$target.removeClass('md-show');
-			});
-			if( classie.has( el, 'md-setperspective' ) ) {
-				setTimeout( function() { classie.add( document.documentElement, 'md-perspective' ); }, 25 );
-			}
-		});
-	};
-});

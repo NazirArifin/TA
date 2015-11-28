@@ -7,21 +7,21 @@
 					<div class="row">
 						<form action="/login" method="post" class="col s12 white z-depth-1">
 							<div class="row" style="margin-top: 20px; margin-bottom: 5px">
-								<div class="input-field col offset-s3 s6">
+								<div class="input-field col offset-s1 s10 offset-m3 m6">
 									<i class="mdi-communication-email prefix"></i>
 									<input type="email" name="email" id="email">
 									<label for="email">Email</label>
 								</div>
 							</div>
 							<div class="row" style="margin-bottom: 5px">
-								<div class="input-field col offset-s3 s6">
+								<div class="input-field col offset-s1 s10 offset-m3 m6">
 									<i class="mdi-communication-vpn-key prefix"></i>
 									<input type="password" name="password" id="password">
 									<label for="password">Password</label>
 								</div>
 							</div>
 							<div class="row">
-								<div class="input-field col s6 offset-s3">
+								<div class="input-field col s10 offset-s1 offset-m3 m6">
 									<button type="submit" class="btn waves-effect waves-light yellow darken-4"><strong><i class="mdi-action-input left"></i>MASUK</strong></button> &nbsp;
 									<a href="/fpass" class="btn-flat right-align light-blue-text right" style="padding: 0; font-size: 0.87rem">Lupa Password?</a>
 								</div>
@@ -240,7 +240,7 @@
 							<div class="row">
 								<div class="input-field col s12">
 									<select name="alasan" id="report-alasan" class="browser-default">
-										<option value="offense">isi melanggar peraturan atau undang-undang yang berlaku</option>
+										<option value="violation">isi melanggar peraturan atau undang-undang yang berlaku</option>
 										<option value="unmatch">isi tidak relevan atau tidak sesuai dengan judul</option>
 										<option value="spam">isi berupa spam tanpa tujuan dan manfaat</option>
 										<option value="porno">isi berisi pornografi atau tidak pantas</option>
@@ -337,14 +337,87 @@
 	</div>
 </div>
 
+<!-- modal untuk laporkan komentar admin -->
+<div class="md-modal md-effect-9" id="modal-7">
+	<div class="md-content">
+		<div class="modal-content" style="min-height: 304px;">
+			<div class="row grey lighten-4 z-depth-1">
+				<div class="col s10 offset-s1">
+					<h4 class="light-text">Laporkan Komentar</h4>
+					<p class="smaller">Anda menyatakan bahwa Anda tidak menyukai komentar ini karena:</p>
+					<div class="row no-pad-bot">
+						<form class="col s12">
+							<input type="hidden" name="id" value="" id="report-komentar-id">
+							<div class="row">
+								<div class="input-field col s12">
+									<select name="alasan" id="report-komentar-alasan" class="browser-default">
+										<option value="violation">isi melanggar peraturan atau undang-undang yang berlaku</option>
+										<option value="spam">isi berupa spam</option>
+										<option value="porno">isi berisi pornografi atau tidak pantas</option>
+										<option value="sara">isi menyinggung isu agama, ras dan suku tertentu</option>
+										<option value="offense">isi menyerang, menghina atau merendahkan pihak tertentu</option>
+									</select>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="row no-pad-bot">
+						<p class="red-text text-darken-1" style="padding:10px;font-weight:500;font-size:0.87rem">Dengan ini saya menyatakan bahwa informasi yang saya berikan benar adanya dan tanpa didasari kepentingan pribadi</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer grey lighten-1">
+			<button class="grey lighten-1 btn-flat right waves-effect waves-light" save-aduan-komentar><i class="left mdi-content-send"></i> KIRIM</button> 
+			<button class="btn-flat grey lighten-1 white-text md-close waves-effect waves-light">BATAL</button>
+		</div>
+	</div>
+</div>
+
+<!-- modal untuk feedback -->
+<div class="md-modal md-effect-4" id="modal-35">
+	<div class="md-content">
+		<div class="modal-content" style="min-height: 304px">
+			<div class="row grey lighten-4 z-depth-1">
+				<div class="col s10 offset-s1">
+					<h4 class="light-text">Kirimkan kritik / saran Anda</h4>
+					<div class="row no-pad-bot">
+						<div class="input-field col s12">
+							<textarea name="saran" id="feedback-pesan" cols="30" rows="5" class="materialize-textarea" placeholder="" style="padding:0"></textarea>
+							<label for="">Saran Anda</label>
+						</div>
+					</div>
+					<div class="row no-pad-bot">
+						<div class="input-field col s12">
+							<p style="margin:0;padding:0;font-size:.8em" class="text-justify">
+								MADURA.BZ mengucapkan terima kasih atas saran dan kritik yang Anda berikan untuk meningkatkan layanan dan manfaat situs ini. Kami akan segera mem-<em>follow up</em> saran yang Anda berikan secepatnya.
+							</p>
+							<br>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer grey lighten-1">
+			<button class="grey lighten-1 btn-flat right waves-effect waves-light" save-feedback><i class="left mdi-content-send"></i> SIMPAN SARAN</button>
+			<button class="btn-flat grey lighten-1 white-text md-close waves-effect waves-light">BATAL</button>
+		</div>
+	</div>
+</div>
+
+<!-- feedback button -->
+<div id="feedback" class="z-depth-2" feedback-btn>
+	<a href=""><i class="fa fa-fw fa-pencil-square"></i> beri saran</a>
+</div>
+
 {% endif %}
 
 <div class="md-overlay"></div><!-- the overlay element -->
 
 <script src="/js/materialize.min.js"></script>
 <script src="/js/jquery-ui.custom.min.js"></script>
-<script src="/js/helper-lite.min.js"></script>
-<script src="/js/tools-lite.min.js"></script>
+<script src="/js/helper.min.js"></script>
+<script src="/js/materialist-tools.min.js"></script>
 
 <script src="/js/custom/app.js"></script>
 <script src="/js/custom/materialist/directive.js"></script>

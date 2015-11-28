@@ -89,14 +89,15 @@
 								</div>
 								{% verbatim %}
 								<ul class="collection" data-ng-show="komentarList">
-									<li class="avatar collection-item" data-ng-repeat="c in komentarList">
+									<li class="avatar collection-item" data-ng-repeat="c in komentarList" id="komentar-{{c.id}}">
 										<img data-ng-src="{{c.foto}}" alt="" class="circle">
 										<span class="title">
 											<a data-ng-href="{{c.link}}"><span data-ng-show="c.valid"><i class="fa fa-check-circle"></i> </span>{{c.nama}}</a>
 										</span>
 										<p data-ng-bind-html="c.isi" class="grey-text">{{c.isi}}</p>
 										<p>
-											<a href="" class="btn-flat" data-ng-show="c.hapus" delete-data="{{c.id}}" data-type="komentar">Hapus</a>
+											<a href="" class="btn-flat" data-ng-show="c.hapus" delete-data="{{c.id}}" data-type="komentar">Hapus</a> 
+											<a href="" class="btn-flat" data-ng-show="c.lapor" data-id-lapor="{{c.id}}" data-tooltip="laporkan ke admin" show-modal data-target="modal-7">Laporkan</a>
 										</p>
 										<span class="secondary-content" style="font-size: 0.87em;"><i class="fa fa-clock-o"></i> {{c.tanggal}}</span>
 									</li>

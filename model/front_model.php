@@ -395,4 +395,18 @@ class FrontModel extends ModelBase {
 		}
 		return array('type' => TRUE, 'biaya' => $biaya, 'cod' => $cod);
 	}
+
+	/**
+	 * simpan feedback
+	 * @return [type] [description]
+	 */
+	public function save_feedback($kdmember) {
+		extract($this->prepare_post(array('pesan')));
+		$pesan = $this->db->escape_str($pesan);
+
+		$cari = $this->db->query("SELECT ID_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '$kdmember'", true);
+		$idmember = $cari->ID_ANGGOTA;
+		$insert = $this->db->query("INSERT INTO feedback VALUES(0, '$idmember', '$pesan', NOW())");
+		return array('type' => true);
+	}
 }

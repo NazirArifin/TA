@@ -1,1 +1,39 @@
-<h5 class="center-align yellow-text text-darken-3 light-text" style="margin-bottom:25px;">Bantuan Pengguna</h5><h6 class="light-blue-text text-darken-2" id="member"><strong><i class="fa fa-fw fa-question-circle"></i> Keanggotaan</strong></h6><div style="margin-left:30px">	<p class="justify-align">Keanggotaan bersifat terbuka dimana setiap pengunjung situs dapat menjadi anggota dengan terlebih dahulu mengisi formulir pada halaman <a href="/daftar">Pendaftaran</a>. Terdapat dua jenis Anggota yaitu anggota biasa dan yang terverifikasi yang ditandai dengan icon <i class="fa fa-check-circle fa-lg light-blue-text text-darken-1"></i> yang tertera sebelum nama Anggota tersebut. Untuk menjadi Anggota yang terverifikasi Anda harus mengirimkan minimal lima puluh <strong>(50)</strong> kiriman jual beli atau Anda di verifikasi oleh Administrator.</p></div><h6 class="light-blue-text text-darken-2"><strong><i class="fa fa-fw fa-question-circle"></i> Level Anggota</strong></h6>
+<h6 id="daftar"><strong><i class="fa fa-fw fa-question-circle"></i> Bagaimana cara daftar di MADURA.BZ</strong></h6>
+<div class="padd-left30">
+	<p class="text-justify smaller">Cukup klik "DAFTAR" lalu mengisi kolom email dengan email yang valid, nama lengkap, telepon dan kemudian klik tombol Daftar Sekarang.</p>
+</div>
+
+<h6 id="daftar"><strong><i class="fa fa-fw fa-question-circle"></i> Mengapa harus bergabung dengan MADURA.BZ?</strong></h6>
+<div class="padd-left30">
+	<p class="text-justify smaller">MADURA.BZ menyediakan bermacam fitur untuk membantu meningkatkan promosi produk Anda seperti direktori listing dan <em>open market</em> untuk bertransaksi secara langsung. Selain itu MADURA.BZ memberikan kesempatan bagi pengusaha untuk membuka toko di situs madura.bz sehingga jangkauan produk makin meningkat.</p>
+</div>
+
+<h6 id="daftar"><strong><i class="fa fa-fw fa-question-circle"></i> Berapa biaya untuk memasang info / iklan jual beli di MADURA.BZ</strong></h6>
+<div class="padd-left30">
+	<p class="text-justify smaller">Memasang info atau iklan jual beli di MADURA.BZ adalah gratis. Kami hanya mengenakan biaya untuk layanan tambahan BUKA TOKO yang tidak diharuskan tapi dianjurkan. Jadi bila Anda tidak menggunakan layanan tambahan apapun untuk iklan Anda maka Anda tidak perlu bayar sepeserpun.</p>
+</div>
+
+<h6 id="daftar"><strong><i class="fa fa-fw fa-question-circle"></i> Berapa lamanya masa tayang / durasi iklan?</strong></h6>
+<div class="padd-left30">
+	<p class="text-justify smaller">Masa aktif atau tayang iklan adalah tidak terbatas hingga Anda yang menghapusnya.</p>
+</div>
+
+<h6 id="member"><strong><i class="fa fa-fw fa-question-circle"></i> Ada berapa jenis keanggotaan di MADURA.BZ?</strong></h6>
+<div class="padd-left30">
+	<p class="justify-align smaller">Terdapat dua jenis Anggota yaitu anggota biasa dan yang terverifikasi yang ditandai dengan icon <i class="fa fa-check-circle fa-lg light-blue-text text-darken-1"></i> yang tertera sebelum nama Anggota tersebut. Untuk menjadi Anggota yang terverifikasi Anda harus mengirimkan minimal lima puluh <strong>(50)</strong> kiriman jual beli atau Anda di verifikasi oleh Administrator.</p>
+</div>
+
+<h6 id="member"><strong><i class="fa fa-fw fa-question-circle"></i> Apa itu anggota Premium?</strong></h6>
+<div class="padd-left30">
+	<p class="justify-align smaller">Anggota premium adalah anggota yang menggunakan layanan berbayar untuk menambah fitur promosi yang dimilikinya dengan adanya fasilitas BUKA TOKO.</p>
+</div>
+
+<h6 id="member"><strong><i class="fa fa-fw fa-question-circle"></i> Bagaimana menjadi anggota Premium?</strong></h6>
+<div class="padd-left30">
+	<p class="justify-align smaller">Dengan Login, di halaman Beranda Anggota akan terdapat link untuk mengupgrade keanggotaan dan isi konfirmasi pembayaran yang telah Anda lakukan. Setelah di konfirmasi tunggu beberapa saat untuk proses upgrade keanggotaan Anda.</p>
+</div>
+
+<h6 id="member"><strong><i class="fa fa-fw fa-question-circle"></i> Bagaimana cara menggunakan anggota Premium?</strong></h6>
+<div class="padd-left30">
+	<p class="justify-align smaller">Setelah akun Anda di upgrade maka otomatis terdapat link untuk membuka toko. Anda dapat menentukan apakah ingin membuka toko dengan nama baru atau menyatakan kepemilikan atas data direktori yang sudah ada. Data toko Anda akan otomatis berada di listing direktori dan perusahaan di MADURA.BZ</p>
+</div>

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 19, 2015 at 04:17 AM
+-- Generation Time: Nov 23, 2015 at 03:22 PM
 -- Server version: 5.5.16
 -- PHP Version: 5.3.8
 
@@ -47,6 +47,23 @@ INSERT INTO `admin` (`ID_ADMIN`, `EMAIL_ADMIN`, `PASSWORD_ADMIN`, `NAMA_ADMIN`, 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `aduankomentar`
+--
+
+CREATE TABLE IF NOT EXISTS `aduankomentar` (
+  `ID_ADUANKOMENTAR` int(11) NOT NULL AUTO_INCREMENT,
+  `ID_KOMENTAR` bigint(20) NOT NULL,
+  `ID_ANGGOTA` int(20) NOT NULL,
+  `ALASAN_ADUANKOMENTAR` varchar(80) NOT NULL,
+  `TANGGAL_ADUANKOMENTAR` datetime NOT NULL,
+  `STATUS_ADUANKOMENTAR` char(1) NOT NULL,
+  PRIMARY KEY (`ID_ADUANKOMENTAR`),
+  KEY `FK_POST_ADUANKOMENTAR` (`ID_KOMENTAR`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `aduanpost`
 --
 
@@ -60,16 +77,7 @@ CREATE TABLE IF NOT EXISTS `aduanpost` (
   PRIMARY KEY (`ID_ADUANPOST`),
   KEY `FK_POST_ADUANPOST` (`ID_POSTANGGOTA`),
   KEY `FK_ANGGOTA_ADUANPOST` (`ID_ANGGOTA`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
-
---
--- Dumping data for table `aduanpost`
---
-
-INSERT INTO `aduanpost` (`ID_ADUANPOST`, `ID_POSTANGGOTA`, `ID_ANGGOTA`, `ALASAN_ADUANPOST`, `TANGGAL_ADUANPOST`, `STATUS_ADUANPOST`) VALUES
-(1, 8, 2, 'sara', '2015-04-19 22:26:44', '1'),
-(2, 4, 2, 'offense', '2015-06-02 19:43:36', '1'),
-(3, 4, 2, 'offense', '2015-06-02 19:43:36', '1');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -92,19 +100,14 @@ CREATE TABLE IF NOT EXISTS `anggota` (
   `JENIS_ANGGOTA` char(1) DEFAULT NULL,
   `STATUS_ANGGOTA` char(1) DEFAULT NULL,
   PRIMARY KEY (`ID_ANGGOTA`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `anggota`
 --
 
 INSERT INTO `anggota` (`ID_ANGGOTA`, `KODE_ANGGOTA`, `EMAIL_ANGGOTA`, `PASSWORD_ANGGOTA`, `NAMA_ANGGOTA`, `ALAMAT_ANGGOTA`, `TELEPON_ANGGOTA`, `FOTO_ANGGOTA`, `INFO_ANGGOTA`, `VALID_ANGGOTA`, `DAFTAR_ANGGOTA`, `JENIS_ANGGOTA`, `STATUS_ANGGOTA`) VALUES
-(1, 'member', 'member@madura.bz', '', 'Anggota', '', NULL, '', 'Anggota Default', '0', '2015-02-19 00:00:00', '0', '0'),
-(2, 'mdbz552b361c02757', 'dyiela_sweet@yahoo.co.id', 'mdWQ.PJoKPXw6', 'Hosniyah', 'Jl. Dirgahayu No. 3 Pamekasan', '+62-9854543432', 'a93d8ab7610861c1b8dbcf0966a1d857.jpg', 'Wirausahawan sejati', '1', '2015-04-13 10:21:00', '2', '1'),
-(3, 'mdbz552b450220561', 'ceylon.rizan@gmail.com', 'mdVgUfOMymZis', 'Amirul Mukminin', '', '+62-984034064', '', '', '1', '2015-04-13 11:24:34', '1', '1'),
-(4, 'mdbz553067ee14ec6', 'greenchonk@yahoo.co.id', 'md04qzXES8QdY', 'Tyieka Imoetz', 'Jl. Stadion No. 15 Pamekasan', '+62-8939832993', '8ae7f3bc908a4faac5f91318320896a3.jpg', 'Harus sukses dan berhasil', '1', '2015-04-17 08:54:54', '1', '1'),
-(5, 'mdbz556295eed6ee2', 'fajsfdl@hfdaf.com', 'mdQBEgkETFzPU', 'nazir arifin', '', '+62-984934374', '', '', '0', '2015-05-25 10:24:30', '1', '1'),
-(6, 'mdbz5562973bd79c8', 'rizan@gmail.com', 'mdTyH1l4J7ivY', 'haji muhidin', '', '+62-98398439534', '', '', '0', '2015-05-25 10:30:03', '1', '1');
+(1, 'member', 'member@madura.bz', '', 'Anggota', '', NULL, '', 'Anggota Default', '0', '2015-02-19 00:00:00', '0', '0');
 
 -- --------------------------------------------------------
 
@@ -124,18 +127,7 @@ CREATE TABLE IF NOT EXISTS `berita` (
   `STATUS_BERITA` char(1) DEFAULT NULL,
   PRIMARY KEY (`ID_BERITA`),
   KEY `FK_BERITA_ADMIN` (`ID_ADMIN`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
-
---
--- Dumping data for table `berita`
---
-
-INSERT INTO `berita` (`ID_BERITA`, `ID_ADMIN`, `JUDUL_BERITA`, `PENGANTAR_BERITA`, `ISI_BERITA`, `FOTO_BERITA`, `TANGGAL_BERITA`, `TAG_BERITA`, `STATUS_BERITA`) VALUES
-(1, 1, 'Tanaman Membusuk, Harga Cabai Terjun Bebas Rp 6.000 Sekilo', 'Selain harga turun, cabai membusuk akibat tanaman terus menerus diguyur hujan. ''Pendapatan anjlok, tanaman juga rusak,'' kata petani cabai, Ansori, Sabtu 11 April 2015.', '<div><br></div><div>Saat harga cabai mahal, katanya, tanaman cabai sebanyak 2.800 batang di lahan seluas 500 meter persegi mampu memanen setiap batang menghasilkan 1,5 kilogram. Setelah diguyur hujan tanaman membusuk dan hanya mampu menghasilkan setengah kilogram. Namun ia tetap mempertahankan tanaman cabai di lahannya.</div><div><br></div><div>Menurutnya, harga cabai pernah anjlok sampai Rp 3 ribu kilogram. Namun, Ansori tetap semangat memanam cabai. Harga cabai, katanya, tak bisa diprediksi. Harga meroket saat pasokan di pasar rendah. Sedangkan harga anjlok ketika cabai membanjiri pasar.&nbsp;</div><div><br></div><div>''Petani latah, menanam cabai saat harga mahal. Dampaknya pasokan melimpah harga terjun bebas,'' ujarnya.&nbsp;</div><div><br></div><div>Untuk itu, pemerintah harus turun tangan untuk mengatur pola tanam. Sehingga harga cabai stabil tak langsung meroket atau terjun bebas. Saat harga mahal, sekali panen Ansori mengantongi uang sampai Rp 40 juta. Saat harga cabai murah seperti sekarang hasil penjualan cabai sebesar Rp 8,5 juta.&nbsp;</div><div><br></div><div>Saat harga cabai murah, katanya, petani merugi. Penjualan cabai tak sebanding dengan biaya produksi. Rata-rata panen cabai yakni pada April-Mei dan September. Cabai dari Batu dipasok ke sejumlah pasar tradisional di Malang dan Batu.&nbsp;</div>', 'c8f52781dc11ea16f5bb33ec7499b420.jpg', '2015-04-13 09:03:22', '', '1'),
-(2, 1, 'Bandara Soekarno-Hatta Tak Penuhi Standar Keamanan', '"Penerbangan dari Soekarno-Hatta yang tiba di Changi, Singapura, itu selalu ditunggui oleh petugas keamanan di sana," kata Sekretaris Jenderal INACA Tengku Burhanuddin saat dihubungi, Jumat, 10 April 2015.&nbsp;', '<div><br></div><div>Menurut Tengku, kondisi itu membuktikan Singapura belum mempercayai keamanan Soekarno-Hatta. Sebab Bandara Soekarno-Hatta belum mengantongi sertifikat standar keamanan global sesuai Organisasi Penerbangan Sipil Internasional (International Civil Aviation Organization/ ICAO) seperti Ngurah Rai.&nbsp;</div><div><br></div><div>"Kementerian Perhubungan tak boleh tawar-menawar. Bandara internasional paling tidak harus TSA level (lolos standar keamanan Badan Keamanan Transportasi Amerika Serikat atau Transportation Security Administration)," katanya.&nbsp;</div><div><br></div><div>Tak adanya sertifikat keamanan global di Soekarno-Hatta itu, kata Tengku, merupakan gambaran betapa bandara di Indonesia belum memenuhi standar keamanan. Apalagi, kata Tengku, bandara-bandara di wilayah timur Indonesia dan wilayah barat lainnya. Padahal, bandara-bandara itu sudah dikelola oleh PT Angkasa Pura I dan PT Angkasa Pura II.&nbsp;</div><div><br></div><div>"Di daerah timur itu, masyarakatnya kurang perhatian. Dibikin pagar, pagarnya dilobangi. Ketika diusir petugas, mereka marah dan melawan," kata Burhanuddin.&nbsp;</div><div><br></div><div>Burhanuddin mendesak Menteri Perhubungan Ignasius Jonan tak hanya mengaudit maskapai. Audit itu juga harus dilakukan terhadap pengelola bandara. "Pernah diaudit apa tidak itu bandara, nggak tahu kami," katanya.&nbsp;</div><div><br></div><div>Standar keamanan bandara menjadi sorotan setelah kasus penyusupan oleh Mario Steven Ambarita, 21 tahun, Selasa, 7 April 2015. Pemuda asal Rokan Hilir, Riau, itu berhasil masuk ke rongga roda pesawat Garuda Indonesia GA 177 tujuan Pekanbaru-Jakarta ketika pesawat hendak takeoff dari runaway Bandara Sultan Syarif Kasim II, Pekanbaru. Atas penyusupan itu, Bandara SSK II akan diaudit khusus dan diperkirakan selesai pekan depan.&nbsp;</div><div><br></div><div>Sebelumnya, pada Oktober 2007 lampau, Bandara Ngurah Rai, Bali, akhirnya mengantongi standar keamanan penerbangan internasional. Badan Keamanan Transportasi Amerika Serikat (TSA) menilai keamanan Ngurah Rai telah memenuhi standar organisasi penerbangan sipil Internasional (ICAO). Pada Desember 2005, TSA sempat menyatakan Ngurah Rai tak memenuhi standar ICAO sehingga mengeluarkan travel warning kepada warga Amerika yang hendak ke Bali. Tak hanya Amerika, Australia juga mengeluarkan travel warning serupa.</div>', 'eae80cfdf3cecd9904f4d254bcfb2535.jpg', '2015-04-13 09:14:24', '', '1'),
-(3, 1, 'Salip ExxonMobil, PetroChina Jadi Perusahaan Minyak Terbesar', 'Pada perdagangan Kamis, 9 April 2015, kapitalisasi ExxonMobil ditutup US$ 352,6 miliar di Shanghai. Kapitalisasi pasar PetroChina telah naik 13,81 persen dalam 12 bulan terakhir, sementara nilai pasar ExxonMobil telah turun 14 persen akibat turunnya harga minyak.&nbsp;', '<div><br></div><div>Selain itu, harga saham perusahaan Cina kelas A ini telah melonjak 61 persen sejak awal April. Terakhir kali, PetroChina berada di atas ExxonMobil pada penutupan perdagangan 25 Juni 2010.</div><div><br></div><div>Menurut ekonom, hal ini bisa terjadi karena Cina berani meliberalisasi pasarnya. "PetroChina mengalami nilai positif saat ini karena reformasi ekonomi yang pemerintah Cina lakukan. Pemerintah Cina memberikan kebebasan yang seluas-luasnya bagi pengaturan investasi mereka," kata Mark Matthews, Kepala Penelitian Asia di Bank Julius Baer &amp; Co Singapura, seperti dilansir RT News, Kamis, 9 April 2015.&nbsp;</div><div><br></div><div>Perusahaan minyak di seluruh dunia telah menghadapi masa sulit karena harga minyak mentah mulai jatuh pada musim panas lalu.&nbsp;</div><div><br></div><div>PetroChina adalah perusahaan terdaftar milik China National Petroleum Corporation (CNPC) dengan hampir semua keuntungan operasi berasal dari sektor eksplorasi dan produksi. Juga, dari sedikit kontribusi pada unit gas alam dan jaringan pipa.</div>', '37ede1a29ef3753e1e3ada0d40413b14.jpg', '2015-04-13 09:19:53', '', '1'),
-(4, 1, 'Penunjukan Pertamina di Blok Mahakam Dinilai Terlambat', '"Pemerintah harus resmi menunjuk Pertamina sebagai pengelola Blok Mahakam," kata Ketua Komisi Energi DPR RI, Kardaya Wamika di Balikpapan, Kamis malam, 9 April 2015. Kardaya berpendapat suatu perusahaan migas setidaknya butuh waktu lima tahun untuk mempersiapkan Blok Mahakam.&nbsp;', '<div><br></div><div>Menurutnya Pertamina saat ini sudah sangat terlambat dalam mempersiapkan diri menerima tongkat estafet pengelolaan Blok Mahakam. "Sudah sangat terlambat penunjukan Pertamina saat ini. Semestinya jauh hari sebelum ini," ia menuturkan.&nbsp;</div><div><br></div><div>Pemerintah, kata Kardaya punya hak penuh untuk menunjuk langsung operator blok migas yang habis masa kontraknya. Menurutnya sudah saatnya pemerintah mempercayai Pertamina mengelola blok kaya potensi migas seperti sudah terjadi di Madura, Jawa dan Sumatera.&nbsp;</div><div>"Ada aturannya dalam Undang-Undang Migas," ujarnya.&nbsp;</div><div><br></div><div>Pertamina tentunya sudah punya kewenangan dalam menjalin kerja sama dengan swasta maupun pemerintah daerah dalam pengelolaan Blok Mahakam. Dalam kasus ini, Kardaya menilai operator terdahulu yakni Total dan Inpex yang paling berpengalaman dalam pengelolaan Blok Mahakam.&nbsp;</div><div><br></div><div>"Seperti contohnya terjadi di Sumatera, produksi migas Pertamina menurun drastis dari sebelumnya 60 ribu menjadi hanya 12 ribu barel minyak bumi," kata dia. Kardaya menyatakan Pertamina harus tetap memperoleh participating interest mayoritas dalam pengelolaan Blok Mahakam. Sisanya diberikan pada swasta dan pemerintah daerah.&nbsp;</div><div><br></div><div>"Misalkan dapat 70 hingga 80 persen. Sisanya untuk swasta dan pemerintah daerah," kata dia.&nbsp;</div><div><br></div><div>Hak partisipasi pemda, menurut Kardaya, juga harus dimanfaatkan sepenuhnya guna kemakmuran masyarakat Kutai Kartanegara dan Kalimantan Timur yang menjadi lokasi Blok Mahakam. Pemerintah pusat harus memastikan agar kepemilikan pemda tidak beralih pada pihak swasta. "Jangan sampai kemudian dijual pada pihak swasta dan asing," tuturnya.</div><div><br></div><div>Produksi gas Blok Mahakam mencapai 1.750 juta kaki kubik per hari (MMCFD) dan minyak 66.400 barel per hari. Produksi ini menurun dibandingkan realisasi tahun sebelumnya yaitu 1.757 MMCFD dan 67.800 barel per hari.&nbsp;</div><div><br></div><div>Blok Mahakam terdiri 107 sumur lama serta 111 sumur baru yang di antaranya yang masih dalam pengembangan. Setidaknya terdapat 20 ribu karyawan. Total E&amp;P Indonesie menyumbangkan penerimaan negara sebesar Rp 830 triliun.</div>', 'c7aa4fea2b1b755951e0d9ec91c2f836.jpg', '2015-04-13 09:24:46', '', '1'),
-(5, 1, 'Lima Produk Unik di Inacraft 2015', '', '<div>1. Lampion Kertas Singkong</div><div><br></div><div>Lampu yang berasal dari budaya Cina ini diproduksi oleh L&amp;D Art Lamp, badan usaha asal Bandung. Dimiliki oleh Lisye Diana, perusahaan ini kerap memproduksi lampion dari barang tak terpakai, seperti kulit singkong, serat belimbing, ataupun daun bambu.</div><div>"Tahun ini spesial di lampion kertas singkong," ujar Septi, anak Lisye Diana, Jumat, 10 April 2015.</div><div><br></div><div>Lampion berada di kisaran harga Rp 40.000 hingga 800.000. Ukurannya juga bermacam-macam. Ada yang berbentuk bulat seperti lampion festival, hingga lampion interior besar yang dibalut kain brukat berukuran hingga 1,5 meter.</div><div><br></div><div>2. Bantal Buatan Tangan Segala Rupa</div><div><br></div><div>Bosan dengan bantal yang berbentuk kotak atau persegi panjang? Kali ini di Inacraft, pengusaha asal Kota Kembang, Rika Marli, memamerkan bantal buatannya yang berbentuk gitar, ukulele, ataupun lego.</div><div><br></div><div>Yang unik dari bantal ini, aksesoris pendukung bantal menggunakan kain perca yang disulam menggunakan tangan (hand made). Warna yang diusung bantal ini juga sebagian besar bercitra pastel atau lembut.</div><div><br></div><div>Selain bantal, Rina juga membawa hasil karyanya, yakni sofa bulat berbahan water resist bean. "Jadi kalau terkena air, sofa ini tidak lembab dan ringan bobotnya," kata Rika. Untuk bantal, Rika mematok harga Rp 100.000-375.000. Sementara sofa dibanderol harga Rp 1 juta.</div><div><br></div><div>3. Karpet "Star Wars"</div><div><br></div><div>Menjumpai karpet dengan motif Timur Tengah atau polkadot mungkin gampang ditemukan di pasaran. Namun bagaimana dengan karpet yang bergambar tokoh film dan kartun?&nbsp;</div><div><br></div><div>Inilah yang menjadi motivasi Tinton Satrio, pemilik CV Leoni Handmade. Tinton yang merupakan penggemar sekuel film Star Wars dan serial kartun Amerika Serikat ini mengkombinasikan dua kesukaannya itu menjadi motif utama karpet.</div><div><br></div><div>Uniknya, warna yang terjahit di karpet adalah warna pastel sehingga membuat motif Star Wars tidak terasa serius. Selain karpet, beragam sajadah juga dijual di toko ini.</div><div><br></div><div>Harga karpet Tinton dimulai dari Rp 450.000 untuk yang berukuran kecil ataupun sajadah. Untuk karpet sedang ukuran 1,5x2 meter, harganya mencapai Rp 2,2 juta.</div><div><br></div><div>4. Meja Langka Mozaik Maroko</div><div><br></div><div>Pernah melihat meja yang tampak atasnya dihiasi ornamen keramik yang disusun seperti mozaik? Hiasan itu yang disebut mozaik Maroko (Moroccan Mozaik).</div><div><br></div><div>Teknik menyusun mozaik ini dinamakan Zellige. Di Indonesia, hanya ada satu orang yang mampu menguasai teknik ini, yakni Gene Turangan. Bahkan, dia menciptakan zellige model baru melalui penyusunan mozaik yang lebih rapi dan longgar.</div><div><br></div><div>Pria paruh baya ini memboyong hasilnya karyanya untuk dipamerkan di Inacraft. Meja unik ini berbentuk persegi, persegi panjang, dan melingkar.</div><div><br></div><div>Gene menghargai meja buatannya dengan kisaran Rp 4-5 juta untuk meja ukuran di bawah 1x2 meter. Sementara ukuran yang lebih besar berkisar pada harga RP 5-10 juta.</div><div><br></div><div>"Kalau beli di luar negeri, harganya bisa Rp 20 juta. Itupun hanya panelnya saja, belum dengan rangka mejanya," Gene berujar.</div><div><br></div><div>5. Lampu Katun Gatot Kaca</div><div><br></div><div>Lampu ini membawa konsep rupa-rupa ala pahlawan. Bentuk dasarnya lingkaran berbahan plastik dan dijahit dengan benang katun warna-warni. Hasilnya, lampu tidur beragam rupa seperti tokoh wayang Gatot Kaca, tokoh kartun Spiderman, bahkan polisi lalu lintas.</div><div><br></div><div>Penyusun konsep ini adalah Guntoro Rusli dan Yenny Wibowo, pasangan asal Surabaya. Mereka menawarkan konsep lampu mini yang menjadi "teman" sebelum tidur.</div><div><br></div><div>Harga lampu tidak tergolong mahal karena yang berdiameter 15 cm saja berharga Rp 50.000. Sedangkan lampu Gatot Kaca yang dinamai boli ini dibanderol seharga Rp 150.000.</div><div><br></div><div>Inacraft berlangsung dari 8-12 April 2015 di Jakarta Convention Center, Jakarta Pusat. Dalam siaran pers yang diterima Tempo, penyelenggara menyatakan pameran ke-17 ini diikuti lebih dari 1.450 peserta dengan jumlah stan lebih dari 1.300 stan. Pameran yang diselenggarakan Asosiasi Eksportir dan Produsen Handicraft ini menargetkan omset transaksi penjualan untuk ritel sebesar Rp 127 miliar dan kontrak dagang US$ 10 juta (sekitar Rp 129,54 miliar).</div><div><br></div>', '6efcea643d7ed9f61a6320ac569a4ac4.jpg', '2015-04-13 09:29:41', '', '1');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -989,25 +981,22 @@ CREATE TABLE IF NOT EXISTS `direktori` (
   PRIMARY KEY (`ID_DIREKTORI`),
   KEY `FK_DIREKTORI_KATEGORI` (`ID_KATDIR`),
   KEY `FK_DIREKTORI_KOTA` (`ID_KOTA`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `direktori`
+-- Table structure for table `feedback`
 --
 
-INSERT INTO `direktori` (`ID_DIREKTORI`, `ID_KATDIR`, `ID_KOTA`, `NAMA_DIREKTORI`, `EMAIL_DIREKTORI`, `FOTO_DIREKTORI`, `ALAMAT_DIREKTORI`, `TELEPON_DIREKTORI`, `PEMILIK_DIREKTORI`, `KOORDINAT_DIREKTORI`, `INFO_DIREKTORI`, `WEB_DIREKTORI`, `CHAT_DIREKTORI`, `SOCMED_DIREKTORI`, `STATUS_DIREKTORI`) VALUES
-(1, 17, 2, 'Mahardika', '', '3aa361860011d0a01ac0a5db88d17959.jpg', '["Padelegan Pademawu",""]', '["+62-8785041177","+62-87750503755"]', '', '["",""]', 'Memproduksi baling-baling kapal dengan kapasitas produksi 54000 unit / tahun', '', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(2, 8, 2, 'Arrohmah', '', '53110031081f54cdb5fa5a9e682eeb24.jpg', '["Blumbungan Larangan",""]', '["+62-81939045336",""]', '', '["",""]', 'Kripik singkong beraneka rasa', '', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(3, 8, 2, 'Barokah Jaya', '', 'edd2a849b29034ab5830b2b95324d808.jpg', '["Larangan Tokol Tlanakan",""]', '["+62-87750588599",""]', '', '["",""]', 'Memproduksi kopi mengkudu 3600 kg / tahun', '', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(4, 8, 2, 'Global Mandiri', '', '8359ebf565dfcfabd6222feeb5dbc653.jpg', '["Branta Pesisir Tlanakan",""]', '["+62-81939295450",""]', '', '["",""]', 'Memproduksi kripik ikan capung 160 bungkus / minggu', '', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(5, 8, 2, 'Dinny Home Industri', '', '00c4350be87bb35f4124ac438426de9f.jpg', '["Branta Pesisir Tlanakan",""]', '["+62-817399577","+62-8525889011"]', '', '["",""]', 'Abon Ikan, Kripik Ikan dan Emping Jagung, Rambak Ikan 2600 bungkus / minggu', '', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(6, 7, 2, 'Hosniyah Batik', '', '40ebba474ed7cc39457db71374c5bfa1.jpg', '["Toket Proppo",""]', '["+62-87850971881",""]', '2', '["",""]', 'Memproduksi batik tulis dan cetak', '', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(7, 7, 2, 'Ahmad Batik', 'ahmadbatik@gmail.com', '32e51166858016987d7b5489af76f485.jpg', '["Toket Proppo",""]', '["+62-81939309400",""]', '2', '["",""]', 'Batik Tulis dengan produksi 25 lembar per minggu', 'ahmad.batik', '{"wa":"","bbm":"a3aa733","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(8, 7, 2, 'Group Podhek', '', '460fb8cdbdfa1fde1677c5537b8ad97d.jpg', '["Rang Perang Daya Proppo",""]', '["+62-87850443636",""]', '', '["",""]', 'Memproduksi Batik Tulis 75 Lembar / Minggu', '', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(9, 18, 2, 'Sumber Barokah (KUB)', '', '8db6b2df2473f6b61d29eae6d266b9bb.jpg', '["Rek-kerrek Palengaan",""]', '["+62-81935117147",""]', '', '["",""]', 'Memproduksi Anyaman Lidi 2000 unit / tahun', '', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(10, 18, 2, 'Rihana Handicraft', '', '0b32ed679b27eb4f6dfe779ba3e4ce46.jpg', '["Tobungan Galis",""]', '["+62-87750414332",""]', '', '["",""]', 'Memproduksi Tas Batik 450 unit / tahun', '', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(11, 7, 2, 'FaceBook Collection Batik', '', '944067457e5043b72f95f56e352de0fd.jpg', '["Toket Proppo",""]', '["+62-87850555599",""]', '2', '["",""]', 'Memproduksi Batik Tulis 720 unit / tahun', 'fbcollection', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1'),
-(12, 7, 2, 'Tradisional Batik Pamekasan', 'tbatikpamek@gmail.com', '2e42f63d748f7b53314b62f11473b975.jpg', '["Rang Perang Daya Proppo",""]', '["+62-87850443636","+62-000003435"]', '', '["",""]', 'Memproduksi Batik Tulis 60 unit / tahun', '["http://batikmadura.blogspot.com"]', '{"wa":"","bbm":"","line":"","wechat":""}', '{"fb":"","twitter":"","gplus":"","ig":""}', '1');
+CREATE TABLE IF NOT EXISTS `feedback` (
+  `ID_FEEDBACK` int(11) NOT NULL AUTO_INCREMENT,
+  `ID_ANGGOTA` int(11) NOT NULL,
+  `ISI_FEEDBACK` text NOT NULL,
+  `TGL_FEEDBACK` datetime NOT NULL,
+  PRIMARY KEY (`ID_FEEDBACK`),
+  KEY `FK_FEEDBACK_ANGGOTA` (`ID_ANGGOTA`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1025,16 +1014,7 @@ CREATE TABLE IF NOT EXISTS `info` (
   `STATUS_INFO` char(1) DEFAULT NULL,
   PRIMARY KEY (`ID_INFO`),
   KEY `FK_INFO_ADMIN` (`ID_ADMIN`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
-
---
--- Dumping data for table `info`
---
-
-INSERT INTO `info` (`ID_INFO`, `ID_ADMIN`, `JUDUL_INFO`, `ISI_INFO`, `FOTO_INFO`, `TANGGAL_INFO`, `STATUS_INFO`) VALUES
-(1, 1, 'Tentang Madura', '<div>Madura adalah nama pulau yang terletak di sebelah timur laut Jawa Timur. Pulau Madura besarnya kurang lebih 5.250 km2 (lebih kecil daripada pulau Bali), dengan penduduk sekitar 4 juta jiwa.</div><div><br></div><div>Madura dibagi menjadi empat kabupaten, yaitu:</div><div><br></div><div>1. Bangkalan</div><div>2. Sampang</div><div>3. Pamekasan</div><div>4. Sumenep</div><div><br></div><div>Pulau ini termasuk provinsi Jawa Timur dan memiliki nomor kendaraan bermotor sendiri, yaitu â€œMâ€.</div><div><br></div><div>Sejarah</div><div>Secara politis, Madura selama berabad-abad telah menjadi subordinat daerah kekuasaan yang berpusat di Jawa. Sekitar tahun 900-1500, pulau ini berada di bawah pengaruh kekuasaan kerajaan Hindu Jawa timur seperti Kediri, Singhasari, dan Majapahit. Di antara tahun 1500 dan 1624, para penguasa Madura pada batas tertentu bergantung pada kerajaan-kerajaan Islam di pantai utara Jawa seperti Demak, Gresik, dan Surabaya. Pada tahun 1624, Madura ditaklukkan oleh Mataram. Sesudah itu, pada paruh pertama abad kedelapan belas Madura berada di bawah kekuasaan kolonial Belanda (mulai 1882), mula-mula oleh VOC, kemudian oleh pemerintah Hindia-Belanda. Pada saat pembagian provinsi pada tahun 1920-an, Madura menjadi bagian dari provinsi Jawa Timur.</div><div><br></div><div>Ekonomi</div><div>Secara keseluruhan, Madura termasuk salah satu daerah miskin di provinsi Jawa Timur. Tidak seperti Pulau Jawa, tanah di Madura kurang cukup subur untuk dijadikan tempat pertanian. Kesempatan ekonomi lain yang terbatas telah mengakibatkan pengangguran dan kemiskinan. Faktor-faktor ini telah mengakibatkan emigrasi jangka panjang dari Madura sehingga saat ini banyak masyarakat suku Madura tidak tinggal di Madura. Penduduk Madura termasuk peserta program transmigrasi terbanyak.</div><div><br></div><div>Pertanian subsisten (skala kecil untuk bertahan hidup) merupakan kegiatan ekonomi utama. Jagung dan singkong merupakan tanaman budi daya utama dalam pertanian subsisten di Madura, tersebar di banyak lahan kecil. Ternak sapi juga merupakan bagian penting ekonomi pertanian di pulau ini dan memberikan pemasukan tambahan bagi keluarga petani selain penting untuk kegiatan karapan sapi. Perikanan skala kecil juga penting dalam ekonomi subsisten di sana.</div><div><br></div><div>Tanaman budi daya yang paling komersial di Madura ialah tembakau. Tanah di pulau ini membantu menjadikan Madura sebagai produsen penting tembakau dan cengkeh bagi industri kretek domestik. Sejak zaman kolonial Belanda, Madura juga telah menjadi penghasil dan pengekspor utama garam.</div><div><br></div><div>Bangkalan yang terletak di ujung barat Madura telah mengalami industrialisasi sejak tahun 1980-an. Daerah ini mudah dijangkau dari Surabaya, kota terbesar kedua di Indonesia, dan dengan demikian berperan menjadi daerah suburban bagi para penglaju ke Surabaya, dan sebagai lokasi industri dan layanan yang diperlukan dekat dengan Surabaya. Jembatan Suramadu yang lama direncanakan dan kini sedang dalam tahap pembangunan diharapkan meningkatkan interaksi daerah Bangkalan dengan ekonomi regional.</div>', 'a6a8e4dcb8b9eadb70acf9c095cff414.jpg', '2015-04-13 09:55:37', '1'),
-(2, 1, 'SIUP ( SURAT IJIN USAHA PERDAGANGAN )', '<p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">SIUP ( SURAT IJIN USAHA PERDAGANGAN )</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">PERSYARATAN :</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">A. PERORANGAN</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">1. Surat Keterangan Kades</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">2. Foto Copy KTP</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">3. Pas photo uk. 4 x 6</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">4. Foto Copy Bukti Tempat Usaha</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">5. Materai @ Rp. 6000,-</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">6. Stop Map</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">7. Foto Copy HO ( apabila mengganggu lingkungan )</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">B. BADAN HUKUM</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">1 s/d 6 sama dengan atas</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">7. foto copy Akte Notaris</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">8. Neraca Awal</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">9. Struktur Organisasi</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">10. Susunan Kepemilikan Modal</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">SARANA DAN PRASARANA :</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">1. Formulir SPI</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">2. Blanko SIUP</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">3. Loket</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">4. Ruang Tunggu</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">5. Peralatan Kantor ( komputer , dll )</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">WAKTU PENYELESAIAN :</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">5 ( lima ) hari kerja</span></p><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;">BIAYA PELAYANAN :</span></p><table class="table table-bordered"><tbody><tr><td>SIUP Besar</td><td>Rp. 400.000,-</td></tr><tr><td>SIUP Menengah</td><td>Rp. 200.000,-</td></tr><tr><td>SIUP Kecil</td><td>Rp. 100.000,-</td></tr></tbody></table><p style="text-align: justify; "><span style="color: rgb(0, 0, 0); font-family: ''Lucida Grande'', ''Lucida Sans Unicode'', Arial, sans-serif; font-size: 11.6639995574951px; line-height: normal;"><br></span></p>', 'fb0f84c943ec6d1a41dd3065358f163e.jpg', '2015-04-13 09:58:00', '1'),
-(3, 1, 'Peluang Investasi', '<p style="text-align: justify; ">Mengapa Harus Berinvestasi Di Pamekasan?</p><p style="text-align: justify;">Kabupaten yang terletak di tengah-tengah Pulau Madura ini mempunyai potensi yang sangat besar untuk berkembang menjadi kawasan industri sebagai penyokong sentra bisnis dan perdagangan di Wilayah Jawa Timur.</p><p style="text-align: justify; ">Penyelesaian Jembatan Suramadu pada tahun 2009 mempermudah jalur trsansportasi darat sehingga otomatis dapat mempercepat laju perekonomian masyarakat Madura pada umumnya, dan masyarakat Pamekasan pada khususnya. Hal ini didukung dengan potensi alam yang bisa dikembangkan secara luas dan profesional, juga ditunjang oleh tenaga kerja yang memedai tingkat pendidikannya dan etos kerja serta budaya kerja yang dikenal keuletannya.</p><p style="text-align: justify;">Untuk menjemput investasi, Pamekasan telah bertekad memberikan kemudahan dalam perijinan, oleh karena itu semua permohonan pelayanan perijinan telah dilayani lewat satu pintu yaitu UPT ( Unit Pelayanan Terpadu ). Dengan demikian, pelayanan sangat transparan, baik ragam perijinanyang dilayani maupun biaya serta rentang waktu penyelesaian perijinan.</p><p style="text-align: justify;">Untu itu Jangan Ragu Untuk Berinvestasi Di Pamekasan.</p>', 'de0ef13246402798e256ae716384e1ed.jpg', '2015-04-13 10:03:49', '1');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1146,15 +1126,7 @@ CREATE TABLE IF NOT EXISTS `komentar` (
   PRIMARY KEY (`ID_KOMENTAR`),
   KEY `FK_KOMENTAR_ANGGOTA` (`ID_ANGGOTA`),
   KEY `FK_KOMENTAR_POSTANGGOTA` (`ID_POSTANGGOTA`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
-
---
--- Dumping data for table `komentar`
---
-
-INSERT INTO `komentar` (`ID_KOMENTAR`, `ID_POSTANGGOTA`, `ID_ANGGOTA`, `ISI_KOMENTAR`, `TANGGAL_KOMENTAR`, `STATUS_KOMENTAR`) VALUES
-(1, 4, 2, 'asdgasdf dafdasfsdf', '2015-06-02 17:07:43', '0'),
-(2, 4, 2, 'posting macam apa ini?', '2015-06-02 18:12:30', '1');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1641,6 +1613,21 @@ INSERT INTO `kurir` (`ID_KURIR`, `NAMA_KURIR`, `STATUS_KURIR`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `pemberitahuan`
+--
+
+CREATE TABLE IF NOT EXISTS `pemberitahuan` (
+  `ID_PEMBERITAHUAN` bigint(20) NOT NULL AUTO_INCREMENT,
+  `TIPE_PEMBERITAHUAN` char(1) NOT NULL,
+  `ISI_PEMBERITAHUAN` text NOT NULL,
+  `TANGGAL_PEMBERITAHUAN` datetime NOT NULL,
+  `STATUS_PEMBERITAHUAN` char(1) NOT NULL,
+  PRIMARY KEY (`ID_PEMBERITAHUAN`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `pencarian`
 --
 
@@ -1671,24 +1658,7 @@ CREATE TABLE IF NOT EXISTS `penjualan` (
   `STATUS_PENJUALAN` char(1) DEFAULT NULL,
   PRIMARY KEY (`ID_PENJUALAN`),
   KEY `FK_PENJUALAN_ANGGOTA` (`ID_ANGGOTA`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
-
---
--- Dumping data for table `penjualan`
---
-
-INSERT INTO `penjualan` (`ID_PENJUALAN`, `ID_ANGGOTA`, `NAMA_PENJUALAN`, `ALAMAT_PENJUALAN`, `TELEPON_PENJUALAN`, `ONGKIR_PENJUALAN`, `TANGGAL_PENJUALAN`, `AKHIR_PENJUALAN`, `KIRIM_PENJUALAN`, `INFO_PENJUALAN`, `STATUS_PENJUALAN`) VALUES
-(1, 2, 'Dian Fadilawati', 'Jl. Bengawan Solo No. 3 Pamekasan', '+62-9854543432', 6000, '2015-04-23 13:07:19', '2015-04-30 13:07:19', '0000-00-00 00:00:00', '', '2'),
-(2, 4, 'Tyieka Imoetz', 'Jl. Stadion No. 15 Pamekasan', '+62-8939832993', 6000, '2015-04-27 13:17:10', '2015-05-04 13:17:10', '0000-00-00 00:00:00', '', '0'),
-(3, 4, 'Tyieka Imoetz', 'Jl. Stadion No. 15 Pamekasan', '+62-8939832993', 6000, '2015-04-27 13:17:10', '2015-05-04 13:17:10', '0000-00-00 00:00:00', '', '0'),
-(4, 4, 'Tyieka Imoetz', 'Jl. Stadion No. 15 Pamekasan', '+62-8939832993', 7000, '2015-04-27 13:22:22', '2015-05-04 13:22:22', '0000-00-00 00:00:00', '', '0'),
-(5, 4, 'Tyieka Imoetz', 'Jl. Stadion No. 15 Pamekasan', '+62-8939832993', 6000, '2015-04-27 13:23:31', '2015-05-04 13:23:31', '0000-00-00 00:00:00', '', '0'),
-(6, 4, 'Tyieka Imoetz', 'Jl. Stadion No. 15 Pamekasan', '+62-8939832993', 4000, '2015-04-27 13:24:51', '2015-05-04 13:24:51', '0000-00-00 00:00:00', '', '0'),
-(7, 4, 'Tyieka Imoetz', 'Jl. Stadion No. 15 Pamekasan', '+62-8939832993', 4000, '2015-04-27 13:24:51', '2015-05-04 13:24:51', '0000-00-00 00:00:00', '', '0'),
-(8, 4, 'Tyieka Imoetz', 'Jl. Stadion No. 15 Pamekasan', '+62-8939832993', 6000, '2015-04-28 20:35:18', '2015-05-05 20:35:18', '0000-00-00 00:00:00', '', '0'),
-(9, 2, 'Hosniyah', 'Jl. Dirgahayu No. 3 Pamekasan', '+62-9854543432', 0, '2015-06-04 12:56:26', '2015-06-11 12:56:26', '0000-00-00 00:00:00', '', '0'),
-(10, 2, 'Hosniyah', 'Jl. Dirgahayu No. 3 Pamekasan', '+62-9854543432', 0, '2015-06-04 14:33:06', '2015-06-11 14:33:06', '0000-00-00 00:00:00', '', '0'),
-(11, 2, 'Hosniyah', 'Jl. Dirgahayu No. 3 Pamekasan', '+62-9854543432', 0, '2015-06-04 14:38:24', '2015-06-11 14:38:24', '0000-00-00 00:00:00', 'KONFIRMASI PEMBAYARAN\r\n<br>REKENING: BCA KC Pamekasan / 033.5342.40000 / Zulkifli Lubis\r\n<br>BAYAR: Rp. 500000,-\r\n<br>PESAN: ', '7');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1705,17 +1675,7 @@ CREATE TABLE IF NOT EXISTS `pesan` (
   `STATUS_PESAN` char(1) DEFAULT NULL,
   `JENIS_PESAN` char(1) DEFAULT NULL,
   PRIMARY KEY (`ID_PESAN`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
-
---
--- Dumping data for table `pesan`
---
-
-INSERT INTO `pesan` (`ID_PESAN`, `PENGIRIM_PESAN`, `PENERIMA_PESAN`, `TANGGAL_PESAN`, `ISI_PESAN`, `STATUS_PESAN`, `JENIS_PESAN`) VALUES
-(1, 4, 2, '2015-04-27 13:53:43', 'bisa gak saya beli produk ini', '2', '4'),
-(2, 2, 4, '2015-06-03 10:43:31', 'dsagdgd fasfd fasdf fasdgdafdsadfds', '1', '4'),
-(3, 2, 4, '2015-06-04 09:43:58', 'keren ini, aq suka banget...', '1', '4'),
-(4, 2, 4, '2015-06-15 21:33:04', 'dfsdf dsfad ds', '1', '4');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1736,25 +1696,7 @@ CREATE TABLE IF NOT EXISTS `postanggota` (
   PRIMARY KEY (`ID_POSTANGGOTA`),
   KEY `FK_POSTING_ANGGOTA` (`ID_ANGGOTA`),
   KEY `FK_KATEGORI_POST` (`ID_KATPRODUK`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
-
---
--- Dumping data for table `postanggota`
---
-
-INSERT INTO `postanggota` (`ID_POSTANGGOTA`, `ID_ANGGOTA`, `ID_KATPRODUK`, `JUDUL_POSTANGGOTA`, `ISI_POSTANGGOTA`, `TANGGAL_POSTANGGOTA`, `TIPE_POSTANGGOTA`, `STATUS_POSTANGGOTA`, `FOTO_POSTANGGOTA`) VALUES
-(1, 2, 8, 'Jersey bola grade ori & player issue club & negara', 'ready jersey bola grade ori dan player issue club & negara pria,wanita,anak couple dan kaos bola.\nharga mulai 115.000\nselengkapnya kunjungi website resmi kami http://www.emdestore.com\nfanspage FB http://www.facebook.com/emdes\nuntuk pertanyaan dan pemesanan :\n085649438119\n081286413101\npin BB 324424D9 - 312ADAE9\nwilayah surabaya gratis ongkir', '2015-04-13 10:28:53', '1', '1', 'a:3:{i:0;s:36:"2f263bf840ac2abc71f2d43a8e1d0597.jpg";i:1;s:36:"135af8bba5aff07d7e4ae1a2239a15fe.jpg";i:2;s:36:"ea85c783af038bc7f1e0c3e2e9f9fd76.jpg";}'),
-(2, 2, 29, 'Jual HDD External USB 3.0 WD My Passport Ultra 1TB', 'Jenis barang : Media penyimpanan komputers\nTipe : Hardisk / HDD, eksternal\nUkuran : 1 TB / 1000 GB.\nBerat : 1,5 kg setelah pengemasan pengiriman.\nKondisi baru, bukan bekas.\nLokasi toko : Sumenep - Madura.\nMelayani COD di toko saya, silahkan hubungi nomor kontak saya.\nBerhubung saya masih dalam proses kuliah, tidak akan selalu online.\nMohon jika berminat, hubungi / sms saya dulu di 082 337 886 882.', '2015-04-13 10:47:38', '1', '1', 'a:1:{i:0;s:36:"240e167d4f9408b70b3baeaebd1d162f.jpg";}'),
-(3, 2, 29, 'JUAL CEPAT! Laptop Acer Aspire', 'JUAL CEPAT! Laptop Acer Aspire E1 -471, Core i3 2,2 Ghz, RAM 2GB, HDD 500GB, LED 14", kondisi 98%,... Rp. 3.400.000,-\r\nCOD langsung aja, posisi Pangarangan.\r\nCP: 082 337 886 882', '2015-04-13 10:59:51', '1', '1', 'a:1:{i:0;s:36:"e1496596283597e836399d5fddfd18c7.jpg";}'),
-(4, 3, 12, 'Jual HP Nokia 6020', 'Sebagai perdana, Admin ingin tawarkan salah satu barang teman ane,.. Sebuah Nokia 6020 with VGA Camera and Radio, spek bisa dilihat di mbah google.\r\nNegatif :\r\n1. Entah Dosbooknya kemana, hilang mungkin Gan katanya, jadi cuma HP+Charger.\r\n2. KeyPadnya 60% buram.\r\nHarga Pas Rp. 100.000\r\nYang gak minat gak usah koment.', '2015-04-13 11:26:11', '1', '1', 'a:1:{i:0;s:36:"4d6c0bc8fb0dd84a1d0fc9cdd19dee3f.jpg";}'),
-(5, 3, 22, 'Mencari motor honda Beat Injeksi', 'Assalamualaikum wr. wb.\r\n\r\nSalam Sejahtera dek seluruh taretan dhibi'' se bedheh eMadureh maupun diluar MAdureh.... Anak baru neh, mw cari barang. barangkali ada yang minat \r\n\r\nHONDA BEAT\r\nBukan Barang Curian, Murni Barang Gadai yg tidak ditebus sama orangnya,,,\r\nsudah setahun lebih ini motor ane pakai,,,\r\nJual Adanya,,,', '2015-04-13 11:32:30', '2', '1', 'a:1:{i:0;s:36:"1696a37ba14ece70fba0575c1cc51d2f.jpg";}'),
-(6, 4, 8, 'T-shirt fotographer dan adventure Series', 'bahan catton combed 30s, jahit rantai rapi, sablon rubber mix sw/vasde\r\nharga @65 ribu,(belum termasuk ongkir buat luar kota semarang)\r\nReady juga Jumper dan jaket kerennya ya...@125 ribu (cek album foto)\r\nreseller welcome\r\npin bb: 7d2ab5b9\r\nHp: 085640692221', '2015-04-17 09:37:18', '1', '1', 'a:2:{i:0;s:36:"3e2836fcf1133ca13092fa36b9e2eebe.jpg";i:1;s:36:"12c1d639e070530d44535de083ac6065.jpg";}'),
-(7, 4, 19, 'Kopi unik, kopi biji salak (koplak)', 'Kopi unik, kopi biji salak (koplak) \r\nKhas Jember.\r\nHp : 08990578274, 085237482717\r\nPin bb : 75357810', '2015-04-17 09:39:54', '1', '1', 'a:2:{i:0;s:36:"f68a906115295099c26fba0e03f5dcad.jpg";i:1;s:36:"d495b50fe67ded822de07be0d40acb1e.jpg";}'),
-(8, 4, 8, 'Sarung BHS berkualitas tinggi', 'siang....\r\ndapatkan koleksi terbaru sarung BHS berkualitas tinggi ...\r\ndengan bahan sutra yang nyaman dipakai....\r\nhanya di toko syafia plaza jln sultan agung 21 jember \r\nmore info \r\n26AFC391 FENI\r\n27DB01A7 DEWI', '2015-04-17 09:41:29', '1', '1', 'a:1:{i:0;s:36:"6175be020a313a597fe91dbf76094f24.jpg";}'),
-(9, 4, 8, 'Atasan Blus Denim', 'Malem all.....\r\nAtasan Blus Denim\r\nDengan bahan yg nyaman dipakai cocok dikenakan saat bersantai di rumah atau unt jalan-jalan\r\nMinat?\r\nBisa datang langsung ke Syafia Plaza\r\nJl.Raya Sultan Agung no.21 Jember\r\nMore info add pin\r\nFeni :26AFC391\r\nDewi : 27DB01A7', '2015-04-17 09:48:31', '2', '1', 'a:1:{i:0;s:36:"d11bb141df9bf5855ab4368466fdd31d.jpg";}'),
-(10, 2, 3, 'Barang Antik Tidak Dijual', 'Barang antik yang sangat oke. alert(1)', '2015-06-03 13:20:02', '1', '0', 'a:1:{i:0;s:36:"9603b628be7c7c4f5e6fe8d2cc0a8fee.jpg";}'),
-(11, 2, 7, 'Alat Elektronik Terlengkap', 'Ini adalah alat-alat elektronik terlengkap dan termurah', '2015-06-08 19:21:40', '1', '1', 'a:3:{i:0;s:36:"dc571696c23efe33330b7fda52e95510.jpg";i:1;s:36:"e8a293d8f0af6686a07c0a955c1beaba.jpg";i:2;s:36:"6fbbbb74e760bdd793e1c4ebd45c7eaf.jpg";}'),
-(12, 2, 14, 'Web Design', 'Menerima pembuatan jasa web design yang unik dan menarik', '2015-06-16 18:18:11', '1', '1', 'a:3:{i:0;s:36:"3b2be3b170eb2e4f460622a22501977a.jpg";i:1;s:36:"196ac9ed630e2e103b4ae2b86b293435.jpg";i:2;s:36:"5b60e06ce61d7b97a79a33b4d67e48ec.jpg";}');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1774,16 +1716,7 @@ CREATE TABLE IF NOT EXISTS `produk` (
   PRIMARY KEY (`ID_PRODUK`),
   KEY `FK_KATEGORI_PRODUK` (`ID_KATPRODUK`),
   KEY `FK_PRODUK_DIREKTORI` (`ID_DIREKTORI`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
-
---
--- Dumping data for table `produk`
---
-
-INSERT INTO `produk` (`ID_PRODUK`, `ID_DIREKTORI`, `ID_KATPRODUK`, `NAMA_PRODUK`, `HARGA_PRODUK`, `INFO_PRODUK`, `FOTO_PRODUK`, `STATUS_PRODUK`) VALUES
-(1, 7, 8, 'Batik Songket Khas Madura', 500000, 'Batik unik khas Madura', 'a:3:{i:0;s:36:"6abc1cc3ae45b3efd592fe4855a1e2b8.jpg";i:1;s:36:"fdb20257b3bc98385ef6dcff3bfeef07.jpg";i:2;s:36:"8253672ad5c7de709d508efc6b7c0e1c.jpg";}', '1'),
-(2, 7, 8, 'Batik Ekor Baru', 450000, 'Batik unik dengan motif ekor baru', 'a:1:{i:0;s:36:"c4075f6ca3e9360452efce8cc200a319.jpg";}', '1'),
-(3, 11, 8, 'Tas Batik', 45000, 'Tas yang terbuat dari batik', 'a:1:{i:0;s:36:"271562722d88f6bd7a482faf60823c4f.jpg";}', '1');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1803,18 +1736,21 @@ CREATE TABLE IF NOT EXISTS `produkutama` (
   `STATUS_PRODUKUTAMA` char(1) DEFAULT NULL,
   PRIMARY KEY (`ID_PRODUKUTAMA`),
   KEY `FK_KATEGORI_FEATUREDP` (`ID_KATPRODUK`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `produkutama`
+-- Table structure for table `prosesdirektori`
 --
 
-INSERT INTO `produkutama` (`ID_PRODUKUTAMA`, `ID_KATPRODUK`, `NAMA_PRODUKUTAMA`, `HARGA_PRODUKUTAMA`, `STOK_PRODUKUTAMA`, `INFO_PRODUKUTAMA`, `BERAT_PRODUKUTAMA`, `FOTO_PRODUKUTAMA`, `STATUS_PRODUKUTAMA`) VALUES
-(1, 8, 'Kain Batik', 450000, 2, 'Batik asli Madura dengan motif beragam dan elegan. Setiap motif dibuat dengan tangan tanpa bantuan mesin cetak', 0.2, 'a:5:{i:0;s:36:"1062839278403a36ad7f7c1361d9d6ee.jpg";i:1;s:36:"7c086d78fcffae9676380824e0e98cbf.jpg";i:2;s:36:"bdaedeb171631e6909c7db5da619e1c9.jpg";i:3;s:36:"682cc0333bd85a66156eb9f5e83d6a1d.jpg";i:4;s:36:"e75555405496d5e32dd776ec7da264c4.jpg";}', '1'),
-(2, 19, 'Kripik Ketela', 2000, 1, 'Kripik renyah dari ketela pilihan', 0.1, 'a:2:{i:0;s:36:"383bfd0f7081f9556ffa8087fade21a9.jpg";i:1;s:36:"68f6a13a349c53bad46c622f75f08713.jpg";}', '1'),
-(3, 12, 'Nokia Jadul', 100000, 1, 'Nokia jadul mau dijual', 0.01, 'a:1:{i:0;s:36:"2e81622a50bd7c6bf43b83ea5bd79178.jpg";}', '0'),
-(4, 8, 'Tas Batik', 50000, 10, 'Tas asesoris yang terbuat dari batik, bagus dan unik', 0.8, 'a:2:{i:0;s:36:"1eca5f866e18426d3b0d4f1f9ec2ad04.jpg";i:1;s:36:"646d5e326c759dc709d3eb77fd2b3511.jpg";}', '1'),
-(5, 17, 'Anyaman Bambu', 100000, 6, 'Anyaman dari bambu yang murah dan meriah, bagus dan unik', 6, 'a:2:{i:0;s:36:"ab4c2918b524d29512696ba06162cf10.jpg";i:1;s:36:"65e697b35ee76b38933f03f59ccd7214.jpg";}', '1');
+CREATE TABLE IF NOT EXISTS `prosesdirektori` (
+  `ID_PROSESDIREKTORI` int(11) NOT NULL AUTO_INCREMENT,
+  `ID_DIREKTORI` int(11) NOT NULL,
+  `ID_ANGGOTA` int(11) NOT NULL,
+  `FOTO_PROSESDIREKTORI` varchar(60) NOT NULL,
+  PRIMARY KEY (`ID_PROSESDIREKTORI`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1829,15 +1765,7 @@ CREATE TABLE IF NOT EXISTS `rekening` (
   `AN_REKENING` varchar(40) DEFAULT NULL,
   `STATUS_REKENING` char(1) DEFAULT NULL,
   PRIMARY KEY (`ID_REKENING`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
-
---
--- Dumping data for table `rekening`
---
-
-INSERT INTO `rekening` (`ID_REKENING`, `BANK_REKENING`, `NOMOR_REKENING`, `AN_REKENING`, `STATUS_REKENING`) VALUES
-(1, 'Bank Mandiri KC Pamekasan', '909.8456.123.7777', 'Zulkifli Lubis', '1'),
-(2, 'BCA KC Pamekasan', '033.5342.40000', 'Zulkifli Lubis', '1');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1874,16 +1802,7 @@ CREATE TABLE IF NOT EXISTS `reviewproduk` (
   PRIMARY KEY (`ID_REVIEWPRODUK`),
   KEY `FK_REVIEWPRODUK_ANGGOTA` (`ID_ANGGOTA`),
   KEY `FK_REVIEWPRODUK_PRODUK` (`ID_PRODUK`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
-
---
--- Dumping data for table `reviewproduk`
---
-
-INSERT INTO `reviewproduk` (`ID_REVIEWPRODUK`, `ID_PRODUK`, `ID_ANGGOTA`, `ISI_REVIEWPRODUK`, `SKOR_REVIEWPRODUK`, `TANGGAL_REVIEWPRODUK`, `STATUS_REVIEWPRODUK`) VALUES
-(4, 1, 4, 'aq suka produk ini, terima kasih', 4, '2015-04-28 22:32:32', '2'),
-(5, 1, 3, 'Oke, bagus', 3, '2015-05-24 12:19:00', '1'),
-(6, 1, 2, 'aku suka banget, seneng juga anak2 dengan produk ini :)', 4, '2015-05-30 14:53:48', '0');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1900,17 +1819,7 @@ CREATE TABLE IF NOT EXISTS `rincipenjualan` (
   PRIMARY KEY (`ID_RINCIPENJUALAN`),
   KEY `FK_RINCIANPENJUALAN_PRODUKUTAMA` (`ID_PRODUKUTAMA`),
   KEY `FK_RINCIAN_PENJUALAN` (`ID_PENJUALAN`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=22 ;
-
---
--- Dumping data for table `rincipenjualan`
---
-
-INSERT INTO `rincipenjualan` (`ID_RINCIPENJUALAN`, `ID_PENJUALAN`, `ID_PRODUKUTAMA`, `JUMLAH_RINCIPENJUALAN`, `BIAYA_RINCIPENJUALAN`) VALUES
-(1, 1, 1, 1, 450000),
-(2, 1, 2, 1, 2000),
-(20, 11, 1, 1, 450000),
-(21, 11, 4, 1, 50000);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1927,14 +1836,7 @@ CREATE TABLE IF NOT EXISTS `testimoni` (
   `STATUS_TESTIMONI` char(1) DEFAULT NULL,
   PRIMARY KEY (`ID_TESTIMONI`),
   KEY `FK_ANGGOTA_TESTIMONI` (`ID_ANGGOTA`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Dumping data for table `testimoni`
---
-
-INSERT INTO `testimoni` (`ID_TESTIMONI`, `ID_ANGGOTA`, `PENGIRIM_TESTIMONI`, `ISI_TESTIMONI`, `TANGGAL_TESTIMONI`, `STATUS_TESTIMONI`) VALUES
-(1, 4, 2, 'Penjual yang baik dan jujur....', '2015-06-03 09:50:43', '0');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1949,15 +1851,7 @@ CREATE TABLE IF NOT EXISTS `tipstrik` (
   `JENIS_TIPSTRIK` char(1) DEFAULT '1',
   `STATUS_TIPSTRIK` char(1) DEFAULT NULL,
   PRIMARY KEY (`ID_TIPSTRIK`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
-
---
--- Dumping data for table `tipstrik`
---
-
-INSERT INTO `tipstrik` (`ID_TIPSTRIK`, `ISI_TIPSTRIK`, `FOTO_TIPSTRIK`, `JENIS_TIPSTRIK`, `STATUS_TIPSTRIK`) VALUES
-(3, 'Pulau Madura besarnya kurang lebih 5.250 km2 (lebih kecil daripada pulau Bali), dengan penduduk sekitar 4 juta jiwa.', NULL, '1', '1'),
-(4, 'Bungkuslah produk yang Anda jual dengan menarik sehingga memberikan kesan yang baik bagi pelanggan Anda', '', '2', '1');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1973,25 +1867,23 @@ CREATE TABLE IF NOT EXISTS `token` (
   `INGAT_TOKEN` char(1) DEFAULT NULL,
   `SOURCE_TOKEN` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`ID_TOKEN`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=78 ;
-
---
--- Dumping data for table `token`
---
-
-INSERT INTO `token` (`ID_TOKEN`, `EMAIL_TOKEN`, `DATA_TOKEN`, `EXPIRED_TOKEN`, `INGAT_TOKEN`, `SOURCE_TOKEN`) VALUES
-(5, 'ceylon.rizan@gmail.com', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMiLCJlbWFpbCI6ImNleWxvbi5yaXphbkBnbWFpbC5jb20iLCJ0b2tlbmlkIjo1LCJ1c2VyIjoibWVtYmVyIiwibGV2ZWwiOiIxIiwic291cmNlIjoid2ViIn0.pmIunTiZoGmy-Z6EkCG5SUW3R0ZQZURO5-4JB9MK9KE', '2015-04-18 20:44:54', '1', 'web'),
-(74, 'admin@madura.bz', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQG1hZHVyYS5ieiIsInRva2VuaWQiOjc0LCJ1c2VyIjoiYWRtaW4iLCJsZXZlbCI6IjEiLCJzb3VyY2UiOiJ3ZWIifQ.2X2D0y_aro9NZTUM4a-i3RABDODBfvFWTLlzTCEauTg', '2015-06-16 21:07:40', '1', 'web'),
-(77, 'dyiela_sweet@yahoo.co.id', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjIiLCJlbWFpbCI6ImR5aWVsYV9zd2VldEB5YWhvby5jby5pZCIsInRva2VuaWQiOjc3LCJ1c2VyIjoibWVtYmVyIiwibGV2ZWwiOiIyIiwic291cmNlIjoid2ViIn0.cjAOKwgNsrLEpskD_18dfF9mjUQsvL83043LyDER2_A', '2015-06-23 13:03:41', '1', 'web');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Constraints for dumped tables
 --
 
 --
+-- Constraints for table `aduankomentar`
+--
+ALTER TABLE `aduankomentar`
+  ADD CONSTRAINT `FK_POST_ADUANKOMENTAR` FOREIGN KEY (`ID_KOMENTAR`) REFERENCES `komentar` (`ID_KOMENTAR`);
+
+--
 -- Constraints for table `aduanpost`
 --
 ALTER TABLE `aduanpost`
+  ADD CONSTRAINT `FK_ANGGOTA_ADUANKOMENTAR` FOREIGN KEY (`ID_ANGGOTA`) REFERENCES `anggota` (`ID_ANGGOTA`),
   ADD CONSTRAINT `FK_ANGGOTA_ADUANPOST` FOREIGN KEY (`ID_ANGGOTA`) REFERENCES `anggota` (`ID_ANGGOTA`),
   ADD CONSTRAINT `FK_POST_ADUANPOST` FOREIGN KEY (`ID_POSTANGGOTA`) REFERENCES `postanggota` (`ID_POSTANGGOTA`);
 
@@ -2026,6 +1918,12 @@ ALTER TABLE `cariproduk`
 ALTER TABLE `direktori`
   ADD CONSTRAINT `FK_DIREKTORI_KATEGORI` FOREIGN KEY (`ID_KATDIR`) REFERENCES `katdir` (`ID_KATDIR`),
   ADD CONSTRAINT `FK_DIREKTORI_KOTA` FOREIGN KEY (`ID_KOTA`) REFERENCES `kota` (`ID_KOTA`);
+
+--
+-- Constraints for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD CONSTRAINT `FK_FEEDBACK_ANGGOTA` FOREIGN KEY (`ID_ANGGOTA`) REFERENCES `anggota` (`ID_ANGGOTA`);
 
 --
 -- Constraints for table `info`

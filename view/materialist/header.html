@@ -61,7 +61,7 @@
 					{% if not registering %}
 						<li><a href="/daftar" class="waves-effect waves-grey">Daftar</a></li>
 					{% endif %}
-					<li><a href="/login" class="waves-effect waves-grey">Masuk Aplikasi</a></li>
+					<li><a href="" data-target="login" class="waves-effect waves-grey modal-trigger">Masuk</a></li>
 				{% else %}
 					{% verbatim %}
 						<li><a href="/home/checkout" class="waves-effect waves-grey" data-ng-class="item.length > 0 ? 'red-text': 'teal-text text-lighten-1'">Cart: {{item.length}} Barang</a></li>
@@ -97,7 +97,7 @@
 			<div class="col m3 s12">
 				{% if not registering %}
 				<p class="right-align padded">
-					<a href="/daftar" class="waves-effect waves-light btn-large green darken-1"><i class="mdi-social-person-add left"></i>DAFTAR</a> 
+					<a href="/daftar" class="waves-effect waves-light btn-large green darken-1"><i class="mdi-social-person-add left"></i>DAFTAR SEKARANG!</a> 
 				</p>
 				{% endif %}
 			</div>

@@ -16,6 +16,7 @@
 		<div class="container">
 			<div class="row">
 				<h4 class="center-align yellow-text text-darken-4 light-text">Direktori Bisnis</h4>
+				<!--
 				<form action="/direktori" class="col s12">
 					<div class="row">
 						<div class="input-field col s6 offset-m1">
@@ -37,6 +38,50 @@
 						</div>
 					</div>
 					<input type="hidden" name="kategori" value="">
+				</form>
+				-->
+				<form action="/direktori" class="col s12" style="margin-top: 20px;">
+					<div class="row nobotmargin">
+						<div class="input-field col s6 m4 offset-m2">
+							<i class="prefix mdi-maps-local-offer"></i>
+							<input type="text" name="nama" id="nama" placeholder="">
+							<label for="nama">Nama / Info Direktori</label>
+						</div>
+						<div class="input-field col s6 m4">
+							<i class="mdi-maps-layers prefix active"></i>
+							<select name="kategori" id="kategori" class="select">
+								<option value="">-- pilih kategori --</option>
+								{% for c in kategori_direktori %}
+								<option value="{{c.id}}">{{c.nama}}</option>
+								{% endfor %}
+							</select>
+							<label for="kategori">Kategori Direktori</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s6 m4 offset-m2">
+							<i class="prefix mdi-maps-place"></i>
+							<input type="text" name="alamat" id="alamat" class="form-control" placeholder="">
+							<label for="alamat">Alamat Direktori</label>
+						</div>
+						<div class="input-field col s6 m4">
+							<i class="mdi-maps-directions-transit prefix active"></i>
+							<select name="kota" id="kota" class="select">
+								<option value="">-- pilih kota --</option>
+								{% for c in kota %}
+								<option value="{{c.id}}">{{c.nama}}</option>
+								{% endfor %}
+							</select>
+							<label for="kota">Kota Direktori</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12 m8 offset-m2" style="text-align:center">
+							<input type="hidden" name="type" value="advanced">
+							<button class="btn btn-large yellow darken-4 waves-effect waves-light" type="submit"><i class="fa fa-search fa-fw"></i> CARI DIREKTORI</button>
+							<!--<button class="btn light-blue darken-1 waves-effect waves-light left" type="submit"><i class="fa fa-search fa-fw"></i> CARI</button>-->
+						</div>
+					</div>
 				</form>
 				
 				<ul class="pagination center-align hide-on-small-only">

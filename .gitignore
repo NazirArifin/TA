@@ -4,3 +4,4 @@ lib/PHPMailer/
 lib/Slim/
 lib/Twig/
 backup/
+node_modules

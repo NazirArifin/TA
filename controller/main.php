@@ -20,6 +20,8 @@ $app->get('/', function() use($app, $ctr) {
 	$pdirektori	= $ctr->FrontModel->get_premium_direktori();
 	$pproduk	= $ctr->FrontModel->get_direktori_produk();
 	$katdir		= $ctr->FrontModel->get_direktori_category();
+	$ctr->load('model', 'main');
+	$datatbl	= $ctr->MainModel->get_data_table('kota_direktori,kategori_direktori');
 	
 	// pesan error gagal login
 	$message 	= '';
@@ -42,7 +44,9 @@ $app->get('/', function() use($app, $ctr) {
 		'direktori_produk'	=> $pproduk,
 		'tips'				=> $tips,
 		'at_home'			=> true,
-		'message'			=> $message
+		'message'			=> $message,
+		'kota'				=> $datatbl['kota_direktori'],
+		'kategori_direktori'=> $datatbl['kategori_direktori']
 	);
 	
 	if (cek_token($ctr)) {
@@ -688,6 +692,20 @@ $app->post('/post/aduan', function() use($app, $ctr) {
 
 // ----------------------------------------------------------------
 /**
+ * Method: POST
+ * Verb: post/aduan/komentar
+ */
+$app->post('/post/aduan/komentar', function() use($app, $ctr) {
+	if ( ! cek_token($ctr)) halt403($app);
+	$member = $ctr->MainModel->member_me($_COOKIE['token']);
+	$ctr->load('helper', 'string');
+	$ctr->load('model', 'post');
+	$r = $ctr->PostModel->save_aduan_komentar($member['data']);
+	json_output($app, $r);
+});
+
+// ----------------------------------------------------------------
+/**
  * Method: DELETE
  * Verb: post 
  */
@@ -1144,5 +1162,21 @@ $app->post('/upgrade', function() use($app, $ctr) {
 	$ctr->load('model', 'anggota');
 	$member	= $ctr->MainModel->member_me($_COOKIE['token']);
 	$r = $ctr->AnggotaModel->upgrade_member($member['data']['member_kode']);
+	json_output($app, $r);
+});
+
+
+// ----------------------------------------------------------------
+/**
+ * Method: POST
+ * Verb: feedback
+ */
+$app->options('/feedback', function() use($app) { $app->status(200); $app->stop(); });
+$app->post('/feedback', function() use($app, $ctr) {
+	if ( ! cek_token($ctr)) halt403($app);
+	$member = $ctr->MainModel->member_me($_COOKIE['token']);
+
+	$ctr->load('model', 'front');
+	$r = $ctr->FrontModel->save_feedback($member['data']['member_kode']);
 	json_output($app, $r);
 });

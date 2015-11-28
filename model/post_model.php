@@ -219,15 +219,12 @@ class PostModel extends ModelBase {
 		if (empty($id)) {
 			// periksa apakah hari ini sudah mengirim data untuk anggota belum valid
 			if ( ! $member['member_valid']) {
-				$run	= $this->db->query("SELECT TANGGAL_POSTANGGOTA FROM postanggota WHERE ID_ANGGOTA = '$idmember' ORDER BY TANGGAL_POSTANGGOTA DESC LIMIT 0, 1", TRUE);
-				if ( ! empty($run)) {
-					$lastpost	= datedb_to_tanggal($run->TANGGAL_POSTANGGOTA, 'U');
-					if (time() - $lastpost < 24 * 60 * 60) {
-						return array(
-							'type'	=> FALSE,
-							'data'	=> 'Anda hanya dapat mengirimkan satu kali dalam satu hari'
-						);
-					}
+				$run 	= $this->db->query("SELECT COUNT(ID_POSTANGGOTA) AS HASIL FROM postanggota WHERE ID_ANGGOTA = '$idmember' AND DATE(NOW()) = DATE(TANGGAL_POSTANGGOTA)", true);
+				if ($run->HASIL > 0) {
+					return array(
+						'type'	=> FALSE,
+						'data'	=> 'Anda hanya dapat mengirimkan satu kali dalam satu hari'
+					);
 				}
 			}
 			$run 	= $this->db->query("INSERT INTO postanggota VALUES(0, '$idmember', '$kategori', '$judul', '$data', NOW(), '$tipe', '1', '')");
@@ -406,7 +403,8 @@ class PostModel extends ModelBase {
 					'isi'	=> nl2br($val->ISI_KOMENTAR, FALSE),
 					'tanggal'=> datedb_to_tanggal($val->TANGGAL_KOMENTAR, 'd M Y H:i'),
 					'foto'	=> '/upload/member/' . (empty($val->FOTO_ANGGOTA) ? 'default.png' : str_replace('.', '_thumb.', $val->FOTO_ANGGOTA)),
-					'hapus'	=> ($member == $val->KODE_ANGGOTA || $poster == $val->KODE_ANGGOTA || $poster == $member)
+					'hapus'	=> ($member == $val->KODE_ANGGOTA),
+					'lapor' => ($val->KODE_ANGGOTA != $member)
 				);
 			}
 		}
@@ -454,6 +452,33 @@ class PostModel extends ModelBase {
 			$ins	= $this->db->query("INSERT INTO aduanpost VALUES(0, '$post', '$idmember', '$reason', NOW(), '1')");
 			// simpan di pemberitahuan
 			$ins	= $this->db->query("INSERT INTO pemberitahuan VALUES(0, '3', 'Aduan kiriman Anggota oleh: <a href=\"/anggota/" . $member['member_kode'] ."\">" . $namamember ."</a> untuk kiriman <a href=\"" . $link . "\">" . $judul . "</a> dengan alasan: " . $reason . "', NOW(), '1')");
+		} else {
+			$data 	= 'Anda sudah memasukkan aduan pada kiriman ini';
+		}
+		return array('type' => true, 'data' => $data);
+	}
+	
+	public function save_aduan_komentar($member) {
+		extract($this->prepare_post(array('komentar', 'reason')));
+		$komentar	= filter_var($komentar, FILTER_SANITIZE_NUMBER_FLOAT);
+		$reason 	= $this->db->escape_str($reason);
+		$run		= $this->db->query("SELECT ID_ANGGOTA, NAMA_ANGGOTA FROM anggota WHERE KODE_ANGGOTA = '" . $member['member_kode'] . "'", true);
+		$idmember	= $run->ID_ANGGOTA;
+		$namamember = $run->NAMA_ANGGOTA;
+		// masukkan ke aduan jika belum ada
+		$run		= $this->db->query("SELECT COUNT(ID_ADUANKOMENTAR) AS HASIL FROM aduankomentar WHERE ID_ANGGOTA = '$idmember' AND ID_KOMENTAR = '$komentar'", true);
+		$data		= '';
+		if ($run->HASIL == 0) {
+			// cari data posting
+			$run 	= $this->db->query("SELECT a.ISI_KOMENTAR, b.NAMA_ANGGOTA, c.JUDUL_POSTANGGOTA, c.TIPE_POSTANGGOTA, c.ID_POSTANGGOTA FROM komentar a, anggota b, postanggota c WHERE a.ID_POSTANGGOTA = c.ID_POSTANGGOTA AND a.ID_ANGGOTA = b.ID_ANGGOTA AND a.ID_KOMENTAR = '$komentar'", true);
+			$isi 	= token_truncate($run->ISI_KOMENTAR, 150);
+			$pengirim = $run->NAMA_ANGGOTA;
+			$judul 	= $run->JUDUL_POSTANGGOTA;
+			$link	= '/' . ($run->TIPE_POSTANGGOTA == '1' ? 'jual' : 'beli') . '/' . $run->ID_POSTANGGOTA . '/' . preg_replace('/[^a-z0-9]/', '', strtolower($judul));
+			
+			$ins	= $this->db->query("INSERT INTO aduankomentar VALUES(0, '$komentar', '$idmember', '$reason', NOW(), '1')");
+			// simpan di pemberitahuan
+			$ins	= $this->db->query("INSERT INTO pemberitahuan VALUES(0, '3', 'Aduan komentar Anggota oleh: <a href=\"/anggota/" . $member['member_kode'] ."\">" . $namamember ."</a> dengan komentar: \"$isi\", untuk kiriman <a href=\"" . $link . "\">" . $judul . "</a> dengan alasan: " . $reason . "', NOW(), '1')");
 		} else {
 			$data 	= 'Anda sudah memasukkan aduan pada kiriman ini';
 		}

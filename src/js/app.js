@@ -1,7 +1,7 @@
 'use strict';
 
 var app = angular.module('mdbz', ['ngRoute', 'ngAnimate', 'ngSanitize', 'ngStorage', 'angular-loading-bar']).
-config(function($httpProvider, $locationProvider, cfpLoadingBarProvider) {
+config(['$httpProvider', '$locationProvider', 'cfpLoadingBarProvider', function($httpProvider, $locationProvider, cfpLoadingBarProvider) {
 	// loading-bar
 	cfpLoadingBarProvider.includeSpinner = false;
 	$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
@@ -9,7 +9,7 @@ config(function($httpProvider, $locationProvider, cfpLoadingBarProvider) {
 		return angular.isObject(data) && String(data) !== '[object File]' ? jQuery.param(data) : data;
 	}];
 	//$locationProvider.html5Mode(true).hashPrefix('#');
-}).
+}]).
 run(['$rootScope', '$location', function($rootScope, $location) {
 	
 }]).

@@ -703,25 +703,3 @@ app.directive('saveNewDirektori', ['notify', function(notify) {
 		}
 	};
 }]);
-
-/** simpan data feedback */
-app.directive('saveFeedback', ['notify', '$http', function(notify, $http) {
-	return {
-		restrict: 'CA',
-		link: function($scope, elm, attrs) {
-			elm.on('click', function(e) {
-				var $modal = $('#modal-35'),
-					$pesan = $('#feedback-pesan');
-				if ($pesan.val().length < 6) return Materialize.toast('Anda belum mengisi saran dengan benar', 4000);
-				$http.post('/feedback', { pesan: $pesan.val() }).
-				success(function(d) {
-					$modal.removeClass('md-show');
-					$pesan.val('');
-					notify.slideTop.info('Saran dan kritik yang Anda berikan berhasil kami simpan. Terima kasih telah membuat MADURA.BZ menjadi lebih baik');
-				}).error(function(e, s, h) {
-					Materialize.toast('Data gagal disimpan, pastikan Anda sudah menjadi anggota dan masuk sistem!', 4000);
-				});
-			});
-		}
-	}
-}]);
